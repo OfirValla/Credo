@@ -137,17 +137,18 @@ export function ExtraPaymentsForm({
                     className="flex items-center justify-between p-3 border rounded-md"
                   >
                     <div>
-                      <span className="font-medium">{formatCurrency(payment.amount, currency)}</span>
-                      {' '}
-                      in {payment.month} for plan <b>{plan ? (plan.name ?? formatCurrency(plan.initialAmount, currency) ): 'N/A'}</b>
-                      {' '}
-                      ({payment.type === 'reduceTerm' ? 'Reduce Term' : 'Reduce Payment'})
+                      <div className="font-medium">
+                        {getPlanDisplayName(plan, currency)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                      {formatCurrency(payment.amount, currency)} extra payment scheduled for {payment.month} ({payment.type === 'reduceTerm' ? 'Reduce Term' : 'Reduce Payment'})
+                      </div>
                     </div>
                     <Button
                       type="button"
                       variant="destructive"
                       size="sm"
-                      onClick={() => onDeleteExtraPayment(payment.id)}
+                      onClick={() => onDeleteExtraPayment(plan.id)}
                     >
                       Delete
                     </Button>
