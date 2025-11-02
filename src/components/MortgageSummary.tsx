@@ -69,8 +69,6 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
       interest: totalInterestWithoutExtra - totalInterest,
     };
 
-    const symbol = getCurrencySymbol(currency);
-
     return {
       withExtra: {
         totalPaid,
@@ -160,17 +158,17 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
 
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-3 text-green-600">Savings</h3>
+              <h3 className={`text-lg font-semibold mb-3 text-${summary.savings.total > 0 ? 'green' : 'red'}-600`}>Savings</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total Savings:</span>
-                  <span className="font-medium text-green-600">
+                  <span className={`font-medium text-${summary.savings.total > 0 ? 'green' : 'red'}-600`}>
                     {formatCurrencyValue(summary.savings.total)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Interest Savings:</span>
-                  <span className="font-medium text-green-600">
+                  <span className={`font-medium text-${summary.savings.total > 0 ? 'green' : 'red'}-600`}>
                     {formatCurrencyValue(summary.savings.interest)}
                   </span>
                 </div>
