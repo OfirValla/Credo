@@ -131,9 +131,12 @@ export function RateChangeForm({
                     className="flex items-center justify-between p-3 border rounded-md"
                   >
                     <div>
-                      <span className="font-medium">{rateChange.newAnnualRate}%</span>
-                      {' '}
-                      starting {rateChange.month} for plan <b>{plan ? (plan.name ?? formatCurrency(plan.initialAmount, currency)) : 'N/A'}</b>
+                      <div className="font-medium">
+                        {getPlanDisplayName(plan, currency)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Annual Interest {rateChange.newAnnualRate}%, effective from {rateChange.month}
+                      </div>
                     </div>
                     <Button
                       type="button"
