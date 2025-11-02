@@ -122,7 +122,7 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-3">With Extra Payments</h3>
+              <h3 className="text-lg font-semibold mb-3">Revised Loan Projection</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total Paid:</span>
@@ -140,7 +140,7 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-3">Without Extra Payments</h3>
+              <h3 className="text-lg font-semibold mb-3">Initial Loan Projection</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total Paid:</span>
