@@ -148,7 +148,7 @@ export function ExtraPaymentsForm({
                       type="button"
                       variant="destructive"
                       size="sm"
-                      onClick={() => onDeleteExtraPayment(plan.id)}
+                      onClick={() => onDeleteExtraPayment(payment.id)}
                     >
                       Delete
                     </Button>
