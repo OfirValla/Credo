@@ -60,12 +60,12 @@ export function ExtraPaymentsForm({
   };
 
   return (
-    <Card className="flex flex-col">
+    <Card>
       <CardHeader>
         <CardTitle>Extra Payments</CardTitle>
       </CardHeader>
-      <CardContent className="grow grid auto-rows-fr">
-        <form onSubmit={handleSubmit} className="space-y-4 grow">
+      <CardContent className="grid [grid-auto-rows:1fr_min-content] [height:calc(100%-72px)]">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="plan">Mortgage Plan</Label>
@@ -137,12 +137,11 @@ export function ExtraPaymentsForm({
                     className="flex items-center justify-between p-3 border rounded-md"
                   >
                     <div>
-                      <div className="font-medium">
-                        {getPlanDisplayName(plan, currency)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                      {formatCurrency(payment.amount, currency)} extra payment scheduled for {payment.month} ({payment.type === 'reduceTerm' ? 'Reduce Term' : 'Reduce Payment'})
-                      </div>
+                      <span className="font-medium">{formatCurrency(payment.amount, currency)}</span>
+                      {' '}
+                      in {payment.month} for plan {plan ? formatCurrency(plan.initialAmount, currency) : 'N/A'}
+                      {' '}
+                      ({payment.type === 'reduceTerm' ? 'Reduce Term' : 'Reduce Payment'})
                     </div>
                     <Button
                       type="button"

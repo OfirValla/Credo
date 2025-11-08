@@ -55,12 +55,12 @@ export function MortgageForm({ plans, currency, onAddPlan, onDeletePlan }: Mortg
   };
 
   return (
-    <Card className="flex flex-col">
+    <Card>
       <CardHeader>
         <CardTitle>Mortgage Plans</CardTitle>
       </CardHeader>
-      <CardContent className="grow grid auto-rows-fr">
-        <form onSubmit={handleSubmit} className="space-y-4 grow">
+      <CardContent className="grid [grid-auto-rows:1fr_min-content] [height:calc(100%-72px)]">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="planName">Plan Name (Optional)</Label>

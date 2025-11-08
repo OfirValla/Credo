@@ -64,12 +64,12 @@ export function RateChangeForm({
   };
 
   return (
-    <Card className="flex flex-col">
+    <Card>
       <CardHeader>
         <CardTitle>Interest Rate Changes</CardTitle>
       </CardHeader>
-      <CardContent className="grow grid auto-rows-fr">
-        <form onSubmit={handleSubmit} className="space-y-4 grow">
+      <CardContent className="grid [grid-auto-rows:1fr_min-content] [height:calc(100%-72px)]">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="rate-plan">Mortgage Plan</Label>
@@ -131,12 +131,9 @@ export function RateChangeForm({
                     className="flex items-center justify-between p-3 border rounded-md"
                   >
                     <div>
-                      <div className="font-medium">
-                        {getPlanDisplayName(plan, currency)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Annual Interest {rateChange.newAnnualRate}%, effective from {rateChange.month}
-                      </div>
+                      <span className="font-medium">{rateChange.newAnnualRate}%</span>
+                      {' '}
+                      starting {rateChange.month} for plan {plan ? formatCurrency(plan.initialAmount, currency) : 'N/A'}
                     </div>
                     <Button
                       type="button"
