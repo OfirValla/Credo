@@ -8,6 +8,10 @@ export default {
     './src/**/*.{ts,tsx}',
   ],
   prefix: "",
+  safelist: [
+    'text-green-600',
+    'text-red-600',
+  ],
   theme: {
     container: {
       center: true,
