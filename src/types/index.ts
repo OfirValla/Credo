@@ -23,6 +23,12 @@ export interface RateChange {
   newAnnualRate: number; // percentage (e.g., 5.5 for 5.5%)
 }
 
+export interface RowTag {
+  type: 'grace-period' | 'extra-payment' | 'rate-change';
+  label: string;
+  color?: string; // Optional override
+}
+
 export interface AmortizationRow {
   month: string; // MM/YYYY format
   planId: string;
@@ -32,4 +38,6 @@ export interface AmortizationRow {
   principal: number;
   interest: number;
   endingBalance: number;
+  tags?: RowTag[];
+  isGracePeriod?: boolean;
 }

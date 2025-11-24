@@ -23,7 +23,7 @@ function App() {
   const [rateChanges, setRateChanges] = useLocalStorage<RateChange[]>('mortgage-rate-changes', []);
   const [currency, setCurrency] = useLocalStorage<CurrencyCode>('mortgage-currency', 'USD');
 
-  const amortizationRows = useMortgage(plans, extraPayments, rateChanges);
+  const amortizationRows = useMortgage(plans, extraPayments, rateChanges, currency);
 
   const handleAddPlan = useCallback((planData: Omit<MortgagePlan, 'id'>) => {
     const newPlan: MortgagePlan = {

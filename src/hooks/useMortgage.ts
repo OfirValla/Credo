@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange } from '@/types';
+import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange, RowTag } from '@/types';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
+import { formatCurrency } from '@/lib/currency';
 
 /**
  * Calculate monthly payment using PMT formula
@@ -44,10 +45,13 @@ function formatMonth(monthNum: number): string {
   return `${month.toString().padStart(2, '0')}/${year}`;
 }
 
+import { CurrencyCode } from '@/lib/currency';
+
 export function useMortgage(
   plans: MortgagePlan[],
   extraPayments: ExtraPayment[],
-  rateChanges: RateChange[] = []
+  rateChanges: RateChange[] = [],
+  currency: CurrencyCode = 'USD'
 ): AmortizationRow[] {
   return useMemo(() => {
     if (plans.length === 0) {
@@ -69,14 +73,12 @@ export function useMortgage(
     for (const plan of plans) {
       const monthlyRate = plan.interestRate / 100 / 12;
 
-      const startMonthIdx = parseDateToMonthIndex(plan.firstPaymentDate);
+      const takenMonthIdx = parseDateToMonthIndex(plan.takenDate);
+      const startPaymentMonthIdx = parseDateToMonthIndex(plan.firstPaymentDate);
       const endMonthIdx = parseDateToMonthIndex(plan.lastPaymentDate);
 
-      // Calculate term in months (inclusive)
-      // Example: 01/01/2024 to 01/01/2024 is 1 payment? Usually mortgage is monthly.
-      // If first payment is Jan 2024 and last is Dec 2024, that's 12 payments.
-      // (Dec - Jan) + 1 = 11 + 1 = 12.
-      const termMonths = Math.max(1, endMonthIdx - startMonthIdx + 1);
+      // Calculate term in months (inclusive) based on PAYMENTS
+      const termMonths = Math.max(1, endMonthIdx - startPaymentMonthIdx + 1);
 
       const monthlyPayment = calculatePMT(plan.amount, monthlyRate, termMonths);
 
@@ -85,7 +87,7 @@ export function useMortgage(
         balance: plan.amount,
         monthlyPayment,
         monthlyRate,
-        currentMonth: startMonthIdx,
+        currentMonth: takenMonthIdx,
         originalTermMonths: termMonths,
         remainingPayments: termMonths,
       });
@@ -94,7 +96,7 @@ export function useMortgage(
     // Get all unique months from plans, extra payments, and rate changes
     const allMonths = new Set<number>();
     plans.forEach(plan => {
-      const startMonth = parseDateToMonthIndex(plan.firstPaymentDate);
+      const startMonth = parseDateToMonthIndex(plan.takenDate);
       const endMonth = parseDateToMonthIndex(plan.lastPaymentDate);
       for (let i = startMonth; i <= endMonth; i++) {
         allMonths.add(i);
@@ -115,13 +117,14 @@ export function useMortgage(
 
       // Process each active plan
       for (const [planId, data] of planData.entries()) {
-        // Skip if plan hasn't started yet
-        if (monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate)) {
+        // Skip if plan hasn't started yet (based on taken date)
+        if (monthNum < parseDateToMonthIndex(data.plan.takenDate)) {
           continue;
         }
 
-        // Skip if plan has ended (no remaining payments)
-        if (data.remainingPayments <= 0) {
+        // Skip if plan has ended (no remaining payments) AND we are past the first payment date
+        // (We need to allow processing if we are in the grace period even if remainingPayments is full)
+        if (data.remainingPayments <= 0 && monthNum >= parseDateToMonthIndex(data.plan.firstPaymentDate)) {
           continue;
         }
 
@@ -130,6 +133,21 @@ export function useMortgage(
         let monthlyPayment = data.monthlyPayment;
         let extraPayment = 0;
         let recalculatePayment = false;
+
+        // Check if we are in the grace period (before first payment date)
+        const isGracePeriod = monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate);
+        const isFirstPaymentMonth = monthNum === parseDateToMonthIndex(data.plan.firstPaymentDate);
+
+        if (isGracePeriod) {
+          monthlyPayment = 0;
+        } else if (isFirstPaymentMonth) {
+          // Recalculate payment based on accumulated balance and original term
+          // This ensures that the accumulated interest is paid off over the term
+          if (startingBalance > 0 && data.originalTermMonths > 0) {
+            monthlyPayment = calculatePMT(startingBalance, monthlyRate, data.originalTermMonths);
+            data.monthlyPayment = monthlyPayment;
+          }
+        }
 
         // Check for rate changes in this month (must be applied BEFORE calculating interest)
         const monthRateChanges = rateChanges.filter(
@@ -147,7 +165,7 @@ export function useMortgage(
           data.monthlyRate = monthlyRate;
 
           // Recalculate monthly payment based on new rate, current balance, and remaining payments
-          if (startingBalance > 0 && data.remainingPayments > 0) {
+          if (startingBalance > 0 && data.remainingPayments > 0 && !isGracePeriod) {
             monthlyPayment = calculatePMT(startingBalance, monthlyRate, data.remainingPayments);
             data.monthlyPayment = monthlyPayment;
           }
@@ -208,7 +226,10 @@ export function useMortgage(
 
         // Update plan data
         data.balance = endingBalance;
-        data.remainingPayments -= 1;
+
+        if (!isGracePeriod) {
+          data.remainingPayments -= 1;
+        }
 
         // Calculate total payment made this month
         // If we adjusted the principal for final payment, show actual payment (principal + interest)
@@ -216,6 +237,32 @@ export function useMortgage(
         const totalPayment = adjustedPayment
           ? principal + interest  // Actual payment when adjusted
           : monthlyPayment + extraPayment; // Scheduled payment + extra
+
+        // Prepare tags
+        const tags: RowTag[] = [];
+        if (isGracePeriod) {
+          tags.push({
+            type: 'grace-period',
+            label: 'Taken (Interest Accrual)',
+            color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+          });
+        }
+
+        if (extraPayment > 0) {
+          tags.push({
+            type: 'extra-payment',
+            label: `Extra: ${formatCurrency(extraPayment, currency)}`,
+          });
+        }
+
+        if (monthRateChanges.length > 0) {
+          const rateChange = monthRateChanges[monthRateChanges.length - 1];
+          tags.push({
+            type: 'rate-change',
+            label: `Rate: ${rateChange.newAnnualRate}%`,
+            color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+          });
+        }
 
         // Add row
         rows.push({
@@ -227,6 +274,8 @@ export function useMortgage(
           principal,
           interest,
           endingBalance,
+          tags,
+          isGracePeriod
         });
 
         // Stop if balance is paid off
@@ -250,5 +299,5 @@ export function useMortgage(
     });
 
     return rows;
-  }, [plans, extraPayments, rateChanges]);
+  }, [plans, extraPayments, rateChanges, currency]);
 }
