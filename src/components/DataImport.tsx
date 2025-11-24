@@ -32,7 +32,14 @@ export const DataImport: React.FC<DataImportProps> = ({ onImport }) => {
                 }
 
                 // Transform data to match internal state structure if needed
-                const plans = data.mortgagePlans;
+                const plans = data.mortgagePlans.map((p: any) => ({
+                    ...p,
+                    amount: p.amount || p.initialAmount, // Backward compatibility
+                    interestRate: p.interestRate || p.annualRate, // Backward compatibility
+                    takenDate: p.takenDate || p.startDate, // Backward compatibility attempt (might be wrong format if old data)
+                    firstPaymentDate: p.firstPaymentDate || p.startDate, // Backward compatibility
+                    lastPaymentDate: p.lastPaymentDate || '', // No clear mapping, might need manual fix
+                }));
 
                 const extraPayments = (data.extraPayments || []).map((ep: any) => ({
                     ...ep,

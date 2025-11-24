@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange } from '@/types';
+import { parseDateToMonthIndex } from '@/lib/planUtils';
 
 /**
  * Calculate monthly payment using PMT formula
@@ -14,12 +15,24 @@ function calculatePMT(principal: number, monthlyRate: number, numPayments: numbe
   return principal * (monthlyRate * factor) / (factor - 1);
 }
 
+
+
 /**
- * Parse MM/YYYY date string and convert to month number
+ * Parse MM/YYYY or DD/MM/YYYY date string and convert to month number
+ * Handles legacy MM/YYYY format for backward compatibility if needed
  */
 function parseMonth(dateStr: string): number {
-  const [month, year] = dateStr.split('/').map(Number);
-  return (year - 2000) * 12 + month - 1; // Using 2000 as base year
+  if (!dateStr) return 0;
+  const parts = dateStr.split('/');
+  if (parts.length === 3) {
+    // DD/MM/YYYY
+    return parseDateToMonthIndex(dateStr);
+  } else if (parts.length === 2) {
+    // MM/YYYY
+    const [month, year] = parts.map(Number);
+    return (year - 2000) * 12 + month - 1;
+  }
+  return 0;
 }
 
 /**
@@ -54,27 +67,37 @@ export function useMortgage(
 
     // Initialize plan data
     for (const plan of plans) {
-      const monthlyRate = plan.annualRate / 100 / 12;
-      const monthlyPayment = calculatePMT(plan.initialAmount, monthlyRate, plan.termMonths);
-      const startMonth = parseMonth(plan.startDate);
-      
+      const monthlyRate = plan.interestRate / 100 / 12;
+
+      const startMonthIdx = parseDateToMonthIndex(plan.firstPaymentDate);
+      const endMonthIdx = parseDateToMonthIndex(plan.lastPaymentDate);
+
+      // Calculate term in months (inclusive)
+      // Example: 01/01/2024 to 01/01/2024 is 1 payment? Usually mortgage is monthly.
+      // If first payment is Jan 2024 and last is Dec 2024, that's 12 payments.
+      // (Dec - Jan) + 1 = 11 + 1 = 12.
+      const termMonths = Math.max(1, endMonthIdx - startMonthIdx + 1);
+
+      const monthlyPayment = calculatePMT(plan.amount, monthlyRate, termMonths);
+
       planData.set(plan.id, {
         plan,
-        balance: plan.initialAmount,
+        balance: plan.amount,
         monthlyPayment,
         monthlyRate,
-        currentMonth: startMonth,
-        originalTermMonths: plan.termMonths,
-        remainingPayments: plan.termMonths,
+        currentMonth: startMonthIdx,
+        originalTermMonths: termMonths,
+        remainingPayments: termMonths,
       });
     }
 
     // Get all unique months from plans, extra payments, and rate changes
     const allMonths = new Set<number>();
     plans.forEach(plan => {
-      const startMonth = parseMonth(plan.startDate);
-      for (let i = 0; i < plan.termMonths; i++) {
-        allMonths.add(startMonth + i);
+      const startMonth = parseDateToMonthIndex(plan.firstPaymentDate);
+      const endMonth = parseDateToMonthIndex(plan.lastPaymentDate);
+      for (let i = startMonth; i <= endMonth; i++) {
+        allMonths.add(i);
       }
     });
     extraPayments.forEach(ep => {
@@ -93,7 +116,7 @@ export function useMortgage(
       // Process each active plan
       for (const [planId, data] of planData.entries()) {
         // Skip if plan hasn't started yet
-        if (monthNum < parseMonth(data.plan.startDate)) {
+        if (monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate)) {
           continue;
         }
 
@@ -118,11 +141,11 @@ export function useMortgage(
           // Sort by id to ensure consistent ordering, use the last one
           monthRateChanges.sort((a, b) => a.id.localeCompare(b.id));
           const rateChange = monthRateChanges[monthRateChanges.length - 1];
-          
+
           // Update the monthly rate
           monthlyRate = rateChange.newAnnualRate / 100 / 12;
           data.monthlyRate = monthlyRate;
-          
+
           // Recalculate monthly payment based on new rate, current balance, and remaining payments
           if (startingBalance > 0 && data.remainingPayments > 0) {
             monthlyPayment = calculatePMT(startingBalance, monthlyRate, data.remainingPayments);
@@ -149,7 +172,7 @@ export function useMortgage(
 
         // Calculate principal from regular payment
         let principal = monthlyPayment - interest;
-        
+
         // Add extra payment to principal
         principal += extraPayment;
 
@@ -190,7 +213,7 @@ export function useMortgage(
         // Calculate total payment made this month
         // If we adjusted the principal for final payment, show actual payment (principal + interest)
         // Otherwise show scheduled payment + extra payments
-        const totalPayment = adjustedPayment 
+        const totalPayment = adjustedPayment
           ? principal + interest  // Actual payment when adjusted
           : monthlyPayment + extraPayment; // Scheduled payment + extra
 
@@ -223,7 +246,7 @@ export function useMortgage(
       const planA = planData.get(a.planId)?.plan;
       const planB = planData.get(b.planId)?.plan;
       if (!planA || !planB) return 0;
-      return parseMonth(planA.startDate) - parseMonth(planB.startDate);
+      return parseDateToMonthIndex(planA.firstPaymentDate) - parseDateToMonthIndex(planB.firstPaymentDate);
     });
 
     return rows;

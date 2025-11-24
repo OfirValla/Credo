@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X } from 'lucide-react';
 import { MortgagePlan } from '@/types';
 import { CurrencyCode, getCurrencySymbol } from '@/lib/currency';
-import { getPlanDisplayName } from '@/lib/planUtils';
+import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,50 +20,54 @@ interface MortgageFormProps {
 export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDeletePlan }: MortgageFormProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const [initialAmount, setInitialAmount] = useState('');
-  const [annualRate, setAnnualRate] = useState('');
-  const [termMonths, setTermMonths] = useState('');
-  const [startDate, setStartDate] = useState('');
+  const [amount, setAmount] = useState('');
+  const [interestRate, setInterestRate] = useState('');
+  const [takenDate, setTakenDate] = useState('');
+  const [firstPaymentDate, setFirstPaymentDate] = useState('');
+  const [lastPaymentDate, setLastPaymentDate] = useState('');
 
   const currencySymbol = getCurrencySymbol(currency);
 
   const handleEdit = (plan: MortgagePlan) => {
     setEditingId(plan.id);
     setName(plan.name || '');
-    setInitialAmount(plan.initialAmount.toString());
-    setAnnualRate(plan.annualRate.toString());
-    setTermMonths(plan.termMonths.toString());
-    setStartDate(plan.startDate);
+    setAmount(plan.amount.toString());
+    setInterestRate(plan.interestRate.toString());
+    setTakenDate(plan.takenDate);
+    setFirstPaymentDate(plan.firstPaymentDate);
+    setLastPaymentDate(plan.lastPaymentDate);
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
     setName('');
-    setInitialAmount('');
-    setAnnualRate('');
-    setTermMonths('');
-    setStartDate('');
+    setAmount('');
+    setInterestRate('');
+    setTakenDate('');
+    setFirstPaymentDate('');
+    setLastPaymentDate('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!initialAmount || !annualRate || !termMonths || !startDate) {
+    if (!amount || !interestRate || !takenDate || !firstPaymentDate || !lastPaymentDate) {
       return;
     }
 
-    const dateRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
-    if (!dateRegex.test(startDate)) {
-      alert('Start date must be in MM/YYYY format (e.g., 01/2024)');
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    if (!dateRegex.test(takenDate) || !dateRegex.test(firstPaymentDate) || !dateRegex.test(lastPaymentDate)) {
+      alert('Dates must be in DD/MM/YYYY format (e.g., 01/01/2024)');
       return;
     }
 
     const planData = {
       name: name.trim() || undefined,
-      initialAmount: parseFloat(initialAmount),
-      annualRate: parseFloat(annualRate),
-      termMonths: parseInt(termMonths),
-      startDate,
+      amount: parseFloat(amount),
+      interestRate: parseFloat(interestRate),
+      takenDate,
+      firstPaymentDate,
+      lastPaymentDate,
     };
 
     if (editingId) {
@@ -74,10 +78,12 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
     }
 
     setName('');
-    setInitialAmount('');
-    setAnnualRate('');
-    setTermMonths('');
-    setStartDate('');
+    setName('');
+    setAmount('');
+    setInterestRate('');
+    setTakenDate('');
+    setFirstPaymentDate('');
+    setLastPaymentDate('');
   };
 
   return (
@@ -104,15 +110,15 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="initialAmount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount ({currencySymbol})</Label>
+                <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount ({currencySymbol})</Label>
                 <div className="relative">
                   <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="initialAmount"
+                    id="amount"
                     type="number"
                     step="0.01"
-                    value={initialAmount}
-                    onChange={(e) => setInitialAmount(e.target.value)}
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
                     placeholder="300000"
                     className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                     required
@@ -120,16 +126,16 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="annualRate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Rate (%)</Label>
+                <Label htmlFor="interestRate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Rate (%)</Label>
                 <div className="relative">
                   <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="annualRate"
+                    id="interestRate"
                     type="number"
-                    step="0.01"
-                    value={annualRate}
-                    onChange={(e) => setAnnualRate(e.target.value)}
-                    placeholder="5.5"
+                    step="0.001"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(e.target.value)}
+                    placeholder="5.500"
                     className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                     required
                   />
@@ -137,33 +143,48 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="termMonths" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Term (Months)</Label>
+                <Label htmlFor="takenDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Taken Date</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="termMonths"
-                    type="number"
-                    value={termMonths}
-                    onChange={(e) => setTermMonths(e.target.value)}
-                    placeholder="360"
+                    id="takenDate"
+                    value={takenDate}
+                    onChange={(e) => setTakenDate(e.target.value)}
+                    placeholder="DD/MM/YYYY"
                     className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                     required
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="startDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Start Date</Label>
-                <Input
-                  id="startDate"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  placeholder="MM/YYYY"
-                  pattern="(0[1-9]|1[0-2])\/\d{4}"
-                  className="bg-background/50 border-border/50 focus:ring-primary/20"
-                  required
-                />
+                <Label htmlFor="firstPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">First Payment</Label>
+                <div className="relative">
+                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="firstPaymentDate"
+                    value={firstPaymentDate}
+                    onChange={(e) => setFirstPaymentDate(e.target.value)}
+                    placeholder="DD/MM/YYYY"
+                    className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Last Payment</Label>
+                <div className="relative">
+                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="lastPaymentDate"
+                    value={lastPaymentDate}
+                    onChange={(e) => setLastPaymentDate(e.target.value)}
+                    placeholder="DD/MM/YYYY"
+                    className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -211,8 +232,8 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
                     exit={{ opacity: 0, scale: 0.95 }}
                     layout
                     className={`group flex items-center justify-between p-3 border rounded-lg transition-colors ${editingId === plan.id
-                        ? 'bg-primary/10 border-primary/50'
-                        : 'bg-background/40 border-border/50 hover:bg-background/60'
+                      ? 'bg-primary/10 border-primary/50'
+                      : 'bg-background/40 border-border/50 hover:bg-background/60'
                       }`}
                   >
                     <div className="space-y-1">
@@ -221,11 +242,16 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
                       </div>
                       <div className="text-xs text-muted-foreground flex items-center gap-2">
                         <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
-                          {plan.annualRate}%
+                          {plan.interestRate}%
                         </span>
-                        <span>{plan.termMonths}mo</span>
+                        <span>{plan.firstPaymentDate} - {plan.lastPaymentDate}</span>
                         <span>•</span>
-                        <span>{plan.startDate}</span>
+                        <span>
+                          {(() => {
+                            const { totalMonths, remainingMonths } = getPlanDurationInfo(plan);
+                            return `${totalMonths} months total • ${remainingMonths} months remaining`;
+                          })()}
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">

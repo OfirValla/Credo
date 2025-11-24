@@ -15,7 +15,9 @@ export const DataExport: React.FC = () => {
     // Format dates to ISO string for consistency
     const formattedPlans = plans.map((plan: MortgagePlan) => ({
       ...plan,
-      startDate: plan.startDate,
+      takenDate: plan.takenDate,
+      firstPaymentDate: plan.firstPaymentDate,
+      lastPaymentDate: plan.lastPaymentDate,
     }));
 
     const formattedExtraPayments = extraPayments.map((payment: ExtraPayment) => ({

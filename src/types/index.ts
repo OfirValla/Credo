@@ -1,10 +1,11 @@
 export interface MortgagePlan {
   id: string;
   name?: string; // Optional custom name for the plan
-  initialAmount: number;
-  annualRate: number; // percentage (e.g., 5.5 for 5.5%)
-  termMonths: number;
-  startDate: string; // MM/YYYY format
+  amount: number;
+  interestRate: number; // percentage (e.g., 5.5 for 5.5%)
+  takenDate: string; // DD/MM/YYYY format
+  firstPaymentDate: string; // DD/MM/YYYY format
+  lastPaymentDate: string; // DD/MM/YYYY format
 }
 
 export interface ExtraPayment {

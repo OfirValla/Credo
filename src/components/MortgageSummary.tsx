@@ -29,7 +29,7 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
       totalPaid += row.monthlyPayment;
     }
 
-    const totalPrincipal = plans.reduce((sum, plan) => sum + plan.initialAmount, 0);
+    const totalPrincipal = plans.reduce((sum, plan) => sum + plan.amount, 0);
 
     // If totalPaid from rows is less than principal (e.g. very early in schedule), 
     // we should at least show the principal + interest. 

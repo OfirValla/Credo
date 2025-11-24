@@ -55,11 +55,21 @@ function getNextPaymentDate(): string {
 }
 
 /**
- * Parse MM/YYYY date string and convert to month number
+ * Parse MM/YYYY or DD/MM/YYYY date string and convert to month number
  */
 function parseMonth(dateStr: string): number {
-  const [month, year] = dateStr.split('/').map(Number);
-  return (year - 2000) * 12 + month - 1;
+  if (!dateStr) return 0;
+  const parts = dateStr.split('/');
+  if (parts.length === 3) {
+    // DD/MM/YYYY
+    const [, month, year] = parts.map(Number);
+    return (year - 2000) * 12 + month - 1;
+  } else if (parts.length === 2) {
+    // MM/YYYY
+    const [month, year] = parts.map(Number);
+    return (year - 2000) * 12 + month - 1;
+  }
+  return 0;
 }
 
 /**
@@ -94,12 +104,12 @@ export function CurrentMonthPreview({ plans, rows, currency }: CurrentMonthPrevi
       const planRows = rows.filter((r) => r.planId === plan.id);
 
       // Check if plan has started
-      const planStartMonth = parseMonth(plan.startDate);
+      const planStartMonth = parseMonth(plan.firstPaymentDate);
       const currentMonthNum = parseMonth(currentMonth);
 
       if (planStartMonth > currentMonthNum) {
         // Plan hasn't started yet
-        result.totalRemainingBalance += plan.initialAmount;
+        result.totalRemainingBalance += plan.amount;
         return;
       }
 
@@ -109,7 +119,7 @@ export function CurrentMonthPreview({ plans, rows, currency }: CurrentMonthPrevi
       );
 
       if (currentOrPastRows.length === 0) {
-        result.totalRemainingBalance += plan.initialAmount;
+        result.totalRemainingBalance += plan.amount;
         return;
       }
 
