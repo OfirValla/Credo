@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
+import { PieChart, DollarSign, TrendingUp, Calendar, CreditCard, Layers } from 'lucide-react';
 import { AmortizationRow, MortgagePlan, ExtraPayment } from '@/types';
-import { CurrencyCode, formatCurrency, getCurrencySymbol } from '@/lib/currency';
-import { getPlanDisplayName } from '@/lib/planUtils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CurrencyCode, formatCurrency } from '@/lib/currency';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+
 
 interface MortgageSummaryProps {
   rows: AmortizationRow[];
@@ -11,196 +12,163 @@ interface MortgageSummaryProps {
   currency: CurrencyCode;
 }
 
-// PMT calculation helper
-function calculatePMT(principal: number, monthlyRate: number, numPayments: number): number {
-  if (monthlyRate === 0) {
-    return principal / numPayments;
-  }
-  const factor = Math.pow(1 + monthlyRate, numPayments);
-  return principal * (monthlyRate * factor) / (factor - 1);
-}
-
 export function MortgageSummary({ rows, plans, extraPayments, currency }: MortgageSummaryProps) {
   const summary = useMemo(() => {
-    if (rows.length === 0) {
+    if (rows.length === 0 || plans.length === 0) {
       return null;
     }
 
-    // Calculate totals with extra payments
-    let totalPaid = 0;
+    // Calculate totals
     let totalInterest = 0;
-    const planTotals = new Map<string, { paid: number; interest: number; principal: number }>();
+    let totalPaid = 0;
 
+    // We use the rows to get the actual projected interest and payments
+    // This accounts for extra payments and rate changes if they are reflected in the rows
     for (const row of rows) {
-      totalPaid += row.monthlyPayment;
       totalInterest += row.interest;
-      
-      const existing = planTotals.get(row.planId) || { paid: 0, interest: 0, principal: 0 };
-      planTotals.set(row.planId, {
-        paid: existing.paid + row.monthlyPayment,
-        interest: existing.interest + row.interest,
-        principal: existing.principal + row.principal,
-      });
+      totalPaid += row.monthlyPayment;
     }
 
-    // Calculate totals without extra payments
-    let totalPaidWithoutExtra = 0;
-    let totalInterestWithoutExtra = 0;
+    const totalPrincipal = plans.reduce((sum, plan) => sum + plan.initialAmount, 0);
 
-    for (const plan of plans) {
-      const monthlyRate = plan.annualRate / 100 / 12;
-      let balance = plan.initialAmount;
-      
-      for (let i = 0; i < plan.termMonths; i++) {
-        const interest = balance * monthlyRate;
-        const payment = calculatePMT(plan.initialAmount, monthlyRate, plan.termMonths);
-        const principal = payment - interest;
-        
-        totalPaidWithoutExtra += payment;
-        totalInterestWithoutExtra += interest;
-        
-        balance = Math.max(0, balance - principal);
-        if (balance <= 0.01) break;
-      }
-    }
+    // If totalPaid from rows is less than principal (e.g. very early in schedule), 
+    // we should at least show the principal + interest. 
+    // However, usually totalPaid > totalPrincipal.
+    // Let's ensure totalPaid is at least principal + interest
+    const actualTotalPaid = Math.max(totalPaid, totalPrincipal + totalInterest);
 
-    const savings = {
-      total: totalPaidWithoutExtra - totalPaid,
-      interest: totalInterestWithoutExtra - totalInterest,
-    };
+    // Calculate duration (max months across all plans)
+    // We can find the max month index from the rows
+    let maxMonthIndex = 0;
+    rows.forEach(row => {
+      const [m, y] = row.month.split('/').map(Number);
+      const monthIndex = (y * 12) + m;
+      if (monthIndex > maxMonthIndex) maxMonthIndex = monthIndex;
+    });
+
+    // To get a rough "months remaining" or "total duration", we can look at the plan with the longest term
+    // OR better, look at the number of unique months in the rows
+    const uniqueMonths = new Set(rows.map(r => r.month));
+    const durationMonths = uniqueMonths.size;
+
 
     return {
-      withExtra: {
-        totalPaid,
-        totalInterest,
-        principal: totalPaid - totalInterest,
-      },
-      withoutExtra: {
-        totalPaid: totalPaidWithoutExtra,
-        totalInterest: totalInterestWithoutExtra,
-        principal: totalPaidWithoutExtra - totalInterestWithoutExtra,
-      },
-      savings,
-      planTotals: Array.from(planTotals.entries()).map(([planId, totals]) => {
-        const plan = plans.find((p) => p.id === planId);
-        return {
-          planId,
-          planName: plan
-            ? getPlanDisplayName(plan, currency)
-            : planId,
-          ...totals,
-        };
-      }),
+      totalPrincipal,
+      totalInterest,
+      totalPaid: actualTotalPaid,
+      durationMonths,
+      principalPct: (totalPrincipal / actualTotalPaid) * 100,
+      interestPct: (totalInterest / actualTotalPaid) * 100,
     };
-  }, [rows, plans, extraPayments, currency]);
-
-  const formatCurrencyValue = (value: number) => formatCurrency(value, currency);
+  }, [rows, plans]);
 
   if (!summary) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            Add a mortgage plan to see the summary.
-          </p>
+      <Card className="glass-card border-none">
+        <CardContent className="p-8 text-center text-muted-foreground">
+          Add a mortgage plan to see the summary.
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Mortgage Summary</CardTitle>
+    <Card className="" gradient>
+      <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-6">
+        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+          <PieChart className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+        </div>
+        <div>
+          <CardTitle className="text-lg font-semibold">Mortgage Summary</CardTitle>
+          <CardDescription>Complete lifecycle overview</CardDescription>
+        </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-3">With Extra Payments</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Paid:</span>
-                  <span className="font-medium">{formatCurrencyValue(summary.withExtra.totalPaid)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Interest:</span>
-                  <span className="font-medium">{formatCurrencyValue(summary.withExtra.totalInterest)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Principal Paid:</span>
-                  <span className="font-medium">{formatCurrencyValue(summary.withExtra.principal)}</span>
-                </div>
-              </div>
-            </div>
+      <CardContent className="space-y-8 pt-0">
 
-            <div>
-              <h3 className="text-lg font-semibold mb-3">Without Extra Payments</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Paid:</span>
-                  <span className="font-medium">{formatCurrencyValue(summary.withoutExtra.totalPaid)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Interest:</span>
-                  <span className="font-medium">{formatCurrencyValue(summary.withoutExtra.totalInterest)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Principal Paid:</span>
-                  <span className="font-medium">{formatCurrencyValue(summary.withoutExtra.principal)}</span>
-                </div>
-              </div>
+        {/* Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex h-8 w-full overflow-hidden rounded-[.5rem] text-white text-sm font-medium gap-2">
+            <div
+              className="bg-blue-600 flex items-center justify-center transition-all duration-500"
+              style={{ width: `${summary.principalPct}%` }}
+            >
+              Principal
+            </div>
+            <div
+              className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500"
+              style={{ width: `${summary.interestPct}%` }}
+            >
+              Interest
+            </div>
+          </div>
+          <div className="flex justify-between text-xs text-muted-foreground px-1">
+            <span>Principal: {summary.principalPct.toFixed(1)}%</span>
+            <span>Interest: {summary.interestPct.toFixed(1)}%</span>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Total Principal */}
+          <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+              <DollarSign className="w-4 h-4" />
+              <span className="text-sm font-medium">Total Principal</span>
+            </div>
+            <div className="text-2xl font-bold text-foreground">
+              {formatCurrency(summary.totalPrincipal, currency)}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <h3 className={`text-lg font-semibold mb-3 text-${summary.savings.total > 0 ? 'green' : 'red'}-600`}>Savings</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Savings:</span>
-                  <span className={`font-medium text-${summary.savings.total > 0 ? 'green' : 'red'}-600`}>
-                    {formatCurrencyValue(summary.savings.total)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Interest Savings:</span>
-                  <span className={`font-medium text-${summary.savings.total > 0 ? 'green' : 'red'}-600`}>
-                    {formatCurrencyValue(summary.savings.interest)}
-                  </span>
-                </div>
-              </div>
+          {/* Total Interest */}
+          <div className="bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-800 rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
+              <TrendingUp className="w-4 h-4" />
+              <span className="text-sm font-medium">Total Interest</span>
             </div>
+            <div className="text-2xl font-bold text-foreground">
+              {formatCurrency(summary.totalInterest, currency)}
+            </div>
+          </div>
 
-            {summary.planTotals.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-3">By Plan</h3>
-                <div className="space-y-3">
-                  {summary.planTotals.map((planTotal) => (
-                    <div key={planTotal.planId} className="border rounded-md p-3">
-                      <div className="font-medium mb-2">{planTotal.planName}</div>
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Paid:</span>
-                          <span>{formatCurrencyValue(planTotal.paid)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Interest:</span>
-                          <span>{formatCurrencyValue(planTotal.interest)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Principal:</span>
-                          <span>{formatCurrencyValue(planTotal.principal)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+          {/* Total Payments */}
+          <div className="bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-800 rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+              <DollarSign className="w-4 h-4" />
+              <span className="text-sm font-medium">Total Payments</span>
+            </div>
+            <div className="text-2xl font-bold text-foreground">
+              {formatCurrency(summary.totalPaid, currency)}
+            </div>
+          </div>
+
+          {/* Duration */}
+          <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800 rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm font-medium">Duration</span>
+            </div>
+            <div className="text-2xl font-bold text-foreground">
+              {summary.durationMonths} mo
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Stats */}
+        <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="bg-secondary/20 rounded-lg p-3 flex justify-between items-center">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Layers className="w-4 h-4" />
+              <span>Active Plans</span>
+            </div>
+            <span className="font-bold">{plans.length}</span>
+          </div>
+          <div className="bg-secondary/20 rounded-lg p-3 flex justify-between items-center">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CreditCard className="w-4 h-4" />
+              <span>Extra Payments</span>
+            </div>
+            <span className="font-bold">{extraPayments.length}</span>
           </div>
         </div>
       </CardContent>

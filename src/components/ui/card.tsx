@@ -2,19 +2,41 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+const gradients = [
+  "bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500",
+  "bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500",
+  "bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500",
+  "bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-500",
+  "bg-gradient-to-r from-fuchsia-500 via-purple-600 to-indigo-600",
+  "bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500",
+];
+
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
+  React.HTMLAttributes<HTMLDivElement> & { gradient?: boolean }
+>(({ className, gradient, ...props }, ref) => {
+  const gradientClass = React.useMemo(() => {
+    if (!gradient) return "";
+    const randomIndex = Math.floor(Math.random() * gradients.length);
+    return gradients[randomIndex];
+  }, [gradient]);
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-xl border-none bg-white/80 dark:bg-slate-900/80 text-card-foreground shadow-xl relative overflow-hidden backdrop-blur-xl",
+        className
+      )}
+      {...props}
+    >
+      {gradient && (
+        <div className={cn("absolute top-0 left-0 w-full h-2 rounded-t-xl", gradientClass)} />
+      )}
+      {props.children}
+    </div>
+  );
+})
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<
@@ -60,7 +82,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-4 pt-0 sm:p-6 sm:pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
@@ -70,7 +92,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
+    className={cn("flex items-center p-4 pt-0 sm:p-6 sm:pt-0", className)}
     {...props}
   />
 ))
