@@ -14,6 +14,7 @@ export interface ExtraPayment {
   planId: string;
   amount: number;
   type: "reduceTerm" | "reducePayment";
+  enabled?: boolean; // Optional, defaults to true
 }
 
 export interface RateChange {

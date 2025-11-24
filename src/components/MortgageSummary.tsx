@@ -48,7 +48,10 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
 
     // To get a rough "months remaining" or "total duration", we can look at the plan with the longest term
     // OR better, look at the number of unique months in the rows
-    const uniqueMonths = new Set(rows.map(r => r.month));
+    const uniqueMonths = new Set(
+      rows.filter(row => !row.tags?.find(tag => tag.type === 'grace-period'))
+        .map(r => r.month.slice(3))
+    );
     const durationMonths = uniqueMonths.size;
 
 
