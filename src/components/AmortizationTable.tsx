@@ -221,58 +221,70 @@ export function AmortizationTable({ rows, plans, currency }: AmortizationTablePr
                   </TableCell>
                 </TableRow>
               ) : (
-                displayedRows.map((row, index) => (
-                  <motion.tr
-                    key={`${row.planId}-${row.month}-${index}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.02 }} // Reduced delay for performance with many rows
-                    className={cn(
-                      "border-b border-border/50 transition-colors",
-                      row.isGracePeriod ? "bg-yellow-50/50 dark:bg-yellow-900/10 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20" : "hover:bg-primary/5",
-                      row.tags?.some(t => t.type === 'extra-payment') && "bg-green-50/50 dark:bg-green-900/10 hover:bg-green-100/50 dark:hover:bg-green-900/20"
-                    )}
-                  >
-                    <TableCell className="font-medium">{row.month}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      <div className="flex flex-col gap-1">
-                        <span>
-                          {getPlanLabel(row.planId)} <span className="text-xs opacity-70">({formatPercentage(row.monthlyRate)})</span>
-                        </span>
-                        {row.tags && row.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {row.tags.map((tag, i) => (
-                              <span
-                                key={i}
-                                className={cn(
-                                  "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-                                  tag.color || "bg-primary/10 text-primary"
-                                )}
-                              >
-                                {tag.label}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      {formatCurrencyValue(row.startingBalance)}
-                    </TableCell>
-                    <TableCell className="text-right font-mono font-medium text-primary">
-                      {formatCurrencyValue(row.monthlyPayment)}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-green-600 dark:text-green-400">
-                      {formatCurrencyValue(row.principal)}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-orange-600 dark:text-orange-400">
-                      {formatCurrencyValue(row.interest)}
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      {formatCurrencyValue(row.endingBalance)}
-                    </TableCell>
-                  </motion.tr>
-                ))
+                displayedRows.map((row, index) => {
+                  // Check if this row is the current month
+                  const now = new Date();
+                  const currentMonth = `${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+                  const isCurrentMonth = row.month.slice(3) === currentMonth;
+
+                  return (
+                    <motion.tr
+                      key={`${row.planId}-${row.month}-${index}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.02 }} // Reduced delay for performance with many rows
+                      className={cn(
+                        "border-b border-border/50 transition-colors",
+                        isCurrentMonth
+                          ? "bg-blue-100/80 dark:bg-blue-900/30 hover:bg-blue-200/80 dark:hover:bg-blue-800/40 border-blue-300/50 dark:border-blue-700/50"
+                          : row.isGracePeriod
+                            ? "bg-yellow-50/50 dark:bg-yellow-900/10 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20"
+                            : row.tags?.some(t => t.type === 'extra-payment')
+                              ? "bg-green-50/50 dark:bg-green-900/10 hover:bg-green-100/50 dark:hover:bg-green-900/20"
+                              : "hover:bg-primary/5"
+                      )}
+                    >
+                      <TableCell className="font-medium">{row.month}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        <div className="flex flex-col gap-1">
+                          <span>
+                            {getPlanLabel(row.planId)} <span className="text-xs opacity-70">({formatPercentage(row.monthlyRate)})</span>
+                          </span>
+                          {row.tags && row.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {row.tags.map((tag, i) => (
+                                <span
+                                  key={i}
+                                  className={cn(
+                                    "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
+                                    tag.color || "bg-primary/10 text-primary"
+                                  )}
+                                >
+                                  {tag.label}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
+                        {formatCurrencyValue(row.startingBalance)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono font-medium text-primary">
+                        {formatCurrencyValue(row.monthlyPayment)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-green-600 dark:text-green-400">
+                        {formatCurrencyValue(row.principal)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-orange-600 dark:text-orange-400">
+                        {formatCurrencyValue(row.interest)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
+                        {formatCurrencyValue(row.endingBalance)}
+                      </TableCell>
+                    </motion.tr>
+                  );
+                })
               )}
             </TableBody>
           </table>
