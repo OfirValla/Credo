@@ -11,15 +11,26 @@ const gradients = [
   "bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500",
 ];
 
+let availableGradients = [...gradients];
+
+const getNextGradient = () => {
+  if (availableGradients.length === 0) {
+    availableGradients = [...gradients];
+  }
+  const randomIndex = Math.floor(Math.random() * availableGradients.length);
+  const gradient = availableGradients[randomIndex];
+  availableGradients.splice(randomIndex, 1);
+  return gradient;
+};
+
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { gradient?: boolean }
 >(({ className, gradient, ...props }, ref) => {
-  const gradientClass = React.useMemo(() => {
+  const [gradientClass] = React.useState(() => {
     if (!gradient) return "";
-    const randomIndex = Math.floor(Math.random() * gradients.length);
-    return gradients[randomIndex];
-  }, [gradient]);
+    return getNextGradient();
+  });
 
   return (
     <div
