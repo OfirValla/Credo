@@ -24,8 +24,10 @@ export function parseDateToMonthIndex(dateStr: string): number {
   if (!dateStr) return 0;
   const parts = dateStr.split('/');
   if (parts.length === 3) {
-    const [, month, year] = parts.map(Number);
-    return (year - 2000) * 12 + month - 1;
+    const [day, month, year] = parts.map(Number);
+    // Return month index + day fraction (day / 100)
+    // e.g., 15/01/2024 -> (2024-2000)*12 + 1 - 1 + 0.15 = 288.15
+    return (year - 2000) * 12 + month - 1 + (day / 100);
   }
   return 0;
 }

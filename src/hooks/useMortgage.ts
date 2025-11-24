@@ -29,7 +29,7 @@ function parseMonth(dateStr: string): number {
     // DD/MM/YYYY
     return parseDateToMonthIndex(dateStr);
   } else if (parts.length === 2) {
-    // MM/YYYY
+    // MM/YYYY - return integer month index (no day fraction)
     const [month, year] = parts.map(Number);
     return (year - 2000) * 12 + month - 1;
   }
@@ -37,12 +37,13 @@ function parseMonth(dateStr: string): number {
 }
 
 /**
- * Convert month number to MM/YYYY format
+ * Convert month number (decimal) to DD/MM/YYYY format
  */
 function formatMonth(monthNum: number): string {
   const year = 2000 + Math.floor(monthNum / 12);
-  const month = (monthNum % 12) + 1;
-  return `${month.toString().padStart(2, '0')}/${year}`;
+  const month = (Math.floor(monthNum) % 12) + 1;
+  const day = Math.round((monthNum % 1) * 100) || 1; // Default to 1st if no day fraction
+  return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 }
 
 import { CurrencyCode } from '@/lib/currency';
@@ -78,7 +79,8 @@ export function useMortgage(
       const endMonthIdx = parseDateToMonthIndex(plan.lastPaymentDate);
 
       // Calculate term in months (inclusive) based on PAYMENTS
-      const termMonths = Math.max(1, endMonthIdx - startPaymentMonthIdx + 1);
+      // Use Math.floor to compare months regardless of days
+      const termMonths = Math.max(1, Math.floor(endMonthIdx) - Math.floor(startPaymentMonthIdx) + 1);
 
       const monthlyPayment = calculatePMT(plan.amount, monthlyRate, termMonths);
 
@@ -95,18 +97,89 @@ export function useMortgage(
 
     // Get all unique months from plans, extra payments, and rate changes
     const allMonths = new Set<number>();
+
+    // Create a map of planId to payment day fraction for easy lookup
+    const planPaymentDays = new Map<string, number>();
+    plans.forEach(plan => {
+      const firstPaymentMonth = parseDateToMonthIndex(plan.firstPaymentDate);
+      planPaymentDays.set(plan.id, firstPaymentMonth % 1);
+    });
+
     plans.forEach(plan => {
       const startMonth = parseDateToMonthIndex(plan.takenDate);
+      const firstPaymentMonth = parseDateToMonthIndex(plan.firstPaymentDate);
       const endMonth = parseDateToMonthIndex(plan.lastPaymentDate);
-      for (let i = startMonth; i <= endMonth; i++) {
-        allMonths.add(i);
+
+      // Add taken date
+      allMonths.add(startMonth);
+
+      // Add all payment dates
+      // We iterate by whole months but keep the day fraction from firstPaymentMonth
+      const paymentDayFraction = firstPaymentMonth % 1;
+      const startPaymentBase = Math.floor(firstPaymentMonth);
+      const endPaymentBase = Math.floor(endMonth);
+
+      for (let i = startPaymentBase; i <= endPaymentBase; i++) {
+        allMonths.add(i + paymentDayFraction);
+      }
+
+      // Also add months between taken and first payment if they are missing
+      // (for grace period rows, aligned to payment day if possible, or just monthly steps from taken date?)
+      // The user said "payments are exactly 1 month apart". 
+      // Grace period rows usually align with the payment day too (e.g. interest accrues monthly on the 10th).
+      // Let's align grace period rows to the payment day fraction, unless it's the taken date itself.
+      const startBase = Math.floor(startMonth);
+      for (let i = startBase; i < startPaymentBase; i++) {
+        // If this month is the taken month, we already added startMonth (which has taken day).
+        // If we want to show a row for "end of month 1 of grace period", it should probably be on the payment day.
+        // Example: Taken 01/03, First Payment 10/04.
+        // We have 01/03.
+        // We want 10/03? (Interest accrual for March).
+        // Yes, usually interest accrues monthly.
+        if (i === startBase && (startMonth % 1) !== paymentDayFraction) {
+          // If taken date is different day than payment day, we might want an intermediate row?
+          // Or just jump to next month's payment day.
+          // Let's add the payment day for this month too if it's after taken date.
+          if ((i + paymentDayFraction) > startMonth) {
+            allMonths.add(i + paymentDayFraction);
+          }
+        } else if (i > startBase) {
+          allMonths.add(i + paymentDayFraction);
+        }
       }
     });
+
+    // For extra payments and rate changes, align to the payment day of their plan
     extraPayments.forEach(ep => {
-      allMonths.add(parseMonth(ep.month));
+      const paymentDayFraction = planPaymentDays.get(ep.planId) || 0.01;
+      const epMonthIndex = parseMonth(ep.month);
+      const epMonthBase = Math.floor(epMonthIndex);
+      // If the extra payment was entered with DD/MM/YYYY, keep that day
+      // Otherwise, use the plan's payment day
+      const epDayFraction = epMonthIndex % 1;
+      if (epDayFraction > 0.001) {
+        // User specified a day, use it
+        allMonths.add(epMonthIndex);
+      } else {
+        // User entered MM/YYYY, align to payment day
+        allMonths.add(epMonthBase + paymentDayFraction);
+      }
     });
+
     rateChanges.forEach(rc => {
-      allMonths.add(parseMonth(rc.month));
+      const paymentDayFraction = planPaymentDays.get(rc.planId) || 0.01;
+      const rcMonthIndex = parseMonth(rc.month);
+      const rcMonthBase = Math.floor(rcMonthIndex);
+      // If the rate change was entered with DD/MM/YYYY, keep that day
+      // Otherwise, use the plan's payment day
+      const rcDayFraction = rcMonthIndex % 1;
+      if (rcDayFraction > 0.001) {
+        // User specified a day, use it
+        allMonths.add(rcMonthIndex);
+      } else {
+        // User entered MM/YYYY, align to payment day
+        allMonths.add(rcMonthBase + paymentDayFraction);
+      }
     });
 
     const sortedMonths = Array.from(allMonths).sort((a, b) => a - b);
@@ -118,13 +191,14 @@ export function useMortgage(
       // Process each active plan
       for (const [planId, data] of planData.entries()) {
         // Skip if plan hasn't started yet (based on taken date)
-        if (monthNum < parseDateToMonthIndex(data.plan.takenDate)) {
+        // Use a small epsilon for float comparison
+        if (monthNum < parseDateToMonthIndex(data.plan.takenDate) - 0.0001) {
           continue;
         }
 
         // Skip if plan has ended (no remaining payments) AND we are past the first payment date
         // (We need to allow processing if we are in the grace period even if remainingPayments is full)
-        if (data.remainingPayments <= 0 && monthNum >= parseDateToMonthIndex(data.plan.firstPaymentDate)) {
+        if (data.remainingPayments <= 0 && monthNum >= parseDateToMonthIndex(data.plan.firstPaymentDate) - 0.0001) {
           continue;
         }
 
@@ -135,8 +209,8 @@ export function useMortgage(
         let recalculatePayment = false;
 
         // Check if we are in the grace period (before first payment date)
-        const isGracePeriod = monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate);
-        const isFirstPaymentMonth = monthNum === parseDateToMonthIndex(data.plan.firstPaymentDate);
+        const isGracePeriod = monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate) - 0.0001;
+        const isFirstPaymentMonth = Math.abs(monthNum - parseDateToMonthIndex(data.plan.firstPaymentDate)) < 0.0001;
 
         if (isGracePeriod) {
           monthlyPayment = 0;
@@ -150,8 +224,15 @@ export function useMortgage(
         }
 
         // Check for rate changes in this month (must be applied BEFORE calculating interest)
+        // Match by integer month (approximate) or exact date?
+        // Rate changes usually happen on a specific date. 
+        // If the rate change is "06/2024", parseMonth returns 1st of June (decimal .01).
+        // Our rows might be on 10th of June (decimal .10).
+        // We should apply the rate change if it's in the same month/year, or strictly before?
+        // Let's assume rate changes apply to the payment of that month.
+        const currentMonthInt = Math.floor(monthNum);
         const monthRateChanges = rateChanges.filter(
-          rc => rc.planId === planId && parseMonth(rc.month) === monthNum
+          rc => Math.floor(parseMonth(rc.month)) === currentMonthInt
         );
 
         // Apply rate change if one exists (use the latest one if multiple exist)
@@ -173,7 +254,7 @@ export function useMortgage(
 
         // Check for extra payments in this month
         const monthExtraPayments = extraPayments.filter(
-          ep => ep.planId === planId && parseMonth(ep.month) === monthNum
+          ep => Math.floor(parseMonth(ep.month)) === currentMonthInt
         );
 
         for (const ep of monthExtraPayments) {
@@ -289,7 +370,7 @@ export function useMortgage(
     rows.sort((a, b) => {
       const monthA = parseMonth(a.month);
       const monthB = parseMonth(b.month);
-      if (monthA !== monthB) {
+      if (Math.abs(monthA - monthB) > 0.0001) {
         return monthA - monthB;
       }
       const planA = planData.get(a.planId)?.plan;

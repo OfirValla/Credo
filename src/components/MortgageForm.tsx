@@ -249,7 +249,7 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
                         <span>
                           {(() => {
                             const { totalMonths, remainingMonths } = getPlanDurationInfo(plan);
-                            return `${totalMonths} months total • ${remainingMonths} months remaining`;
+                            return `${totalMonths} months total • ${Math.floor(remainingMonths)} months remaining`;
                           })()}
                         </span>
                       </div>
