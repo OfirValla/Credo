@@ -171,7 +171,7 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
               <CreditCard className="w-4 h-4" />
               <span>Extra Payments</span>
             </div>
-            <span className="font-bold">{extraPayments.length}</span>
+            <span className="font-bold">{extraPayments.filter(extra => extra.enabled).length}</span>
           </div>
         </div>
       </CardContent>
