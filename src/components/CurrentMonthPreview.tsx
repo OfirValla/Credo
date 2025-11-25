@@ -160,7 +160,19 @@ export function CurrentMonthPreview({ plans, rows, currency }: CurrentMonthPrevi
 
   if (plans.length === 0) {
     return (
-      <Card className="glass-card border-none ">
+      <Card gradient>
+        <CardHeader className="flex flex-row items-start justify-between space-y-0">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20">
+              <CalendarDays className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-bold">Current Month Preview</CardTitle>
+              <CardDescription>{displayDate}</CardDescription>
+            </div>
+          </div>
+          <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
+        </CardHeader>
         <CardContent className="p-8 text-center text-muted-foreground">
           Add a mortgage plan to see the current month preview.
         </CardContent>
@@ -169,7 +181,7 @@ export function CurrentMonthPreview({ plans, rows, currency }: CurrentMonthPrevi
   }
 
   return (
-    <Card className="" gradient>
+    <Card gradient>
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20">
@@ -183,72 +195,83 @@ export function CurrentMonthPreview({ plans, rows, currency }: CurrentMonthPrevi
         <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Total Payment - Green */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 text-white shadow-lg shadow-emerald-500/20 group hover:scale-[1.02] transition-transform duration-300">
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3 opacity-90">
-                <DollarSign className="w-4 h-4" />
-                <span className="text-sm font-medium">Total Payment</span>
-              </div>
-              <div className="text-2xl font-bold tracking-tight">
-                {formatCurrency(aggregatedData.totalPayment, currency)}
-              </div>
-            </div>
-          </div>
+        {
+          plans.length === 0
+            ? (
+              "Add a mortgage plan to see the current month preview."
+            )
+            : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Total Payment - Green */}
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 text-white shadow-lg shadow-emerald-500/20 group hover:scale-[1.02] transition-transform duration-300">
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-3 opacity-90">
+                        <DollarSign className="w-4 h-4" />
+                        <span className="text-sm font-medium">Total Payment</span>
+                      </div>
+                      <div className="text-2xl font-bold tracking-tight">
+                        {formatCurrency(aggregatedData.totalPayment, currency)}
+                      </div>
+                    </div>
+                  </div>
 
-          {/* Principal - Blue */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-5 text-white shadow-lg shadow-blue-500/20 group hover:scale-[1.02] transition-transform duration-300">
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3 opacity-90">
-                <TrendingUp className="w-4 h-4" />
-                <span className="text-sm font-medium">Principal</span>
-              </div>
-              <div className="text-2xl font-bold tracking-tight">
-                {formatCurrency(aggregatedData.totalPrincipal, currency)}
-              </div>
-            </div>
-          </div>
+                  {/* Principal - Blue */}
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-5 text-white shadow-lg shadow-blue-500/20 group hover:scale-[1.02] transition-transform duration-300">
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-3 opacity-90">
+                        <TrendingUp className="w-4 h-4" />
+                        <span className="text-sm font-medium">Principal</span>
+                      </div>
+                      <div className="text-2xl font-bold tracking-tight">
+                        {formatCurrency(aggregatedData.totalPrincipal, currency)}
+                      </div>
+                    </div>
+                  </div>
 
-          {/* Interest - Orange */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-5 text-white shadow-lg shadow-orange-500/20 group hover:scale-[1.02] transition-transform duration-300">
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3 opacity-90">
-                <DollarSign className="w-4 h-4" />
-                <span className="text-sm font-medium">Interest</span>
-              </div>
-              <div className="text-2xl font-bold tracking-tight">
-                {formatCurrency(aggregatedData.totalInterest, currency)}
-              </div>
-            </div>
-          </div>
+                  {/* Interest - Orange */}
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-5 text-white shadow-lg shadow-orange-500/20 group hover:scale-[1.02] transition-transform duration-300">
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-3 opacity-90">
+                        <DollarSign className="w-4 h-4" />
+                        <span className="text-sm font-medium">Interest</span>
+                      </div>
+                      <div className="text-2xl font-bold tracking-tight">
+                        {formatCurrency(aggregatedData.totalInterest, currency)}
+                      </div>
+                    </div>
+                  </div>
 
-          {/* Next Payment - Purple */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-5 text-white shadow-lg shadow-purple-500/20 group hover:scale-[1.02] transition-transform duration-300">
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3 opacity-90">
-                <Calendar className="w-4 h-4" />
-                <span className="text-sm font-medium">Next Payment</span>
-              </div>
-              <div className="text-2xl font-bold tracking-tight">
-                {nextPaymentDate}
-              </div>
-            </div>
-          </div>
-        </div>
+                  {/* Next Payment - Purple */}
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-5 text-white shadow-lg shadow-purple-500/20 group hover:scale-[1.02] transition-transform duration-300">
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-3 opacity-90">
+                        <Calendar className="w-4 h-4" />
+                        <span className="text-sm font-medium">Next Payment</span>
+                      </div>
+                      <div className="text-2xl font-bold tracking-tight">
+                        {nextPaymentDate}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-        {/* Footer - Remaining Balance */}
-        <div className="bg-secondary/5 rounded-xl p-4 flex items-center justify-between border border-border/50">
-          <span className="text-sm font-medium text-muted-foreground">Remaining Balance</span>
-          <span className="text-xl font-bold text-foreground">
-            {formatCurrency(aggregatedData.totalRemainingBalance, currency)}
-          </span>
-        </div>
+                {/* Footer - Remaining Balance */}
+                <div className="bg-secondary/5 rounded-xl p-4 flex items-center justify-between border border-border/50">
+                  <span className="text-sm font-medium text-muted-foreground">Remaining Balance</span>
+                  <span className="text-xl font-bold text-foreground">
+                    {formatCurrency(aggregatedData.totalRemainingBalance, currency)}
+                  </span>
+                </div>
+              </>
+            )
+        }
       </CardContent>
+
     </Card>
   );
 }

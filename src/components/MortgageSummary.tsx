@@ -65,16 +65,6 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
     };
   }, [rows, plans]);
 
-  if (!summary) {
-    return (
-      <Card className="glass-card border-none">
-        <CardContent className="p-8 text-center text-muted-foreground">
-          Add a mortgage plan to see the summary.
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="" gradient>
       <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-6">
@@ -87,93 +77,102 @@ export function MortgageSummary({ rows, plans, extraPayments, currency }: Mortga
         </div>
       </CardHeader>
       <CardContent className="space-y-8 pt-0">
+        {
+          !summary ?
+            (
+              "Add a mortgage plan to see the summary."
+            )
+            : (
+              <>
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex h-8 w-full overflow-hidden rounded-[.5rem] text-white text-sm font-medium gap-2">
+                    <div
+                      className="bg-blue-600 flex items-center justify-center transition-all duration-500"
+                      style={{ width: `${summary.principalPct}%` }}
+                    >
+                      Principal
+                    </div>
+                    <div
+                      className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500"
+                      style={{ width: `${summary.interestPct}%` }}
+                    >
+                      Interest
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground px-1">
+                    <span>Principal: {summary.principalPct.toFixed(1)}%</span>
+                    <span>Interest: {summary.interestPct.toFixed(1)}%</span>
+                  </div>
+                </div>
 
-        {/* Progress Bar */}
-        <div className="space-y-2">
-          <div className="flex h-8 w-full overflow-hidden rounded-[.5rem] text-white text-sm font-medium gap-2">
-            <div
-              className="bg-blue-600 flex items-center justify-center transition-all duration-500"
-              style={{ width: `${summary.principalPct}%` }}
-            >
-              Principal
-            </div>
-            <div
-              className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500"
-              style={{ width: `${summary.interestPct}%` }}
-            >
-              Interest
-            </div>
-          </div>
-          <div className="flex justify-between text-xs text-muted-foreground px-1">
-            <span>Principal: {summary.principalPct.toFixed(1)}%</span>
-            <span>Interest: {summary.interestPct.toFixed(1)}%</span>
-          </div>
-        </div>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Total Principal */}
+                  <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                      <DollarSign className="w-4 h-4" />
+                      <span className="text-sm font-medium">Total Principal</span>
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {formatCurrency(summary.totalPrincipal, currency)}
+                    </div>
+                  </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Total Principal */}
-          <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-xl p-4 space-y-3">
-            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-              <DollarSign className="w-4 h-4" />
-              <span className="text-sm font-medium">Total Principal</span>
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {formatCurrency(summary.totalPrincipal, currency)}
-            </div>
-          </div>
+                  {/* Total Interest */}
+                  <div className="bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-800 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
+                      <TrendingUp className="w-4 h-4" />
+                      <span className="text-sm font-medium">Total Interest</span>
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {formatCurrency(summary.totalInterest, currency)}
+                    </div>
+                  </div>
 
-          {/* Total Interest */}
-          <div className="bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-800 rounded-xl p-4 space-y-3">
-            <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
-              <TrendingUp className="w-4 h-4" />
-              <span className="text-sm font-medium">Total Interest</span>
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {formatCurrency(summary.totalInterest, currency)}
-            </div>
-          </div>
+                  {/* Total Payments */}
+                  <div className="bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-800 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                      <DollarSign className="w-4 h-4" />
+                      <span className="text-sm font-medium">Total Payments</span>
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {formatCurrency(summary.totalPaid, currency)}
+                    </div>
+                  </div>
 
-          {/* Total Payments */}
-          <div className="bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-800 rounded-xl p-4 space-y-3">
-            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-              <DollarSign className="w-4 h-4" />
-              <span className="text-sm font-medium">Total Payments</span>
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {formatCurrency(summary.totalPaid, currency)}
-            </div>
-          </div>
+                  {/* Duration */}
+                  <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                      <Calendar className="w-4 h-4" />
+                      <span className="text-sm font-medium">Duration</span>
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {summary.durationMonths} mo
+                    </div>
+                  </div>
+                </div>
 
-          {/* Duration */}
-          <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800 rounded-xl p-4 space-y-3">
-            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
-              <Calendar className="w-4 h-4" />
-              <span className="text-sm font-medium">Duration</span>
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {summary.durationMonths} mo
-            </div>
-          </div>
-        </div>
-
-        {/* Footer Stats */}
-        <div className="grid grid-cols-2 gap-4 pt-2">
-          <div className="bg-secondary/20 rounded-lg p-3 flex justify-between items-center">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Layers className="w-4 h-4" />
-              <span>Active Plans</span>
-            </div>
-            <span className="font-bold">{plans.length}</span>
-          </div>
-          <div className="bg-secondary/20 rounded-lg p-3 flex justify-between items-center">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CreditCard className="w-4 h-4" />
-              <span>Extra Payments</span>
-            </div>
-            <span className="font-bold">{extraPayments.filter(extra => extra.enabled).length}</span>
-          </div>
-        </div>
+                {/* Footer Stats */}
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="bg-secondary/20 rounded-lg p-3 flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Layers className="w-4 h-4" />
+                      <span>Active Plans</span>
+                    </div>
+                    <span className="font-bold">{plans.length}</span>
+                  </div>
+                  <div className="bg-secondary/20 rounded-lg p-3 flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CreditCard className="w-4 h-4" />
+                      <span>Extra Payments</span>
+                    </div>
+                    <span className="font-bold">{extraPayments.filter(extra => extra.enabled).length}</span>
+                  </div>
+                </div>
+              </>
+            )
+        }
       </CardContent>
     </Card>
   );

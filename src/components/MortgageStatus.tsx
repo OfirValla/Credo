@@ -101,12 +101,8 @@ export function MortgageStatus({ plans, rows, currency }: MortgageStatusProps) {
 
     const enabledPlansCount = plans.filter(plan => plan.enabled !== false).length;
 
-    if (enabledPlansCount === 0) {
-        return null;
-    }
-
     return (
-        <Card className="" gradient>
+        <Card gradient>
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-6">
                 <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
                     <Activity className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
@@ -117,42 +113,50 @@ export function MortgageStatus({ plans, rows, currency }: MortgageStatusProps) {
                 </div>
             </CardHeader>
             <CardContent className="space-y-6 pt-0">
-                {statusData.map((plan) => (
-                    <div key={plan.id} className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <CreditCard className="w-4 h-4 text-muted-foreground" />
-                                <span className="font-medium">{getPlanDisplayName(plan, currency)}</span>
-                            </div>
-                            <span className="text-sm font-medium text-muted-foreground">
-                                {plan.progress.toFixed(1)}% Paid
-                            </span>
-                        </div>
+                {
+                    enabledPlansCount === 0
+                        ? (
+                            "No active plans"
+                        )
+                        : (
+                            statusData.map((plan) => (
+                                <div key={plan.id} className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <CreditCard className="w-4 h-4 text-muted-foreground" />
+                                            <span className="font-medium">{getPlanDisplayName(plan, currency)}</span>
+                                        </div>
+                                        <span className="text-sm font-medium text-muted-foreground">
+                                            {plan.progress.toFixed(1)}% Paid
+                                        </span>
+                                    </div>
 
-                        {/* Progress Bar */}
-                        <div className="h-2 w-full bg-secondary/30 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                                style={{ width: `${Math.min(100, Math.max(0, plan.progress))}%` }}
-                            />
-                        </div>
+                                    {/* Progress Bar */}
+                                    <div className="h-2 w-full bg-secondary/30 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                                            style={{ width: `${Math.min(100, Math.max(0, plan.progress))}%` }}
+                                        />
+                                    </div>
 
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div className="bg-secondary/10 p-2 rounded-md">
-                                <span className="text-muted-foreground block text-xs mb-1">Balance</span>
-                                <span className="font-bold text-foreground">
-                                    {formatCurrency(plan.currentBalance, currency)}
-                                </span>
-                            </div>
-                            <div className="bg-secondary/10 p-2 rounded-md">
-                                <span className="text-muted-foreground block text-xs mb-1">Rate</span>
-                                <span className="font-bold text-foreground">
-                                    {plan.currentRate.toFixed(2)}%
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div className="bg-secondary/10 p-2 rounded-md">
+                                            <span className="text-muted-foreground block text-xs mb-1">Balance</span>
+                                            <span className="font-bold text-foreground">
+                                                {formatCurrency(plan.currentBalance, currency)}
+                                            </span>
+                                        </div>
+                                        <div className="bg-secondary/10 p-2 rounded-md">
+                                            <span className="text-muted-foreground block text-xs mb-1">Rate</span>
+                                            <span className="font-bold text-foreground">
+                                                {plan.currentRate.toFixed(2)}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )
+                }
             </CardContent>
         </Card>
     );

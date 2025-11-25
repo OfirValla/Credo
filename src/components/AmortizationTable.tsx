@@ -92,8 +92,8 @@ export function AmortizationTable({ rows, plans, currency }: AmortizationTablePr
 
   if (rows.length === 0) {
     return (
-      <Card className="glass-card border-none">
-        <CardHeader className="bg-primary/5 border-b border-border/50">
+      <Card className="flex flex-col" gradient>
+        <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Table2 className="w-5 h-5 text-primary" />
             Amortization Table
@@ -193,7 +193,7 @@ export function AmortizationTable({ rows, plans, currency }: AmortizationTablePr
         </div>
       </CardHeader>
       <CardContent className="p-0 sm:p-0">
-        <div className="">
+        <div>
           <table className="w-full caption-bottom text-sm table-fixed">
             <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
               <TableRow className="border-border/50 hover:bg-transparent">
