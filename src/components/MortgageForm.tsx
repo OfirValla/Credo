@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X } from 'lucide-react';
+import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { MortgagePlan } from '@/types';
 import { CurrencyCode, getCurrencySymbol } from '@/lib/currency';
 import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
@@ -233,12 +233,19 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
                     layout
                     className={`group flex items-center justify-between p-3 border rounded-lg transition-colors ${editingId === plan.id
                       ? 'bg-primary/10 border-primary/50'
-                      : 'bg-background/40 border-border/50 hover:bg-background/60'
+                      : plan.enabled === false
+                        ? 'bg-muted/30 border-border/30 opacity-60'
+                        : 'bg-background/40 border-border/50 hover:bg-background/60'
                       }`}
                   >
                     <div className="space-y-1">
-                      <div className="font-medium text-sm">
-                        {getPlanDisplayName(plan, currency)}
+                      <div className="flex items-center gap-2">
+                        <div className={`font-medium text-sm ${plan.enabled === false ? 'line-through text-muted-foreground' : ''}`}>
+                          {getPlanDisplayName(plan, currency)}
+                        </div>
+                        {plan.enabled === false && (
+                          <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">Disabled</span>
+                        )}
                       </div>
                       <div className="text-xs text-muted-foreground flex items-center gap-2">
                         <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
@@ -255,6 +262,20 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
                       </div>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className={`h-8 w-8 ${plan.enabled !== false ? 'text-secondary hover:text-secondary hover:bg-secondary/10' : 'text-muted-foreground hover:text-muted-foreground hover:bg-muted/10'}`}
+                        onClick={() => onUpdatePlan({ ...plan, enabled: !plan.enabled })}
+                        title={plan.enabled !== false ? 'Enable plan' : 'Disable plan'}
+                      >
+                        {plan.enabled ? (
+                          <ToggleRight className="h-5 w-5" />
+                        ) : (
+                          <ToggleLeft className="h-5 w-5" />
+                        )}
+                      </Button>
                       <Button
                         type="button"
                         variant="ghost"

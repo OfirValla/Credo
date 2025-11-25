@@ -59,6 +59,13 @@ export function useMortgage(
       return [];
     }
 
+    // Filter to only enabled plans (enabled defaults to true if not set)
+    const enabledPlans = plans.filter(plan => plan.enabled !== false);
+
+    if (enabledPlans.length === 0) {
+      return [];
+    }
+
     const rows: AmortizationRow[] = [];
     const planData = new Map<string, {
       plan: MortgagePlan;
@@ -71,7 +78,7 @@ export function useMortgage(
     }>();
 
     // Initialize plan data
-    for (const plan of plans) {
+    for (const plan of enabledPlans) {
       const monthlyRate = plan.interestRate / 100 / 12;
 
       const takenMonthIdx = parseDateToMonthIndex(plan.takenDate);
@@ -100,12 +107,12 @@ export function useMortgage(
 
     // Create a map of planId to payment day fraction for easy lookup
     const planPaymentDays = new Map<string, number>();
-    plans.forEach(plan => {
+    enabledPlans.forEach(plan => {
       const firstPaymentMonth = parseDateToMonthIndex(plan.firstPaymentDate);
       planPaymentDays.set(plan.id, firstPaymentMonth % 1);
     });
 
-    plans.forEach(plan => {
+    enabledPlans.forEach(plan => {
       const startMonth = parseDateToMonthIndex(plan.takenDate);
       const firstPaymentMonth = parseDateToMonthIndex(plan.firstPaymentDate);
       const endMonth = parseDateToMonthIndex(plan.lastPaymentDate);

@@ -29,7 +29,10 @@ export function MortgageStatus({ plans, rows, currency }: MortgageStatusProps) {
         const now = new Date();
         const currentMonthIndex = (now.getFullYear() - 2000) * 12 + now.getMonth();
 
-        return plans.map(plan => {
+        // Filter to only enabled plans (defaults to true if not set)
+        const enabledPlans = plans.filter(plan => plan.enabled !== false);
+
+        return enabledPlans.map(plan => {
             const planRows = rows.filter(r => r.planId === plan.id);
 
             // Find the row for the current month, or the latest row before current month
@@ -96,7 +99,9 @@ export function MortgageStatus({ plans, rows, currency }: MortgageStatusProps) {
         });
     }, [plans, rows]);
 
-    if (plans.length === 0) {
+    const enabledPlansCount = plans.filter(plan => plan.enabled !== false).length;
+
+    if (enabledPlansCount === 0) {
         return null;
     }
 
