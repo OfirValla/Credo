@@ -9,6 +9,20 @@ const gradients = [
   "bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-500",
   "bg-gradient-to-r from-fuchsia-500 via-purple-600 to-indigo-600",
   "bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500",
+  "bg-gradient-to-r from-rose-400 via-pink-500 to-purple-500",
+  "bg-gradient-to-r from-lime-400 via-green-500 to-emerald-600",
+  "bg-gradient-to-r from-violet-400 via-purple-500 to-fuchsia-500",
+  "bg-gradient-to-r from-sky-400 via-cyan-500 to-blue-600",
+  "bg-gradient-to-r from-amber-400 via-orange-500 to-red-500",
+  "bg-gradient-to-r from-teal-400 via-cyan-500 to-sky-500",
+  "bg-gradient-to-r from-indigo-400 via-blue-500 to-cyan-500",
+  "bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600",
+  "bg-gradient-to-r from-red-400 via-rose-500 to-pink-500",
+  "bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600",
+  "bg-gradient-to-r from-purple-400 via-violet-500 to-indigo-600",
+  "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500",
+  "bg-gradient-to-r from-green-500 via-lime-500 to-yellow-500",
+  "bg-gradient-to-r from-cyan-500 via-teal-500 to-green-600",
 ];
 
 let availableGradients = [...gradients];
