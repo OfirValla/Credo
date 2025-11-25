@@ -12,8 +12,8 @@ import { CurrentMonthPreview } from '@/components/CurrentMonthPreview';
 import { AmortizationTable } from '@/components/AmortizationTable';
 import { MortgageSummary } from '@/components/MortgageSummary';
 import { CurrencySelector } from '@/components/CurrencySelector';
-import { ThemeProvider } from '@/components/theme-provider';
-import { ModeToggle } from '@/components/mode-toggle';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { ModeToggle } from '@/components/ModeToggle';
 import { useMortgage } from '@/hooks/useMortgage';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 

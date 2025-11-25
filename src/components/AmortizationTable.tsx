@@ -6,7 +6,6 @@ import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { getPlanDisplayName } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
