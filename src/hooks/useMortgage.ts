@@ -137,20 +137,10 @@ export function useMortgage(
       // Let's align grace period rows to the payment day fraction, unless it's the taken date itself.
       const startBase = Math.floor(startMonth);
       for (let i = startBase; i < startPaymentBase; i++) {
-        // If this month is the taken month, we already added startMonth (which has taken day).
-        // If we want to show a row for "end of month 1 of grace period", it should probably be on the payment day.
-        // Example: Taken 01/03, First Payment 10/04.
-        // We have 01/03.
-        // We want 10/03? (Interest accrual for March).
-        // Yes, usually interest accrues monthly.
-        if (i === startBase && (startMonth % 1) !== paymentDayFraction) {
-          // If taken date is different day than payment day, we might want an intermediate row?
-          // Or just jump to next month's payment day.
-          // Let's add the payment day for this month too if it's after taken date.
-          if ((i + paymentDayFraction) > startMonth) {
-            allMonths.add(i + paymentDayFraction);
-          }
-        } else if (i > startBase) {
+        // Only add months AFTER the taken month
+        // The taken date is already added (startMonth)
+        // We want to avoid adding a second row for the same month (e.g. taken 01/03, payment day 10 -> don't add 10/03)
+        if (i > startBase) {
           allMonths.add(i + paymentDayFraction);
         }
       }
@@ -172,11 +162,9 @@ export function useMortgage(
       const epDayFraction = epMonthIndex % 1;
       if (epDayFraction > 0.001) {
         // User specified a day, use it
-        console.log("MonthIndex", epMonthIndex);
         allMonths.add(epMonthIndex);
       } else {
         // User entered MM/YYYY, align to payment day
-        console.log("MonthBase", epMonthBase, paymentDayFraction);
         allMonths.add(epMonthBase + paymentDayFraction);
       }
     });
@@ -288,8 +276,52 @@ export function useMortgage(
           }
         }
 
-        // Calculate interest
-        const interest = startingBalance * monthlyRate;
+        // Calculate interest - proportional to actual days in this period
+        // Need to calculate the number of days this interest period covers
+        let daysInPeriod = 30; // Default to 30 days for a normal month
+
+        // For the first month after taking the loan, or if in grace period
+        if (isGracePeriod || isFirstPaymentMonth) {
+          // Parse dates to get actual day values
+          const parseTakenDate = (dateStr: string) => {
+            const [day, month, year] = dateStr.split('/').map(Number);
+            return new Date(year, month - 1, day);
+          };
+
+          const takenDate = parseTakenDate(data.plan.takenDate);
+          const firstPaymentDate = parseTakenDate(data.plan.firstPaymentDate);
+          const currentMonthDate = new Date(2000 + Math.floor(monthNum / 12), Math.floor(monthNum) % 12, Math.round((monthNum % 1) * 100) || 1);
+
+          // Calculate days between start of this period and end
+          if (isGracePeriod) {
+            // Grace period: from start of this month (or taken date if first month) to end of month
+            const periodStart = (monthNum < parseDateToMonthIndex(data.plan.takenDate) + 0.1)
+              ? takenDate
+              : new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth(), 1);
+            const periodEnd = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 0); // Last day of month
+            daysInPeriod = Math.ceil((periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+            console.log(`[Grace Period Accrual] Plan: ${data.plan.name}, Month: ${monthStr}`);
+            console.log(`  Period: ${periodStart.toLocaleDateString()} - ${periodEnd.toLocaleDateString()}`);
+            console.log(`  Days: ${daysInPeriod}`);
+          } else if (isFirstPaymentMonth) {
+            // First payment month: from start of month to payment day
+            const periodStart = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth(), 1);
+            daysInPeriod = firstPaymentDate.getDate();
+
+            console.log(`[First Payment Accrual] Plan: ${data.plan.name}, Month: ${monthStr}`);
+            console.log(`  Period: ${periodStart.toLocaleDateString()} - ${firstPaymentDate.toLocaleDateString()}`);
+            console.log(`  Days: ${daysInPeriod}`);
+          }
+        }
+
+        // Daily interest rate
+        const dailyRate = monthlyRate / 30; // Approximate monthly rate / 30 days
+        const interest = startingBalance * dailyRate * daysInPeriod;
+
+        if (isGracePeriod || isFirstPaymentMonth) {
+          console.log(`  Balance: ${startingBalance.toFixed(2)}, Interest: ${interest.toFixed(2)}`);
+        }
 
         // Calculate principal from regular payment
         let principal = monthlyPayment - interest;
