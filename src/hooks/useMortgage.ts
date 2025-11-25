@@ -182,6 +182,10 @@ export function useMortgage(
     });
 
     rateChanges.forEach(rc => {
+      // Skip rate changes that don't have an enabled plan
+      if (!enabledPlans.find(plan => plan.id === rc.planId))
+        return;
+
       const paymentDayFraction = planPaymentDays.get(rc.planId) || 0.01;
       const rcMonthIndex = parseMonth(rc.month);
       const rcMonthBase = Math.floor(rcMonthIndex);
@@ -246,8 +250,9 @@ export function useMortgage(
         // We should apply the rate change if it's in the same month/year, or strictly before?
         // Let's assume rate changes apply to the payment of that month.
         const currentMonthInt = Math.floor(monthNum);
-        const monthRateChanges = rateChanges.filter(
-          rc => Math.floor(parseMonth(rc.month)) === currentMonthInt
+        const monthRateChanges = rateChanges.filter(rc =>
+          rc.planId === planId &&
+          Math.floor(parseMonth(rc.month)) === currentMonthInt
         );
 
         // Apply rate change if one exists (use the latest one if multiple exist)
