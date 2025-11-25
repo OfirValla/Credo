@@ -137,7 +137,7 @@ export function RateChangeForm({
                   <Input
                     id="new-rate"
                     type="number"
-                    step="0.01"
+                    step="0.001"
                     value={newAnnualRate}
                     onChange={(e) => setNewAnnualRate(e.target.value)}
                     placeholder="5.5"
@@ -200,8 +200,8 @@ export function RateChangeForm({
                       exit={{ opacity: 0, x: 20 }}
                       layout
                       className={`group flex items-center justify-between p-3 border rounded-lg transition-colors ${editingId === rateChange.id
-                          ? 'bg-accent/10 border-accent/50'
-                          : 'bg-background/40 border-border/50 hover:bg-background/60'
+                        ? 'bg-accent/10 border-accent/50'
+                        : 'bg-background/40 border-border/50 hover:bg-background/60'
                         }`}
                     >
                       <div className="space-y-1">

@@ -159,8 +159,11 @@ export function useMortgage(
     // For extra payments and rate changes, align to the payment day of their plan
     // Filter to only include enabled extra payments (enabled defaults to true if not set)
     const enabledExtraPayments = extraPayments.filter(ep => ep.enabled !== false);
-
     enabledExtraPayments.forEach(ep => {
+      // Skip extra payments that don't have an enabled plan
+      if (!enabledPlans.find(plan => plan.id === ep.planId))
+        return;
+
       const paymentDayFraction = planPaymentDays.get(ep.planId) || 0.01;
       const epMonthIndex = parseMonth(ep.month);
       const epMonthBase = Math.floor(epMonthIndex);
@@ -169,9 +172,11 @@ export function useMortgage(
       const epDayFraction = epMonthIndex % 1;
       if (epDayFraction > 0.001) {
         // User specified a day, use it
+        console.log("MonthIndex", epMonthIndex);
         allMonths.add(epMonthIndex);
       } else {
         // User entered MM/YYYY, align to payment day
+        console.log("MonthBase", epMonthBase, paymentDayFraction);
         allMonths.add(epMonthBase + paymentDayFraction);
       }
     });
@@ -263,8 +268,10 @@ export function useMortgage(
         }
 
         // Check for extra payments in this month (only enabled ones)
-        const monthExtraPayments = extraPayments.filter(
-          ep => ep.enabled !== false && Math.floor(parseMonth(ep.month)) === currentMonthInt
+        const monthExtraPayments = extraPayments.filter(ep =>
+          ep.planId === planId &&
+          ep.enabled !== false &&
+          Math.floor(parseMonth(ep.month)) === currentMonthInt
         );
 
         for (const ep of monthExtraPayments) {

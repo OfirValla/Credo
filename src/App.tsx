@@ -185,7 +185,7 @@ function App() {
                   transition={{ delay: 0.2 }}
                 >
                   <CurrentMonthPreview
-                    plans={plans}
+                    plans={plans.filter(p => p.enabled)}
                     rows={amortizationRows}
                     currency={currency}
                   />
@@ -198,9 +198,9 @@ function App() {
                 >
                   <MortgageSummary
                     rows={amortizationRows}
-                    plans={plans}
+                    plans={plans.filter(p => p.enabled)}
                     currency={currency}
-                    extraPayments={extraPayments}
+                    extraPayments={extraPayments.filter(ep => ep.enabled)}
                   />
                 </motion.div>
 
@@ -211,7 +211,7 @@ function App() {
                 >
                   <MortgageStatus
                     rows={amortizationRows}
-                    plans={plans}
+                    plans={plans.filter(p => p.enabled)}
                     currency={currency}
                   />
                 </motion.div>
@@ -226,7 +226,7 @@ function App() {
                 >
                   <AmortizationTable
                     rows={amortizationRows}
-                    plans={plans}
+                    plans={plans.filter(p => p.enabled)}
                     currency={currency}
                   />
                 </motion.div>
