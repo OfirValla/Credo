@@ -129,7 +129,7 @@ export function CurrentMonthPreview({ plans, rows, currency }: CurrentMonthPrevi
       });
 
       // If the latest row IS the current month, add payment details
-      if (latestRow.month === currentMonth) {
+      if (compareMonths(latestRow.month, currentMonth) === 0) {
         result.totalPayment += latestRow.monthlyPayment;
         result.totalPrincipal += latestRow.principal;
         result.totalInterest += latestRow.interest;
