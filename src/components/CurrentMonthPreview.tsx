@@ -133,9 +133,26 @@ export function CurrentMonthPreview({ plans, rows, currency }: CurrentMonthPrevi
         result.totalPayment += latestRow.monthlyPayment;
         result.totalPrincipal += latestRow.principal;
         result.totalInterest += latestRow.interest;
-      }
 
-      result.totalRemainingBalance += latestRow.endingBalance;
+        // Check if payment has been made yet (based on current day vs payment day)
+        const now = new Date();
+        const currentDay = now.getDate();
+
+        // Extract payment day from firstPaymentDate (DD/MM/YYYY)
+        // Default to 1st if parsing fails
+        const paymentDay = parseInt(plan.firstPaymentDate.split('/')[0], 10) || 1;
+
+        if (currentDay < paymentDay) {
+          // Payment not yet made, show starting balance
+          result.totalRemainingBalance += latestRow.startingBalance;
+        } else {
+          // Payment made, show ending balance
+          result.totalRemainingBalance += latestRow.endingBalance;
+        }
+      } else {
+        // Past month, always use ending balance
+        result.totalRemainingBalance += latestRow.endingBalance;
+      }
     });
 
     return result;
