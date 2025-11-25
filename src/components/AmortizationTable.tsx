@@ -65,7 +65,9 @@ export function AmortizationTable({ rows, plans, currency }: AmortizationTablePr
     const yearlyMap = new Map<string, AmortizationRow>();
 
     filteredRows.forEach((row) => {
-      const [, year] = row.month.split('/'); // Ignore month part
+      // Handle both MM/YYYY and DD/MM/YYYY formats
+      const parts = row.month.split('/');
+      const year = parts[parts.length - 1];
       const key = `${year}-${row.planId}`;
 
       if (!yearlyMap.has(key)) {
@@ -83,16 +85,8 @@ export function AmortizationTable({ rows, plans, currency }: AmortizationTablePr
       yearlyRow.interest += row.interest;
       yearlyRow.monthlyPayment += row.monthlyPayment;
       yearlyRow.endingBalance = row.endingBalance; // End of year balance
-      yearlyRow.startingBalance = yearlyRow.startingBalance === 0 && row.month.startsWith('01') ? row.startingBalance : yearlyRow.startingBalance; // Keep initial start balance (simplification)
-      // Actually starting balance for the year should be the starting balance of the first month of that year
-      // But since we iterate in order, we can just set it if it's the first entry, or better:
-      // We should rely on the fact that rows are sorted.
+      // startingBalance is already set correctly from the first row encountered for this year
     });
-
-    // Refine starting balance logic:
-    // The starting balance of the year is the starting balance of the first month found for that year/plan.
-    // Since we process in order, we can just capture it on creation.
-    // However, we initialized with `...row` so startingBalance is already correct from the first month encountered.
 
     return Array.from(yearlyMap.values());
   }, [filteredRows, viewMode]);
@@ -222,10 +216,19 @@ export function AmortizationTable({ rows, plans, currency }: AmortizationTablePr
                 </TableRow>
               ) : (
                 displayedRows.map((row, index) => {
-                  // Check if this row is the current month
+                  // Check if this row is the current month or year
                   const now = new Date();
                   const currentMonth = `${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-                  const isCurrentMonth = row.month.slice(3) === currentMonth;
+                  const currentYear = String(now.getFullYear());
+
+                  let isCurrent = false;
+                  if (viewMode === 'monthly') {
+                    // Check for MM/YYYY match at the end of the string
+                    isCurrent = row.month.endsWith(currentMonth);
+                  } else {
+                    // In yearly mode, row.month is just the year
+                    isCurrent = row.month === currentYear;
+                  }
 
                   return (
                     <motion.tr
@@ -235,7 +238,7 @@ export function AmortizationTable({ rows, plans, currency }: AmortizationTablePr
                       transition={{ delay: 0.02 }} // Reduced delay for performance with many rows
                       className={cn(
                         "border-b border-border/50 transition-colors",
-                        isCurrentMonth
+                        isCurrent
                           ? "bg-blue-100/80 dark:bg-blue-900/30 hover:bg-blue-200/80 dark:hover:bg-blue-800/40 border-blue-300/50 dark:border-blue-700/50"
                           : row.isGracePeriod
                             ? "bg-yellow-50/50 dark:bg-yellow-900/10 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20"
