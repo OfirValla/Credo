@@ -1,0 +1,154 @@
+import { useMemo } from 'react';
+import { Activity, CreditCard } from 'lucide-react';
+import { MortgagePlan, AmortizationRow } from '@/types';
+import { CurrencyCode, formatCurrency } from '@/lib/currency';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { getPlanDisplayName } from '@/lib/planUtils';
+
+interface MortgageStatusProps {
+    plans: MortgagePlan[];
+    rows: AmortizationRow[];
+    currency: CurrencyCode;
+}
+
+function parseMonth(dateStr: string): number {
+    if (!dateStr) return 0;
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+        const [, month, year] = parts.map(Number);
+        return (year - 2000) * 12 + month - 1;
+    } else if (parts.length === 2) {
+        const [month, year] = parts.map(Number);
+        return (year - 2000) * 12 + month - 1;
+    }
+    return 0;
+}
+
+export function MortgageStatus({ plans, rows, currency }: MortgageStatusProps) {
+    const statusData = useMemo(() => {
+        const now = new Date();
+        const currentMonthIndex = (now.getFullYear() - 2000) * 12 + now.getMonth();
+
+        return plans.map(plan => {
+            const planRows = rows.filter(r => r.planId === plan.id);
+
+            // Find the row for the current month, or the latest row before current month
+            // If plan hasn't started, balance is full amount
+            // If plan is finished, balance is 0
+
+            const startMonthIndex = parseMonth(plan.takenDate);
+
+            let currentBalance = plan.amount;
+            let monthlyPayment = 0;
+            let interestRate = plan.interestRate;
+
+            if (currentMonthIndex < startMonthIndex) {
+                // Not started
+                currentBalance = plan.amount;
+            } else {
+                // Find row for current month or closest past month
+                const relevantRows = planRows.filter(r => parseMonth(r.month) <= currentMonthIndex);
+
+                if (relevantRows.length > 0) {
+                    // Sort by month descending
+                    relevantRows.sort((a, b) => parseMonth(b.month) - parseMonth(a.month));
+                    const latestRow = relevantRows[0];
+
+                    currentBalance = latestRow.endingBalance;
+                    monthlyPayment = latestRow.monthlyPayment;
+                    interestRate = latestRow.monthlyRate * 12 * 100; // Annual rate
+
+                    // Special case: if we are exactly on the current month, check payment date
+                    // If payment hasn't happened yet, use starting balance?
+                    // The request was specifically for CurrentMonthPreview. 
+                    // For this status card, "Current Balance" usually implies "Outstanding Balance".
+                    // If I haven't paid yet, I owe the starting balance.
+                    // If I have paid, I owe the ending balance.
+                    // Let's match the logic from CurrentMonthPreview for consistency.
+
+                    if (parseMonth(latestRow.month) === currentMonthIndex) {
+                        const currentDay = now.getDate();
+                        const paymentDay = parseInt(plan.firstPaymentDate.split('/')[0], 10) || 1;
+                        if (currentDay < paymentDay) {
+                            currentBalance = latestRow.startingBalance;
+                        }
+                    }
+                } else {
+                    // Should not happen if startMonthIndex check passed, unless rows are missing
+                    // Assume full amount if no rows found but we are past start date (e.g. data error)
+                    currentBalance = plan.amount;
+                }
+            }
+
+            // Ensure balance is not negative
+            currentBalance = Math.max(0, currentBalance);
+
+            const principalPaid = plan.amount - currentBalance;
+            const progress = (principalPaid / plan.amount) * 100;
+
+            return {
+                ...plan,
+                currentBalance,
+                progress,
+                monthlyPayment,
+                currentRate: interestRate
+            };
+        });
+    }, [plans, rows]);
+
+    if (plans.length === 0) {
+        return null;
+    }
+
+    return (
+        <Card className="" gradient>
+            <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-6">
+                <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                    <Activity className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                    <CardTitle className="text-lg font-semibold">Portfolio Status</CardTitle>
+                    <CardDescription>Current standing of active plans</CardDescription>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-0">
+                {statusData.map((plan) => (
+                    <div key={plan.id} className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <CreditCard className="w-4 h-4 text-muted-foreground" />
+                                <span className="font-medium">{getPlanDisplayName(plan, currency)}</span>
+                            </div>
+                            <span className="text-sm font-medium text-muted-foreground">
+                                {plan.progress.toFixed(1)}% Paid
+                            </span>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="h-2 w-full bg-secondary/30 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                                style={{ width: `${Math.min(100, Math.max(0, plan.progress))}%` }}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="bg-secondary/10 p-2 rounded-md">
+                                <span className="text-muted-foreground block text-xs mb-1">Balance</span>
+                                <span className="font-bold text-foreground">
+                                    {formatCurrency(plan.currentBalance, currency)}
+                                </span>
+                            </div>
+                            <div className="bg-secondary/10 p-2 rounded-md">
+                                <span className="text-muted-foreground block text-xs mb-1">Rate</span>
+                                <span className="font-bold text-foreground">
+                                    {plan.currentRate.toFixed(2)}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </CardContent>
+        </Card>
+    );
+}

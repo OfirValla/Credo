@@ -10,6 +10,7 @@ import { ExtraPaymentsForm } from '@/components/ExtraPaymentsForm';
 import { RateChangeForm } from '@/components/RateChangeForm';
 import { CurrentMonthPreview } from '@/components/CurrentMonthPreview';
 import { AmortizationTable } from '@/components/AmortizationTable';
+import { MortgageStatus } from '@/components/MortgageStatus';
 import { MortgageSummary } from '@/components/MortgageSummary';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -200,6 +201,18 @@ function App() {
                     plans={plans}
                     currency={currency}
                     extraPayments={extraPayments}
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                >
+                  <MortgageStatus
+                    rows={amortizationRows}
+                    plans={plans}
+                    currency={currency}
                   />
                 </motion.div>
               </div>
