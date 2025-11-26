@@ -219,24 +219,7 @@ export function useMortgageCalculations(
         const isGracePeriod = monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate) - 0.0001;
         const isFirstPaymentMonth = Math.abs(monthNum - parseDateToMonthIndex(data.plan.firstPaymentDate)) < 0.0001;
 
-        if (isGracePeriod) {
-          monthlyPayment = 0;
-        } else if (isFirstPaymentMonth) {
-          // Recalculate payment based on accumulated balance and original term
-          // This ensures that the accumulated interest is paid off over the term
-          if (startingBalance > 0 && data.originalTermMonths > 0) {
-            monthlyPayment = calculatePMT(startingBalance, monthlyRate, data.originalTermMonths);
-            data.monthlyPayment = monthlyPayment;
-          }
-        }
-
         // Check for rate changes in this month (must be applied BEFORE calculating interest)
-        // Match by integer month (approximate) or exact date?
-        // Rate changes usually happen on a specific date. 
-        // If the rate change is "06/2024", parseMonth returns 1st of June (decimal .01).
-        // Our rows might be on 10th of June (decimal .10).
-        // We should apply the rate change if it's in the same month/year, or strictly before?
-        // Let's assume rate changes apply to the payment of that month.
         const currentMonthInt = Math.floor(monthNum);
         const monthRateChanges = rateChanges.filter(rc =>
           rc.planId === planId &&
@@ -258,22 +241,6 @@ export function useMortgageCalculations(
           if (startingBalance > 0 && data.remainingPayments > 0 && !isGracePeriod) {
             monthlyPayment = calculatePMT(startingBalance, monthlyRate, data.remainingPayments);
             data.monthlyPayment = monthlyPayment;
-          }
-        }
-
-        // Check for extra payments in this month (only enabled ones)
-        const monthExtraPayments = extraPayments.filter(ep =>
-          ep.planId === planId &&
-          ep.enabled !== false &&
-          Math.floor(parseMonth(ep.month)) === currentMonthInt
-        );
-
-        for (const ep of monthExtraPayments) {
-          if (ep.type === 'reduceTerm') {
-            extraPayment += ep.amount;
-          } else if (ep.type === 'reducePayment') {
-            extraPayment += ep.amount;
-            recalculatePayment = true;
           }
         }
 
@@ -301,18 +268,9 @@ export function useMortgageCalculations(
               : new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth(), 1);
             const periodEnd = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 0); // Last day of month
             daysInPeriod = Math.ceil((periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-
-            console.log(`[Grace Period Accrual] Plan: ${data.plan.name}, Month: ${monthStr}`);
-            console.log(`  Period: ${periodStart.toLocaleDateString()} - ${periodEnd.toLocaleDateString()}`);
-            console.log(`  Days: ${daysInPeriod}`);
           } else if (isFirstPaymentMonth) {
             // First payment month: from start of month to payment day
-            const periodStart = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth(), 1);
             daysInPeriod = firstPaymentDate.getDate();
-
-            console.log(`[First Payment Accrual] Plan: ${data.plan.name}, Month: ${monthStr}`);
-            console.log(`  Period: ${periodStart.toLocaleDateString()} - ${firstPaymentDate.toLocaleDateString()}`);
-            console.log(`  Days: ${daysInPeriod}`);
           }
         }
 
@@ -320,8 +278,36 @@ export function useMortgageCalculations(
         const dailyRate = monthlyRate / 30; // Approximate monthly rate / 30 days
         const interest = startingBalance * dailyRate * daysInPeriod;
 
-        if (isGracePeriod || isFirstPaymentMonth) {
-          console.log(`  Balance: ${startingBalance.toFixed(2)}, Interest: ${interest.toFixed(2)}`);
+        // Determine Monthly Payment (Grace Period Logic)
+        if (isGracePeriod) {
+          if (data.plan.gracePeriodType === 'interestOnly') {
+            monthlyPayment = interest;
+          } else {
+            monthlyPayment = 0;
+          }
+        } else if (isFirstPaymentMonth) {
+          // Recalculate payment based on accumulated balance and original term
+          // This ensures that the accumulated interest is paid off over the term
+          if (startingBalance > 0 && data.originalTermMonths > 0) {
+            monthlyPayment = calculatePMT(startingBalance, monthlyRate, data.originalTermMonths);
+            data.monthlyPayment = monthlyPayment;
+          }
+        }
+
+        // Check for extra payments in this month (only enabled ones)
+        const monthExtraPayments = extraPayments.filter(ep =>
+          ep.planId === planId &&
+          ep.enabled !== false &&
+          Math.floor(parseMonth(ep.month)) === currentMonthInt
+        );
+
+        for (const ep of monthExtraPayments) {
+          if (ep.type === 'reduceTerm') {
+            extraPayment += ep.amount;
+          } else if (ep.type === 'reducePayment') {
+            extraPayment += ep.amount;
+            recalculatePayment = true;
+          }
         }
 
         // Calculate principal from regular payment
@@ -379,7 +365,7 @@ export function useMortgageCalculations(
         if (isGracePeriod) {
           tags.push({
             type: 'grace-period',
-            label: 'Taken (Interest Accrual)',
+            label: data.plan.gracePeriodType === 'interestOnly' ? 'Interest Only' : 'Taken (Interest Accrual)',
             color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
           });
         }

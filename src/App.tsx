@@ -5,6 +5,7 @@ import { DataImport } from '@/components/DataImport';
 import { MortgageForm } from '@/components/MortgageForm';
 import { ExtraPaymentsForm } from '@/components/ExtraPaymentsForm';
 import { RateChangeForm } from '@/components/RateChangeForm';
+import { GracePeriodForm } from '@/components/GracePeriodForm';
 import { CurrentMonthPreview } from '@/components/CurrentMonthPreview';
 import { AmortizationTable } from '@/components/AmortizationTable';
 import { MortgageStatus } from '@/components/MortgageStatus';
@@ -77,6 +78,14 @@ function AppContent() {
               transition={{ delay: 0.3 }}
             >
               <RateChangeForm />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <GracePeriodForm />
             </motion.div>
           </div>
 

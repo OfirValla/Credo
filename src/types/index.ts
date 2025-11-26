@@ -6,6 +6,7 @@ export interface MortgagePlan {
   takenDate: string; // DD/MM/YYYY format
   firstPaymentDate: string; // DD/MM/YYYY format
   lastPaymentDate: string; // DD/MM/YYYY format
+  gracePeriodType?: 'capitalized' | 'interestOnly'; // Optional, defaults to 'capitalized'
   enabled?: boolean; // Optional, defaults to true
 }
 
