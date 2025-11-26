@@ -38,9 +38,13 @@ export const DataExport: React.FC = () => {
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
 
+    const day = String(new Date().getDate()).padStart(2, '0');          // 01–31
+    const month = String(new Date().getMonth() + 1).padStart(2, '0');   // 01–12
+    const year = new Date().getFullYear();                              // e.g. 2025
+
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'mortgage_data.json';
+    a.download = `mortgage_data_${day}-${month}-${year}.json`;
     document.body.appendChild(a);
     a.click();
 
