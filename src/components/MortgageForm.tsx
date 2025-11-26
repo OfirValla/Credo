@@ -71,7 +71,10 @@ export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDelet
     };
 
     if (editingId) {
-      onUpdatePlan({ ...planData, id: editingId });
+      const existingPlan = plans.find(p => p.id === editingId);
+      if (existingPlan) {
+        onUpdatePlan({ ...existingPlan, ...planData, id: editingId });
+      }
       setEditingId(null);
     } else {
       onAddPlan(planData);
