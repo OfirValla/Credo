@@ -250,7 +250,7 @@ export function MortgageForm() {
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <div className={`font-medium text-sm ${plan.enabled === false ? 'line-through text-muted-foreground' : ''}`}>
+                        <div className={`font-medium text-sm ${!plan.enabled ? 'line-through text-muted-foreground' : ''}`}>
                           {getPlanDisplayName(plan, currency)}
                         </div>
                         {plan.enabled === false && (

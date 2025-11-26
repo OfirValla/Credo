@@ -23,6 +23,7 @@ export interface RateChange {
   month: string; // MM/YYYY format
   planId: string;
   newAnnualRate: number; // percentage (e.g., 5.5 for 5.5%)
+  enabled?: boolean; // Optional, defaults to true
 }
 
 export interface RowTag {

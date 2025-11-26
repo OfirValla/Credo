@@ -240,6 +240,7 @@ export function useMortgageCalculations(
         const currentMonthInt = Math.floor(monthNum);
         const monthRateChanges = rateChanges.filter(rc =>
           rc.planId === planId &&
+          rc.enabled !== false &&
           Math.floor(parseMonth(rc.month)) === currentMonthInt
         );
 

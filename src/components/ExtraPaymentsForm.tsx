@@ -229,13 +229,17 @@ export function ExtraPaymentsForm() {
                     >
                       <div className="flex items-center gap-3 flex-1">
                         <div className="space-y-1 flex-1">
-                          <div className={`flex items-center gap-2 font-medium text-sm ${payment.enabled === false ? 'text-muted-foreground' : ''
-                            }`}>
-                            <span className={payment.enabled === false ? 'text-muted-foreground' : 'text-secondary'}>
-                              {formatCurrency(payment.amount, currency)}
+                          <div className='flex items-center gap-2'>
+                            <span className={`flex items-center gap-2 font-medium text-sm ${payment.enabled === false ? 'line-through text-muted-foreground' : ''}`}>
+                              <span className={payment.enabled === false ? 'text-muted-foreground' : 'text-secondary'}>
+                                {formatCurrency(payment.amount, currency)}
+                              </span>
+                              <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                              <span>{payment.month}</span>
                             </span>
-                            <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                            <span>{payment.month}</span>
+                            {payment.enabled === false && (
+                              <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">Disabled</span>
+                            )}
                           </div>
                           <div className="text-xs text-muted-foreground">
                             {plan ? getPlanDisplayName(plan, currency) : 'Unknown Plan'} • {payment.type === 'reduceTerm' ? 'Term' : 'Payment'}

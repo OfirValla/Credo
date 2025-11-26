@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Calendar, Percent, Plus, Trash2, ArrowRight, Pencil, X } from 'lucide-react';
+import { TrendingUp, Calendar, Percent, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { RateChange, MortgagePlan } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 import { getPlanDisplayName } from '@/lib/planUtils';
@@ -61,6 +61,7 @@ export function RateChangeForm() {
       month,
       planId,
       newAnnualRate: rate,
+      enabled: true,
     };
 
     if (editingId) {
@@ -200,20 +201,49 @@ export function RateChangeForm() {
                       layout
                       className={`group flex items-center justify-between p-3 border rounded-lg transition-colors ${editingId === rateChange.id
                         ? 'bg-accent/10 border-accent/50'
-                        : 'bg-background/40 border-border/50 hover:bg-background/60'
+                        : rateChange.enabled === false
+                          ? 'bg-muted/30 border-muted-foreground/20 opacity-60'
+                          : 'bg-background/40 border-border/50 hover:bg-background/60'
                         }`}
                     >
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2 font-medium text-sm">
-                          <span className="text-accent">{rateChange.newAnnualRate}%</span>
-                          <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                          <span>{rateChange.month}</span>
+                        <div className='flex items-center gap-2'>
+                          <span className={`flex items-center gap-2 font-medium text-sm ${rateChange.enabled === false ? 'line-through text-muted-foreground' : ''}`}>
+                            <span className={rateChange.enabled === false ? 'text-muted-foreground' : 'text-accent'}>{rateChange.newAnnualRate}%</span>
+                            <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                            <span>{rateChange.month}</span>
+                          </span>
+                          {rateChange.enabled === false && (
+                            <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">Disabled</span>
+                          )}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {plan ? getPlanDisplayName(plan, currency) : 'Unknown Plan'}
                         </div>
                       </div>
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className={`h-8 w-8 ${rateChange.enabled !== false
+                            ? 'text-secondary hover:text-secondary hover:bg-secondary/10'
+                            : 'text-muted-foreground hover:text-muted-foreground hover:bg-muted/10'
+                            }`}
+                          onClick={() => {
+                            onUpdateRateChange({
+                              ...rateChange,
+                              enabled: rateChange.enabled === false ? true : false,
+                            });
+                          }}
+                          title={rateChange.enabled === false ? "Click to enable" : "Click to disable"}
+                        >
+                          {rateChange.enabled !== false ? (
+                            <ToggleRight className="h-5 w-5" />
+                          ) : (
+                            <ToggleLeft className="h-5 w-5" />
+                          )}
+                        </Button>
                         <Button
                           type="button"
                           variant="ghost"
