@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/custom-select';
+import { Select } from '@/components/ui/select';
 
 import { useMortgage } from '@/context/MortgageProvider';
 

@@ -3,7 +3,7 @@ import { Hourglass, CalendarClock, Plus, Trash2, Pencil, Save, X, ToggleLeft, To
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/custom-select';
+import { Select } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useMortgage } from '@/context/MortgageProvider';
 import { getPlanDisplayName } from '@/lib/planUtils';

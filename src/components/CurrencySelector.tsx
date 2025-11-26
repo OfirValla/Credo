@@ -1,6 +1,6 @@
 import { CurrencyCode, CURRENCIES } from '@/lib/currency';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/custom-select';
+import { Select } from '@/components/ui/select';
 import { useMortgage } from '@/context/MortgageProvider';
 
 export function CurrencySelector() {
