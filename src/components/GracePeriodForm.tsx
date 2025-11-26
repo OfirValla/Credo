@@ -1,13 +1,26 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hourglass, CalendarClock } from 'lucide-react';
+import { Hourglass, CalendarClock, Plus, Trash2, Pencil, Save, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/custom-select';
 import { Label } from '@/components/ui/label';
 import { useMortgage } from '@/context/MortgageProvider';
 import { getPlanDisplayName } from '@/lib/planUtils';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
+import { useState } from 'react';
+import { GracePeriod } from '@/types';
 
 export function GracePeriodForm() {
-    const { plans, currency, updatePlan } = useMortgage();
+    const { plans, currency, updatePlan, gracePeriods, addGracePeriod, deleteGracePeriod, updateGracePeriod } = useMortgage();
+    const [isAdding, setIsAdding] = useState<string | null>(null); // planId if adding
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState<Partial<GracePeriod>>({});
+    const [newGracePeriod, setNewGracePeriod] = useState<Partial<GracePeriod>>({
+        type: 'capitalized',
+        startDate: '',
+        endDate: ''
+    });
 
     // Filter only enabled plans
     const activePlans = plans.filter(p => p.enabled !== false);
@@ -16,6 +29,54 @@ export function GracePeriodForm() {
         const start = parseDateToMonthIndex(takenDate);
         const end = parseDateToMonthIndex(firstPaymentDate);
         return Math.max(0, Math.floor(end - start));
+    };
+
+    const handleAddGracePeriod = (planId: string) => {
+        if (!newGracePeriod.startDate || !newGracePeriod.endDate) return;
+
+        addGracePeriod({
+            planId,
+            startDate: newGracePeriod.startDate!,
+            endDate: newGracePeriod.endDate!,
+            type: newGracePeriod.type as 'capitalized' | 'interestOnly' || 'capitalized',
+            enabled: true
+        });
+
+        setIsAdding(null);
+        setNewGracePeriod({
+            type: 'capitalized',
+            startDate: '',
+            endDate: ''
+        });
+    };
+
+    const handleEditStart = (gp: GracePeriod) => {
+        setEditingId(gp.id);
+        setEditForm(gp);
+    };
+
+    const handleEditCancel = () => {
+        setEditingId(null);
+        setEditForm({});
+    };
+
+    const handleEditSave = () => {
+        if (!editingId || !editForm.startDate || !editForm.endDate) return;
+
+        updateGracePeriod({
+            ...editForm as GracePeriod,
+            id: editingId
+        });
+
+        setEditingId(null);
+        setEditForm({});
+    };
+
+    const handleToggle = (gp: GracePeriod) => {
+        updateGracePeriod({
+            ...gp,
+            enabled: !gp.enabled
+        });
     };
 
     return (
@@ -50,6 +111,7 @@ export function GracePeriodForm() {
                             activePlans.map((plan) => {
                                 const months = calculateGracePeriodMonths(plan.takenDate, plan.firstPaymentDate);
                                 const hasGracePeriod = months > 0;
+                                const planGracePeriods = gracePeriods.filter(gp => gp.planId === plan.id);
 
                                 return (
                                     <motion.div
@@ -71,37 +133,220 @@ export function GracePeriodForm() {
                                             </div>
 
                                             {hasGracePeriod ? (
-                                                <div className="space-y-2">
-                                                    <Label htmlFor={`grace-type-${plan.id}`} className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                                                        Payment Type
-                                                    </Label>
-                                                    <div className="relative">
-                                                        <select
-                                                            id={`grace-type-${plan.id}`}
-                                                            value={plan.gracePeriodType || 'capitalized'}
-                                                            onChange={(e) => updatePlan({ ...plan, gracePeriodType: e.target.value as 'capitalized' | 'interestOnly' })}
-                                                            className="w-full h-9 pl-3 pr-8 bg-background/50 border border-border/50 rounded-md focus:ring-indigo-500/20 text-sm appearance-none transition-colors hover:bg-background/80"
-                                                        >
-                                                            <option value="capitalized">Capitalized (Add to Principal)</option>
-                                                            <option value="interestOnly">Interest Only (Pay Monthly)</option>
-                                                        </select>
-                                                        <div className="absolute right-3 top-2.5 pointer-events-none">
-                                                            <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                            </svg>
-                                                        </div>
+                                                <div className="rounded-md border border-indigo-100 bg-indigo-50/50 p-3 space-y-3 dark:bg-indigo-950/20 dark:border-indigo-900/50">
+                                                    <div className="flex items-center justify-between">
+                                                        <Label htmlFor={`grace-type-${plan.id}`} className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                                                            <Hourglass className="w-3 h-3" />
+                                                            Initial Grace Period
+                                                        </Label>
+                                                        <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium dark:bg-indigo-900/50 dark:text-indigo-300">
+                                                            Default
+                                                        </span>
                                                     </div>
-                                                    <p className="text-[10px] text-muted-foreground pl-1">
-                                                        {plan.gracePeriodType === 'interestOnly'
-                                                            ? 'You pay the accrued interest each month. Principal remains same.'
-                                                            : 'Interest is added to your loan balance. No monthly payments.'}
-                                                    </p>
+
+                                                    <div className="space-y-2">
+                                                        <div className="relative">
+                                                            <Select
+                                                                value={plan.gracePeriodType || 'capitalized'}
+                                                                onValueChange={(value: string) => updatePlan({ ...plan, gracePeriodType: value as 'capitalized' | 'interestOnly' })}
+                                                                options={[
+                                                                    { value: 'capitalized', label: 'Capitalized (Add to Principal)' },
+                                                                    { value: 'interestOnly', label: 'Interest Only (Pay Monthly)' },
+                                                                ]}
+                                                            />
+                                                        </div>
+                                                        <p className="text-[10px] text-muted-foreground pl-1 flex items-start gap-1.5">
+                                                            <span className="mt-0.5 block w-1 h-1 rounded-full bg-indigo-400 shrink-0" />
+                                                            {plan.gracePeriodType === 'interestOnly'
+                                                                ? 'You pay the accrued interest each month. Principal remains same.'
+                                                                : 'Interest is added to your loan balance. No monthly payments.'}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             ) : (
-                                                <div className="text-xs text-muted-foreground italic pl-1">
-                                                    No grace period (First payment is immediately after taken date)
+                                                <div className="p-3 rounded-md border border-dashed border-muted-foreground/20 bg-muted/30 text-xs text-muted-foreground italic text-center">
+                                                    No initial grace period (First payment is immediately after taken date)
                                                 </div>
                                             )}
+
+                                            {/* Additional Grace Periods */}
+                                            <div className="space-y-3 pt-2 border-t border-border/50">
+                                                <div className="flex items-center justify-between">
+                                                    <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                                        Additional Grace Periods
+                                                    </Label>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-6 text-xs"
+                                                        onClick={() => setIsAdding(isAdding === plan.id ? null : plan.id)}
+                                                    >
+                                                        <Plus className="w-3 h-3 mr-1" />
+                                                        Add Period
+                                                    </Button>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    {planGracePeriods.map(gp => (
+                                                        <div key={gp.id} className={`flex items-center justify-between p-2 bg-background/50 rounded border border-border/50 text-sm ${gp.enabled === false ? 'opacity-60' : ''}`}>
+                                                            {editingId === gp.id ? (
+                                                                <div className="flex-1 p-2 bg-background rounded-md shadow-sm border border-indigo-100 dark:border-indigo-900/50">
+                                                                    <div className="grid grid-cols-2 gap-3 mb-3">
+                                                                        <div className="space-y-1.5">
+                                                                            <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Start Date</Label>
+                                                                            <Input
+                                                                                value={editForm.startDate}
+                                                                                onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
+                                                                                placeholder="MM/YYYY"
+                                                                                className="h-8 text-xs bg-muted/30"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="space-y-1.5">
+                                                                            <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">End Date</Label>
+                                                                            <Input
+                                                                                value={editForm.endDate}
+                                                                                onChange={(e) => setEditForm({ ...editForm, endDate: e.target.value })}
+                                                                                placeholder="MM/YYYY"
+                                                                                className="h-8 text-xs bg-muted/30"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="space-y-1.5 mb-3">
+                                                                        <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Type</Label>
+                                                                        <div className="relative">
+                                                                            <Select
+                                                                                value={editForm.type!}
+                                                                                onValueChange={(value: string) => setEditForm({ ...editForm, type: value as "capitalized" | "interestOnly" })}
+                                                                                options={[
+                                                                                    { value: 'capitalized', label: 'Capitalized' },
+                                                                                    { value: 'interestOnly', label: 'Interest Only' },
+                                                                                ]}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex gap-2 justify-end pt-2 border-t border-border/50">
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            className="h-7 text-xs hover:bg-destructive/10 hover:text-destructive"
+                                                                            onClick={handleEditCancel}
+                                                                        >
+                                                                            Cancel
+                                                                        </Button>
+                                                                        <Button
+                                                                            size="sm"
+                                                                            className="h-7 text-xs bg-indigo-600 hover:bg-indigo-700 text-white"
+                                                                            onClick={handleEditSave}
+                                                                        >
+                                                                            Save Changes
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="font-medium flex items-center gap-2">
+                                                                            {gp.startDate} - {gp.endDate}
+                                                                            {gp.enabled === false && <span className="text-[10px] uppercase bg-muted px-1 rounded">Disabled</span>}
+                                                                        </span>
+                                                                        <span className="text-xs text-muted-foreground">
+                                                                            {gp.type === 'interestOnly' ? 'Interest Only' : 'Capitalized'}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="flex items-center gap-1">
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            className={`h-6 w-6 ${gp.enabled !== false ? 'text-secondary hover:text-secondary hover:bg-secondary/10' : 'text-muted-foreground hover:text-muted-foreground hover:bg-muted/10'}`}
+                                                                            onClick={() => handleToggle(gp)}
+                                                                            title={gp.enabled !== false ? "Disable" : "Enable"}
+                                                                        >
+                                                                            {gp.enabled !== false ? (
+                                                                                <ToggleRight className="w-4 h-4" />
+                                                                            ) : (
+                                                                                <ToggleLeft className="w-4 h-4" />
+                                                                            )}
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                                                            onClick={() => handleEditStart(gp)}
+                                                                        >
+                                                                            <Pencil className="w-3 h-3" />
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                                            onClick={() => deleteGracePeriod(gp.id)}
+                                                                        >
+                                                                            <Trash2 className="w-3 h-3" />
+                                                                        </Button>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    ))}
+
+                                                    {isAdding === plan.id && (
+                                                        <div className="p-3 bg-muted/30 rounded border border-border/50 space-y-3 animate-in fade-in slide-in-from-top-2">
+                                                            <div className="grid grid-cols-2 gap-2">
+                                                                <div className="space-y-1">
+                                                                    <Label className="text-xs">Start (MM/YYYY)</Label>
+                                                                    <Input
+                                                                        value={newGracePeriod.startDate}
+                                                                        onChange={(e) => setNewGracePeriod({ ...newGracePeriod, startDate: e.target.value })}
+                                                                        placeholder="MM/YYYY"
+                                                                        className="h-8 text-xs"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <Label className="text-xs">End (MM/YYYY)</Label>
+                                                                    <Input
+                                                                        value={newGracePeriod.endDate}
+                                                                        onChange={(e) => setNewGracePeriod({ ...newGracePeriod, endDate: e.target.value })}
+                                                                        placeholder="MM/YYYY"
+                                                                        className="h-8 text-xs"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <Label className="text-xs">Type</Label>
+                                                                <div className="relative">
+                                                                    <Select
+                                                                        value={newGracePeriod.type || 'capitalized'}
+                                                                        onValueChange={(value: string) => setNewGracePeriod({ ...newGracePeriod, type: value as 'capitalized' | 'interestOnly' })}
+                                                                        options={[
+                                                                            { value: 'capitalized', label: 'Capitalized' },
+                                                                            { value: 'interestOnly', label: 'Interest Only' },
+                                                                        ]}
+                                                                        className="w-full h-8 bg-background/50 border-border/50 focus:ring-indigo-500/20 text-xs hover:bg-background/80"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    className="h-7 text-xs"
+                                                                    onClick={() => setIsAdding(null)}
+                                                                >
+                                                                    Cancel
+                                                                </Button>
+                                                                <Button
+                                                                    size="sm"
+                                                                    className="h-7 text-xs"
+                                                                    onClick={() => handleAddGracePeriod(plan.id)}
+                                                                    disabled={!newGracePeriod.startDate || !newGracePeriod.endDate}
+                                                                >
+                                                                    Add
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     </motion.div>
                                 );

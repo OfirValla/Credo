@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange, RowTag } from '@/types';
+import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange, RowTag, GracePeriod } from '@/types';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { formatCurrency } from '@/lib/currency';
 
@@ -52,6 +52,7 @@ export function useMortgageCalculations(
   plans: MortgagePlan[],
   extraPayments: ExtraPayment[],
   rateChanges: RateChange[] = [],
+  gracePeriods: GracePeriod[] = [],
   currency: CurrencyCode = 'USD'
 ): AmortizationRow[] {
   return useMemo(() => {
@@ -189,6 +190,23 @@ export function useMortgageCalculations(
       }
     });
 
+    // Add grace period months
+    gracePeriods.forEach(gp => {
+      if (!enabledPlans.find(plan => plan.id === gp.planId)) return;
+      if (gp.enabled === false) return;
+
+      const startMonth = parseMonth(gp.startDate);
+      const endMonth = parseMonth(gp.endDate);
+      const paymentDayFraction = planPaymentDays.get(gp.planId) || 0.01;
+
+      const startBase = Math.floor(startMonth);
+      const endBase = Math.floor(endMonth);
+
+      for (let i = startBase; i <= endBase; i++) {
+        allMonths.add(i + paymentDayFraction);
+      }
+    });
+
     const sortedMonths = Array.from(allMonths).sort((a, b) => a - b);
 
     // Process each month
@@ -215,8 +233,18 @@ export function useMortgageCalculations(
         let extraPayment = 0;
         let recalculatePayment = false;
 
-        // Check if we are in the grace period (before first payment date)
-        const isGracePeriod = monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate) - 0.0001;
+        // Check if we are in the initial grace period (before first payment date)
+        const isInitialGracePeriod = monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate) - 0.0001;
+
+        // Check if we are in an additional grace period
+        const activeGracePeriod = gracePeriods.find(gp =>
+          gp.planId === planId &&
+          gp.enabled !== false &&
+          monthNum >= parseMonth(gp.startDate) - 0.0001 &&
+          monthNum <= parseMonth(gp.endDate) + 0.0001
+        );
+
+        const isGracePeriod = isInitialGracePeriod || !!activeGracePeriod;
         const isFirstPaymentMonth = Math.abs(monthNum - parseDateToMonthIndex(data.plan.firstPaymentDate)) < 0.0001;
 
         // Check for rate changes in this month (must be applied BEFORE calculating interest)
@@ -285,6 +313,15 @@ export function useMortgageCalculations(
           } else {
             monthlyPayment = 0;
           }
+
+          // Override for additional grace periods if they have specific settings
+          if (activeGracePeriod) {
+            if (activeGracePeriod.type === 'interestOnly') {
+              monthlyPayment = interest;
+            } else {
+              monthlyPayment = 0;
+            }
+          }
         } else if (isFirstPaymentMonth) {
           // Recalculate payment based on accumulated balance and original term
           // This ensures that the accumulated interest is paid off over the term
@@ -351,6 +388,18 @@ export function useMortgageCalculations(
 
         if (!isGracePeriod) {
           data.remainingPayments -= 1;
+        } else if (activeGracePeriod) {
+          // If we are in an additional grace period, we are technically delaying the term
+          // So we don't decrement remaining payments? 
+          // Or do we? The requirement says "non deleteable grace period" for the initial one.
+          // Usually grace periods extend the term or increase payments later.
+          // If it's interest only, the principal doesn't drop.
+          // If it's capitalized, the principal increases.
+          // In both cases, we are NOT making a "regular" payment that reduces the count of remaining payments 
+          // (unless the term is fixed and payments increase, but here we seem to have a fixed number of payments calculated from term).
+
+          // If we pause payments, the term effectively extends.
+          // So we do NOT decrement remainingPayments.
         }
 
         // Calculate total payment made this month
@@ -363,11 +412,19 @@ export function useMortgageCalculations(
         // Prepare tags
         const tags: RowTag[] = [];
         if (isGracePeriod) {
-          tags.push({
-            type: 'grace-period',
-            label: data.plan.gracePeriodType === 'interestOnly' ? 'Interest Only' : 'Taken (Interest Accrual)',
-            color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-          });
+          if (activeGracePeriod) {
+            tags.push({
+              type: 'grace-period',
+              label: activeGracePeriod.type === 'interestOnly' ? 'Grace: Interest Only' : 'Grace: Capitalized',
+              color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+            });
+          } else {
+            tags.push({
+              type: 'grace-period',
+              label: data.plan.gracePeriodType === 'interestOnly' ? 'Interest Only' : 'Taken (Interest Accrual)',
+              color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+            });
+          }
         }
 
         if (extraPayment > 0) {
@@ -421,5 +478,5 @@ export function useMortgageCalculations(
     });
 
     return rows;
-  }, [plans, extraPayments, rateChanges, currency]);
+  }, [plans, extraPayments, rateChanges, gracePeriods, currency]);
 }

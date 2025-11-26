@@ -19,6 +19,15 @@ export interface ExtraPayment {
   enabled?: boolean; // Optional, defaults to true
 }
 
+export interface GracePeriod {
+  id: string;
+  planId: string;
+  startDate: string; // MM/YYYY format
+  endDate: string; // MM/YYYY format
+  type: 'capitalized' | 'interestOnly';
+  enabled?: boolean; // Optional, defaults to true
+}
+
 export interface RateChange {
   id: string;
   month: string; // MM/YYYY format
