@@ -4,7 +4,7 @@ import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X, ToggleLef
 import { MortgagePlan } from '@/types';
 import { CurrencyCode, getCurrencySymbol } from '@/lib/currency';
 import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -88,12 +88,21 @@ export function MortgageForm() {
   };
 
   return (
-    <Card className="glass-card border-none overflow-hidden">
-      <CardHeader className="bg-primary/5 border-b border-border/50">
-        <CardTitle className="flex items-center gap-2 text-xl">
-          <Home className="w-5 h-5 text-primary" />
-          {editingId ? 'Edit Mortgage Plan' : 'Mortgage Plans'}
-        </CardTitle>
+    <Card gradient>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
+            <Home className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <CardTitle className="text-xl font-bold">
+              {editingId ? 'Edit Mortgage Plan' : 'Mortgage Plans'}
+            </CardTitle>
+            <CardDescription>
+              Manage your property financing details
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -254,12 +263,14 @@ export function MortgageForm() {
                         </span>
                         <span>{plan.firstPaymentDate} - {plan.lastPaymentDate}</span>
                         <span>•</span>
-                        <span>
-                          {(() => {
-                            const { totalMonths, remainingMonths } = getPlanDurationInfo(plan);
-                            return `${totalMonths} months total • ${Math.floor(remainingMonths)} months remaining`;
-                          })()}
-                        </span>
+                        {(() => {
+                          const { totalMonths, remainingMonths } = getPlanDurationInfo(plan);
+                          return <>
+                            <span>{`${totalMonths} months total`}</span>
+                            <span>•</span>
+                            <span>{`${Math.floor(remainingMonths)} months remaining`}</span>
+                          </>;
+                        })()}
                       </div>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">

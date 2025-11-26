@@ -4,7 +4,7 @@ import { TrendingUp, Calendar, Percent, Plus, Trash2, ArrowRight, Pencil, X } fr
 import { RateChange, MortgagePlan } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 import { getPlanDisplayName } from '@/lib/planUtils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -82,12 +82,21 @@ export function RateChangeForm() {
   }));
 
   return (
-    <Card className="glass-card border-none overflow-hidden">
-      <CardHeader className="bg-accent/5 border-b border-border/50">
-        <CardTitle className="flex items-center gap-2 text-xl">
-          <TrendingUp className="w-5 h-5 text-accent" />
-          {editingId ? 'Edit Rate Change' : 'Interest Rate Changes'}
-        </CardTitle>
+    <Card gradient>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-amber-500 rounded-xl shadow-lg shadow-amber-500/20">
+            <TrendingUp className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <CardTitle className="text-xl font-bold">
+              {editingId ? 'Edit Rate Change' : 'Interest Rate Changes'}
+            </CardTitle>
+            <CardDescription>
+              Schedule future interest rate adjustments
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
