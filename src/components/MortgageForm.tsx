@@ -9,15 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-interface MortgageFormProps {
-  plans: MortgagePlan[];
-  currency: CurrencyCode;
-  onAddPlan: (plan: Omit<MortgagePlan, 'id'>) => void;
-  onUpdatePlan: (plan: MortgagePlan) => void;
-  onDeletePlan: (id: string) => void;
-}
+import { useMortgage } from '@/context/MortgageProvider';
 
-export function MortgageForm({ plans, currency, onAddPlan, onUpdatePlan, onDeletePlan }: MortgageFormProps) {
+export function MortgageForm() {
+  const { plans, currency, addPlan, updatePlan, deletePlan } = useMortgage();
+  const onAddPlan = addPlan;
+  const onUpdatePlan = updatePlan;
+  const onDeletePlan = deletePlan;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');

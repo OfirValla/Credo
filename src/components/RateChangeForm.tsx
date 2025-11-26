@@ -10,23 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/custom-select';
 
-interface RateChangeFormProps {
-  plans: MortgagePlan[];
-  currency: CurrencyCode;
-  rateChanges: RateChange[];
-  onAddRateChange: (rateChange: Omit<RateChange, 'id'>) => void;
-  onUpdateRateChange: (rateChange: RateChange) => void;
-  onDeleteRateChange: (id: string) => void;
-}
+import { useMortgage } from '@/context/MortgageProvider';
 
-export function RateChangeForm({
-  plans,
-  currency,
-  rateChanges,
-  onAddRateChange,
-  onUpdateRateChange,
-  onDeleteRateChange,
-}: RateChangeFormProps) {
+export function RateChangeForm() {
+  const { plans, currency, rateChanges, addRateChange, updateRateChange, deleteRateChange } = useMortgage();
+  const onAddRateChange = addRateChange;
+  const onUpdateRateChange = updateRateChange;
+  const onDeleteRateChange = deleteRateChange;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [month, setMonth] = useState('');
   const [planId, setPlanId] = useState('');

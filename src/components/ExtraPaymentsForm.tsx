@@ -10,23 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/custom-select';
 
-interface ExtraPaymentsFormProps {
-  plans: MortgagePlan[];
-  currency: CurrencyCode;
-  extraPayments: ExtraPayment[];
-  onAddExtraPayment: (payment: Omit<ExtraPayment, 'id'>) => void;
-  onUpdateExtraPayment: (payment: ExtraPayment) => void;
-  onDeleteExtraPayment: (id: string) => void;
-}
+import { useMortgage } from '@/context/MortgageProvider';
 
-export function ExtraPaymentsForm({
-  plans,
-  currency,
-  extraPayments,
-  onAddExtraPayment,
-  onUpdateExtraPayment,
-  onDeleteExtraPayment,
-}: ExtraPaymentsFormProps) {
+export function ExtraPaymentsForm() {
+  const { plans, currency, extraPayments, addExtraPayment, updateExtraPayment, deleteExtraPayment } = useMortgage();
+  const onAddExtraPayment = addExtraPayment;
+  const onUpdateExtraPayment = updateExtraPayment;
+  const onDeleteExtraPayment = deleteExtraPayment;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [month, setMonth] = useState('');
   const [planId, setPlanId] = useState('');

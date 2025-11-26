@@ -3,13 +3,7 @@ import { Calendar, DollarSign, TrendingUp, Sparkles, CalendarDays } from 'lucide
 import { MortgagePlan, AmortizationRow } from '@/types';
 import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-
-
-interface CurrentMonthPreviewProps {
-  plans: MortgagePlan[];
-  rows: AmortizationRow[];
-  currency: CurrencyCode;
-}
+import { useMortgage } from '@/context/MortgageProvider';
 
 /**
  * Get current month in MM/YYYY format
@@ -82,7 +76,10 @@ function compareMonths(month1: string, month2: string): number {
   return m1 - m2;
 }
 
-export function CurrentMonthPreview({ plans, rows, currency }: CurrentMonthPreviewProps) {
+export function CurrentMonthPreview() {
+  const { plans: allPlans, amortizationRows: rows, currency } = useMortgage();
+  const plans = allPlans.filter(p => p.enabled !== false);
+
   const currentMonth = getCurrentMonth();
   const displayDate = getDisplayDate();
   const nextPaymentDate = getNextPaymentDate();

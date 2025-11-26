@@ -4,12 +4,7 @@ import { MortgagePlan, AmortizationRow } from '@/types';
 import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getPlanDisplayName } from '@/lib/planUtils';
-
-interface MortgageStatusProps {
-    plans: MortgagePlan[];
-    rows: AmortizationRow[];
-    currency: CurrencyCode;
-}
+import { useMortgage } from '@/context/MortgageProvider';
 
 function parseMonth(dateStr: string): number {
     if (!dateStr) return 0;
@@ -24,7 +19,9 @@ function parseMonth(dateStr: string): number {
     return 0;
 }
 
-export function MortgageStatus({ plans, rows, currency }: MortgageStatusProps) {
+export function MortgageStatus() {
+    const { plans: allPlans, amortizationRows: rows, currency } = useMortgage();
+    const plans = allPlans.filter(p => p.enabled !== false);
     const statusData = useMemo(() => {
         const now = new Date();
         const currentMonthIndex = (now.getFullYear() - 2000) * 12 + now.getMonth();

@@ -48,7 +48,7 @@ function formatMonth(monthNum: number): string {
 
 import { CurrencyCode } from '@/lib/currency';
 
-export function useMortgage(
+export function useMortgageCalculations(
   plans: MortgagePlan[],
   extraPayments: ExtraPayment[],
   rateChanges: RateChange[] = [],

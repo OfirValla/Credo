@@ -1,18 +1,14 @@
 import { useMemo } from 'react';
 import { PieChart, DollarSign, TrendingUp, Calendar, CreditCard, Layers } from 'lucide-react';
-import { AmortizationRow, MortgagePlan, ExtraPayment } from '@/types';
-import { CurrencyCode, formatCurrency } from '@/lib/currency';
+import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useMortgage } from '@/context/MortgageProvider';
 
+export function MortgageSummary() {
+  const { plans: allPlans, amortizationRows: rows, currency, extraPayments: allExtraPayments } = useMortgage();
+  const plans = allPlans.filter(p => p.enabled !== false);
+  const extraPayments = allExtraPayments.filter(ep => ep.enabled !== false);
 
-interface MortgageSummaryProps {
-  rows: AmortizationRow[];
-  plans: MortgagePlan[];
-  extraPayments: ExtraPayment[];
-  currency: CurrencyCode;
-}
-
-export function MortgageSummary({ rows, plans, extraPayments, currency }: MortgageSummaryProps) {
   const summary = useMemo(() => {
     if (rows.length === 0 || plans.length === 0) {
       return null;

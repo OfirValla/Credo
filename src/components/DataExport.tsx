@@ -1,15 +1,12 @@
 import React from 'react';
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+
 import { MortgagePlan, ExtraPayment, RateChange } from '@/types';
-import { CurrencyCode } from '@/lib/currency';
+import { useMortgage } from '@/context/MortgageProvider';
 
 export const DataExport: React.FC = () => {
-  const [plans] = useLocalStorage<MortgagePlan[]>('mortgage-plans', []);
-  const [extraPayments] = useLocalStorage<ExtraPayment[]>('mortgage-extra-payments', []);
-  const [rateChanges] = useLocalStorage<RateChange[]>('mortgage-rate-changes', []);
-  const [currency] = useLocalStorage<CurrencyCode>('mortgage-currency', 'USD');
+  const { plans, extraPayments, rateChanges, currency } = useMortgage();
 
   const exportData = () => {
     // Format dates to ISO string for consistency

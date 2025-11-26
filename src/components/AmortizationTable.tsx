@@ -19,21 +19,18 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-
-interface AmortizationTableProps {
-  rows: AmortizationRow[];
-  plans: MortgagePlan[];
-  currency: CurrencyCode;
-}
+import { useMortgage } from '@/context/MortgageProvider';
 
 type ViewMode = 'monthly' | 'yearly';
 
-export function AmortizationTable({ rows, plans, currency }: AmortizationTableProps) {
+export function AmortizationTable() {
+  const { plans: allPlans, amortizationRows: rows, currency } = useMortgage();
+  const plans = allPlans.filter(p => p.enabled !== false);
+
   const [viewMode, setViewMode] = useState<ViewMode>('monthly');
   const [selectedPlanIds, setSelectedPlanIds] = useState<string[]>([]);
 
   const formatCurrencyValue = (value: number) => formatCurrency(value, currency);
-
   const formatPercentage = (value: number) => {
     return `${(value * 100).toFixed(4)}%`;
   };
