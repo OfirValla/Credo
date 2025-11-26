@@ -79,7 +79,6 @@ export function MortgageForm() {
     }
 
     setName('');
-    setName('');
     setAmount('');
     setInterestRate('');
     setTakenDate('');
