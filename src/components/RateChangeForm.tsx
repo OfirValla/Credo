@@ -155,7 +155,7 @@ export function RateChangeForm() {
             <Button
               type="submit"
               disabled={plans.length === 0}
-              className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg shadow-accent/20 transition-all hover:scale-[1.02]"
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02]"
             >
               {editingId ? (
                 <>
@@ -209,7 +209,7 @@ export function RateChangeForm() {
                       <div className="space-y-1">
                         <div className='flex items-center gap-2'>
                           <span className={`flex items-center gap-2 font-medium text-sm ${rateChange.enabled === false ? 'line-through text-muted-foreground' : ''}`}>
-                            <span className={rateChange.enabled === false ? 'text-muted-foreground' : 'text-accent'}>{rateChange.newAnnualRate}%</span>
+                            <span className={rateChange.enabled === false ? 'text-muted-foreground' : 'text-amber-500'}>{rateChange.newAnnualRate}%</span>
                             <ArrowRight className="w-3 h-3 text-muted-foreground" />
                             <span>{rateChange.month}</span>
                           </span>
@@ -227,7 +227,7 @@ export function RateChangeForm() {
                           variant="ghost"
                           size="icon"
                           className={`h-8 w-8 ${rateChange.enabled !== false
-                            ? 'text-secondary hover:text-secondary hover:bg-secondary/10'
+                            ? 'text-amber-500 hover:text-amber-500 hover:bg-amber-500/10'
                             : 'text-muted-foreground hover:text-muted-foreground hover:bg-muted/10'
                             }`}
                           onClick={() => {
@@ -248,7 +248,7 @@ export function RateChangeForm() {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-accent hover:bg-accent/10"
+                          className="h-8 w-8 text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10"
                           onClick={() => handleEdit(rateChange)}
                         >
                           <Pencil className="h-4 w-4" />
