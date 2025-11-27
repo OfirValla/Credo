@@ -54,4 +54,5 @@ export interface AmortizationRow {
   endingBalance: number;
   tags?: RowTag[];
   isGracePeriod?: boolean;
+  linkage?: number;
 }

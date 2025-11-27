@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange, RowTag, GracePeriod } from '@/types';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
-import { formatCurrency } from '@/lib/currency';
+import { formatCurrency, CurrencyCode } from '@/lib/currency';
+import { CPIData, CPI_STORAGE_KEY } from '@/lib/cpiService';
 
 /**
  * Calculate monthly payment using PMT formula
@@ -15,8 +16,6 @@ function calculatePMT(principal: number, monthlyRate: number, numPayments: numbe
   const factor = Math.pow(1 + monthlyRate, numPayments);
   return principal * (monthlyRate * factor) / (factor - 1);
 }
-
-
 
 /**
  * Parse MM/YYYY or DD/MM/YYYY date string and convert to month number
@@ -46,8 +45,6 @@ function formatMonth(monthNum: number): string {
   return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 }
 
-import { CurrencyCode } from '@/lib/currency';
-
 export function useMortgageCalculations(
   plans: MortgagePlan[],
   extraPayments: ExtraPayment[],
@@ -55,6 +52,37 @@ export function useMortgageCalculations(
   gracePeriods: GracePeriod[] = [],
   currency: CurrencyCode = 'USD'
 ): AmortizationRow[] {
+  // Read CPI data from localStorage
+  const cpiData: CPIData = useMemo(() => {
+    try {
+      const stored = localStorage.getItem(CPI_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      console.error('Failed to parse CPI data', e);
+      return {};
+    }
+  }, []);
+
+  const getCPI = (monthNum: number): number | null => {
+    const year = 2000 + Math.floor(monthNum / 12);
+    const month = (Math.floor(monthNum) % 12) + 1;
+    const yearStr = year.toString();
+    const monthStr = month.toString().padStart(2, '0'); // Ensure 2 digits
+
+    // Check if we have data for this specific month
+    if (cpiData[yearStr] && cpiData[yearStr][monthStr]) {
+      return cpiData[yearStr][monthStr];
+    }
+
+    // Try to find it with single digit if stored that way (though service stores as 2 digits)
+    const monthStrSingle = month.toString();
+    if (cpiData[yearStr] && cpiData[yearStr][monthStrSingle]) {
+      return cpiData[yearStr][monthStrSingle];
+    }
+
+    return null;
+  };
+
   return useMemo(() => {
     if (plans.length === 0) {
       return [];
@@ -132,15 +160,8 @@ export function useMortgageCalculations(
       }
 
       // Also add months between taken and first payment if they are missing
-      // (for grace period rows, aligned to payment day if possible, or just monthly steps from taken date?)
-      // The user said "payments are exactly 1 month apart". 
-      // Grace period rows usually align with the payment day too (e.g. interest accrues monthly on the 10th).
-      // Let's align grace period rows to the payment day fraction, unless it's the taken date itself.
       const startBase = Math.floor(startMonth);
       for (let i = startBase; i < startPaymentBase; i++) {
-        // Only add months AFTER the taken month
-        // The taken date is already added (startMonth)
-        // We want to avoid adding a second row for the same month (e.g. taken 01/03, payment day 10 -> don't add 10/03)
         if (i > startBase) {
           allMonths.add(i + paymentDayFraction);
         }
@@ -216,22 +237,44 @@ export function useMortgageCalculations(
       // Process each active plan
       for (const [planId, data] of planData.entries()) {
         // Skip if plan hasn't started yet (based on taken date)
-        // Use a small epsilon for float comparison
         if (monthNum < parseDateToMonthIndex(data.plan.takenDate) - 0.0001) {
           continue;
         }
 
         // Skip if plan has ended (no remaining payments) AND we are past the first payment date
-        // (We need to allow processing if we are in the grace period even if remainingPayments is full)
         if (data.remainingPayments <= 0 && monthNum >= parseDateToMonthIndex(data.plan.firstPaymentDate) - 0.0001) {
           continue;
         }
 
-        const startingBalance = data.balance;
+        let startingBalance = data.balance;
         let monthlyRate = data.monthlyRate;
         let monthlyPayment = data.monthlyPayment;
         let extraPayment = 0;
         let recalculatePayment = false;
+        let linkageAmount = 0;
+
+
+
+        // Apply CPI Linkage if enabled
+        if (data.plan.linkedToCPI) {
+          // According to CBS, the index published on the 15th refers to the previous month.
+          // So for a payment in month M, we use the index published in month M (which is for M-1)
+          // and compare it to the index published in month M-1 (which is for M-2).
+          const currentCPI = getCPI(Math.floor(monthNum) - 1);
+          const prevCPI = getCPI(Math.floor(monthNum) - 2);
+
+          if (currentCPI && prevCPI && prevCPI !== 0) {
+            const inflationFactor = currentCPI / prevCPI;
+            const linkageDiff = startingBalance * (inflationFactor - 1);
+
+            linkageAmount = linkageDiff;
+            startingBalance += linkageAmount;
+
+            // Adjust monthly payment by the same factor to keep term constant
+            monthlyPayment *= inflationFactor;
+            data.monthlyPayment = monthlyPayment;
+          }
+        }
 
         // Check if we are in the initial grace period (before first payment date)
         const isInitialGracePeriod = monthNum < parseDateToMonthIndex(data.plan.firstPaymentDate) - 0.0001;
@@ -247,7 +290,7 @@ export function useMortgageCalculations(
         const isGracePeriod = isInitialGracePeriod || !!activeGracePeriod;
         const isFirstPaymentMonth = Math.abs(monthNum - parseDateToMonthIndex(data.plan.firstPaymentDate)) < 0.0001;
 
-        // Check for rate changes in this month (must be applied BEFORE calculating interest)
+        // Check for rate changes in this month
         const currentMonthInt = Math.floor(monthNum);
         const monthRateChanges = rateChanges.filter(rc =>
           rc.planId === planId &&
@@ -255,30 +298,24 @@ export function useMortgageCalculations(
           Math.floor(parseMonth(rc.month)) === currentMonthInt
         );
 
-        // Apply rate change if one exists (use the latest one if multiple exist)
+        // Apply rate change if one exists
         if (monthRateChanges.length > 0) {
-          // Sort by id to ensure consistent ordering, use the last one
           monthRateChanges.sort((a, b) => a.id.localeCompare(b.id));
           const rateChange = monthRateChanges[monthRateChanges.length - 1];
 
-          // Update the monthly rate
           monthlyRate = rateChange.newAnnualRate / 100 / 12;
           data.monthlyRate = monthlyRate;
 
-          // Recalculate monthly payment based on new rate, current balance, and remaining payments
           if (startingBalance > 0 && data.remainingPayments > 0 && !isGracePeriod) {
             monthlyPayment = calculatePMT(startingBalance, monthlyRate, data.remainingPayments);
             data.monthlyPayment = monthlyPayment;
           }
         }
 
-        // Calculate interest - proportional to actual days in this period
-        // Need to calculate the number of days this interest period covers
-        let daysInPeriod = 30; // Default to 30 days for a normal month
+        // Calculate interest
+        let daysInPeriod = 30;
 
-        // For the first month after taking the loan, or if in grace period
         if (isGracePeriod || isFirstPaymentMonth) {
-          // Parse dates to get actual day values
           const parseTakenDate = (dateStr: string) => {
             const [day, month, year] = dateStr.split('/').map(Number);
             return new Date(year, month - 1, day);
@@ -288,22 +325,18 @@ export function useMortgageCalculations(
           const firstPaymentDate = parseTakenDate(data.plan.firstPaymentDate);
           const currentMonthDate = new Date(2000 + Math.floor(monthNum / 12), Math.floor(monthNum) % 12, Math.round((monthNum % 1) * 100) || 1);
 
-          // Calculate days between start of this period and end
           if (isGracePeriod) {
-            // Grace period: from start of this month (or taken date if first month) to end of month
             const periodStart = (monthNum < parseDateToMonthIndex(data.plan.takenDate) + 0.1)
               ? takenDate
               : new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth(), 1);
-            const periodEnd = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 0); // Last day of month
+            const periodEnd = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 0);
             daysInPeriod = Math.ceil((periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
           } else if (isFirstPaymentMonth) {
-            // First payment month: from start of month to payment day
             daysInPeriod = firstPaymentDate.getDate();
           }
         }
 
-        // Daily interest rate
-        const dailyRate = monthlyRate / 30; // Approximate monthly rate / 30 days
+        const dailyRate = monthlyRate / 30;
         const interest = startingBalance * dailyRate * daysInPeriod;
 
         // Determine Monthly Payment (Grace Period Logic)
@@ -314,7 +347,6 @@ export function useMortgageCalculations(
             monthlyPayment = 0;
           }
 
-          // Override for additional grace periods if they have specific settings
           if (activeGracePeriod) {
             if (activeGracePeriod.type === 'interestOnly') {
               monthlyPayment = interest;
@@ -323,15 +355,13 @@ export function useMortgageCalculations(
             }
           }
         } else if (isFirstPaymentMonth) {
-          // Recalculate payment based on accumulated balance and original term
-          // This ensures that the accumulated interest is paid off over the term
           if (startingBalance > 0 && data.originalTermMonths > 0) {
             monthlyPayment = calculatePMT(startingBalance, monthlyRate, data.originalTermMonths);
             data.monthlyPayment = monthlyPayment;
           }
         }
 
-        // Check for extra payments in this month (only enabled ones)
+        // Check for extra payments
         const monthExtraPayments = extraPayments.filter(ep =>
           ep.planId === planId &&
           ep.enabled !== false &&
@@ -347,67 +377,37 @@ export function useMortgageCalculations(
           }
         }
 
-        // Calculate principal from regular payment
         let principal = monthlyPayment - interest;
-
-        // Add extra payment to principal
         principal += extraPayment;
-
-        // Ensure principal doesn't exceed the balance (can't pay more than owed)
         principal = Math.min(principal, startingBalance);
-
-        // Calculate ending balance: starting balance minus principal paid
         let endingBalance = startingBalance - principal;
-
-        // Ensure ending balance is never negative
         endingBalance = Math.max(0, endingBalance);
 
-        // Adjust final payment if balance is very small (rounding errors)
-        // This ensures the loan is fully paid off on the last payment
         let adjustedPayment = false;
         if (data.remainingPayments === 1 && endingBalance > 0 && endingBalance < 0.01) {
-          // Last payment: adjust principal to pay off exactly
           principal = startingBalance;
           endingBalance = 0;
           adjustedPayment = true;
         } else if (endingBalance > 0 && endingBalance < 0.01) {
-          // For any other payment, if balance is tiny due to rounding, pay it off
           principal += endingBalance;
           endingBalance = 0;
           adjustedPayment = true;
         }
 
-        // If reducePayment type, recalculate payment for remaining term
         if (recalculatePayment && endingBalance > 0) {
           const newPayment = calculatePMT(endingBalance, monthlyRate, data.remainingPayments - 1);
           data.monthlyPayment = newPayment;
         }
 
-        // Update plan data
         data.balance = endingBalance;
 
         if (!isGracePeriod) {
           data.remainingPayments -= 1;
-        } else if (activeGracePeriod) {
-          // If we are in an additional grace period, we are technically delaying the term
-          // So we don't decrement remaining payments? 
-          // Or do we? The requirement says "non deleteable grace period" for the initial one.
-          // Usually grace periods extend the term or increase payments later.
-          // If it's interest only, the principal doesn't drop.
-          // If it's capitalized, the principal increases.
-          // In both cases, we are NOT making a "regular" payment that reduces the count of remaining payments 
-          // (unless the term is fixed and payments increase, but here we seem to have a fixed number of payments calculated from term).
-
-          // If we pause payments, the term effectively extends.
-          // So we do NOT decrement remainingPayments.
         }
 
-        // Calculate total payment made this month
-        // If we adjusted the principal for final payment, show actual payment (principal + interest)
-        // Otherwise show scheduled payment + extra payments
         const totalPayment = adjustedPayment
-          ? principal + interest  // Actual payment when adjusted
-          : monthlyPayment + extraPayment; // Scheduled payment + extra
+          ? principal + interest
+          : monthlyPayment + extraPayment;
 
         // Prepare tags
         const tags: RowTag[] = [];
@@ -443,19 +443,31 @@ export function useMortgageCalculations(
           });
         }
 
+        if (linkageAmount !== 0) {
+          const sign = linkageAmount > 0 ? '+' : '';
+          tags.push({
+            type: 'rate-change',
+            label: `CPI: ${sign}${formatCurrency(linkageAmount, currency)}`,
+            color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+          });
+        }
+
         // Add row
         rows.push({
           month: monthStr,
           planId,
           startingBalance,
           monthlyRate,
-          monthlyPayment: totalPayment, // Show total payment including extra
+          monthlyPayment: totalPayment,
           principal,
           interest,
           endingBalance,
           tags,
-          isGracePeriod
+          isGracePeriod,
+          linkage: linkageAmount
         });
+
+
 
         // Stop if balance is paid off
         if (endingBalance <= 0.01) {
@@ -478,5 +490,5 @@ export function useMortgageCalculations(
     });
 
     return rows;
-  }, [plans, extraPayments, rateChanges, gracePeriods, currency]);
+  }, [plans, extraPayments, rateChanges, gracePeriods, currency, cpiData]);
 }
