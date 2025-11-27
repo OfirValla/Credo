@@ -22,7 +22,7 @@ export function SlidingSelect({
     defaultValue
 }: SlidingSelectProps) {
     const [selected, setSelected] = React.useState(defaultValue || options.at(0)?.value)
-    console.log(defaultValue, selected)
+
     React.useEffect(() => {
         onValueChange(selected!)
     }, [selected]);
