@@ -6,7 +6,7 @@ import { MortgagePlan, ExtraPayment, RateChange } from '@/types';
 import { useMortgage } from '@/context/MortgageProvider';
 
 export const DataExport: React.FC = () => {
-  const { plans, extraPayments, rateChanges, currency } = useMortgage();
+  const { plans, extraPayments, rateChanges, gracePeriods, currency } = useMortgage();
 
   const exportData = () => {
     // Format dates to ISO string for consistency
@@ -27,10 +27,15 @@ export const DataExport: React.FC = () => {
       date: change.month,
     }));
 
+    const formattedGracePeriods = gracePeriods.map((gp) => ({
+      ...gp,
+    }));
+
     const data = {
       mortgagePlans: formattedPlans,
       extraPayments: formattedExtraPayments,
       rateChanges: formattedRateChanges,
+      gracePeriods: formattedGracePeriods,
       currency: currency,
     };
 

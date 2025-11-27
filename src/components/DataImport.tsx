@@ -25,21 +25,25 @@ export const DataImport: React.FC = () => {
                 // Transform data to match internal state structure if needed
                 const plans = data.mortgagePlans.map((p: any) => ({
                     ...p,
-                    amount: p.amount || p.initialAmount, // Backward compatibility
-                    interestRate: p.interestRate || p.annualRate, // Backward compatibility
-                    takenDate: p.takenDate || p.startDate, // Backward compatibility attempt (might be wrong format if old data)
-                    firstPaymentDate: p.firstPaymentDate || p.startDate, // Backward compatibility
-                    lastPaymentDate: p.lastPaymentDate || '', // No clear mapping, might need manual fix
+                    amount: p.amount,
+                    interestRate: p.interestRate,
+                    takenDate: p.takenDate,
+                    firstPaymentDate: p.firstPaymentDate,
+                    lastPaymentDate: p.lastPaymentDate,
                 }));
 
                 const extraPayments = (data.extraPayments || []).map((ep: any) => ({
                     ...ep,
-                    month: ep.month || ep.date, // Handle both formats
+                    month: ep.month,
                 }));
 
                 const rateChanges = (data.rateChanges || []).map((rc: any) => ({
                     ...rc,
-                    month: rc.month || rc.date, // Handle both formats
+                    month: rc.month,
+                }));
+
+                const gracePeriods = (data.gracePeriods || []).map((gp: any) => ({
+                    ...gp,
                 }));
 
                 const currency = data.currency || 'USD';
@@ -48,6 +52,7 @@ export const DataImport: React.FC = () => {
                     plans,
                     extraPayments,
                     rateChanges,
+                    gracePeriods,
                     currency,
                 });
 
