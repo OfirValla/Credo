@@ -156,7 +156,6 @@ export function ExtraPaymentsForm() {
                   { value: 'reduceTerm', label: 'Reduce Term' },
                   { value: 'reducePayment', label: 'Reduce Payment' },
                 ]}
-                className="w-full"
               />
             </div>
 
