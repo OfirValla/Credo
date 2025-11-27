@@ -148,24 +148,29 @@ export function ExtraPaymentsForm() {
 
             <div className="space-y-2">
               <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Strategy</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-1 bg-background/50 rounded-lg border border-border/50">
+              <div
+                className="relative grid grid-cols-2 gap-2 p-1 bg-background/50 rounded-lg border border-border/50"
+                style={{ "--index": type === 'reduceTerm' ? 0 : 1 } as React.CSSProperties}
+              >
+                {/* <!-- Sliding highlight --> */}
+                <div
+                  className="absolute top-1 left-1 h-[calc(100%-0.5rem)] w-[calc(50%-0.5rem)] bg-secondary rounded-md shadow-sm transition-all duration-300"
+                  style={{ transform: 'translateX(calc(var(--index, 0) * 100%))' }}>
+                </div>
+
+                {/* <!-- Buttons --> */}
                 <button
                   type="button"
+                  className="relative z-10 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-secondary-foreground transition-all"
                   onClick={() => setType('reduceTerm')}
-                  className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all ${type === 'reduceTerm'
-                    ? 'bg-secondary text-secondary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-secondary/10 hover:text-secondary'
-                    }`}
                 >
                   Reduce Term
                 </button>
+
                 <button
                   type="button"
+                  className="relative z-10 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-secondary-foreground transition-all"
                   onClick={() => setType('reducePayment')}
-                  className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all ${type === 'reducePayment'
-                    ? 'bg-secondary text-secondary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-secondary/10 hover:text-secondary'
-                    }`}
                 >
                   Reduce Payment
                 </button>
