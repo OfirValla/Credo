@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Table2, Filter, Check } from 'lucide-react';
-import { AmortizationRow, MortgagePlan } from '@/types';
-import { CurrencyCode, formatCurrency } from '@/lib/currency';
+import { AmortizationRow } from '@/types';
+import { formatCurrency } from '@/lib/currency';
 import { getPlanDisplayName } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useMortgage } from '@/context/MortgageProvider';
+import { SlidingSelect } from './ui/sliding-select';
 
 type ViewMode = 'monthly' | 'yearly';
 
@@ -118,30 +119,16 @@ export function AmortizationTable() {
 
         <div className="flex flex-wrap items-center gap-3">
           {/* View Mode Toggle */}
-          <div className="flex p-1 bg-background/50 rounded-lg border border-border/50">
-            <button
-              onClick={() => setViewMode('monthly')}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all",
-                viewMode === 'monthly'
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
-              )}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setViewMode('yearly')}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all",
-                viewMode === 'yearly'
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
-              )}
-            >
-              Yearly
-            </button>
-          </div>
+          <SlidingSelect
+            value={viewMode}
+            onValueChange={(e) => setViewMode(e as ViewMode)}
+            options={[
+              { value: 'monthly', label: 'Monthly' },
+              { value: 'yearly', label: 'Yearly' },
+            ]}
+            color="bg-primary"
+            textColor="text-primary-foreground"
+          />
 
           {/* Plan Filter */}
           <Popover>
