@@ -187,7 +187,7 @@ export function GracePeriodForm() {
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    {planGracePeriods.map(gp => (
+                                                    {planGracePeriods.sort((a, b) => parseDateToMonthIndex(a.startDate) - parseDateToMonthIndex(b.startDate)).map(gp => (
                                                         <div key={gp.id} className={`flex items-center justify-between p-2 bg-background/50 rounded border border-border/50 text-sm ${gp.enabled === false ? 'opacity-60' : ''}`}>
                                                             {editingId === gp.id ? (
                                                                 <div className="flex-1 p-2 bg-background rounded-md shadow-sm border border-indigo-100 dark:border-indigo-900/50">
