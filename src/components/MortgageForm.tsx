@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 import { useMortgage } from '@/context/MortgageProvider';
 
@@ -24,6 +25,7 @@ export function MortgageForm() {
   const [takenDate, setTakenDate] = useState('');
   const [firstPaymentDate, setFirstPaymentDate] = useState('');
   const [lastPaymentDate, setLastPaymentDate] = useState('');
+  const [linkedToCPI, setLinkedToCPI] = useState(false);
 
   const currencySymbol = getCurrencySymbol(currency);
 
@@ -35,6 +37,7 @@ export function MortgageForm() {
     setTakenDate(plan.takenDate);
     setFirstPaymentDate(plan.firstPaymentDate);
     setLastPaymentDate(plan.lastPaymentDate);
+    setLinkedToCPI(plan.linkedToCPI || false);
   };
 
   const handleCancelEdit = () => {
@@ -45,6 +48,7 @@ export function MortgageForm() {
     setTakenDate('');
     setFirstPaymentDate('');
     setLastPaymentDate('');
+    setLinkedToCPI(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,6 +71,7 @@ export function MortgageForm() {
       takenDate,
       firstPaymentDate,
       lastPaymentDate,
+      linkedToCPI,
     };
 
     if (editingId) {
@@ -85,6 +90,7 @@ export function MortgageForm() {
     setTakenDate('');
     setFirstPaymentDate('');
     setLastPaymentDate('');
+    setLinkedToCPI(false);
   };
 
   return (
@@ -199,6 +205,17 @@ export function MortgageForm() {
                   />
                 </div>
               </div>
+            </div>
+
+            <div className="flex items-center space-x-2 pt-2">
+              <Switch
+                id="linkedToCPI"
+                checked={linkedToCPI}
+                onCheckedChange={setLinkedToCPI}
+              />
+              <Label htmlFor="linkedToCPI" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground">
+                Link to CPI (Consumer Price Index)
+              </Label>
             </div>
           </div>
 

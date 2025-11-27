@@ -8,6 +8,7 @@ export interface MortgagePlan {
   lastPaymentDate: string; // DD/MM/YYYY format
   gracePeriodType?: 'capitalized' | 'interestOnly'; // Optional, defaults to 'capitalized'
   enabled?: boolean; // Optional, defaults to true
+  linkedToCPI?: boolean; // Optional, defaults to false
 }
 
 export interface ExtraPayment {
