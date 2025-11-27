@@ -82,15 +82,15 @@ export function MortgageSummary() {
               <>
                 {/* Progress Bar */}
                 <div className="space-y-2">
-                  <div className="flex h-8 w-full overflow-hidden rounded-[.5rem] text-white text-sm font-medium gap-2">
+                  <div className="flex h-8 w-full overflow-hidden rounded-[0.5rem] text-white text-sm font-medium gap-2">
                     <div
-                      className="bg-blue-600 flex items-center justify-center transition-all duration-500"
+                      className="bg-blue-600 flex items-center justify-center transition-all duration-500 rounded-l-[0.5rem]"
                       style={{ width: `${summary.principalPct}%` }}
                     >
                       Principal
                     </div>
                     <div
-                      className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500"
+                      className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500 rounded-r-[0.5rem]"
                       style={{ width: `${summary.interestPct}%` }}
                     >
                       Interest
