@@ -44,7 +44,7 @@ export const DataExport: React.FC = () => {
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `mortgage_data_${day}-${month}-${year}.json`;
+    a.download = `mortgage_data_${year}-${month}-${day}.json`;
     document.body.appendChild(a);
     a.click();
 
