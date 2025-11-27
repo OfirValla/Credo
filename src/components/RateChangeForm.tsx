@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Calendar, Percent, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { RateChange } from '@/types';
-import { getPlanDisplayName } from '@/lib/planUtils';
+import { getPlanDisplayName, parseDateToMonthIndex } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -189,7 +189,7 @@ export function RateChangeForm() {
                   No rate changes scheduled
                 </motion.div>
               ) : (
-                rateChanges.map((rateChange) => {
+                rateChanges.sort((a, b) => parseDateToMonthIndex(a.month) - parseDateToMonthIndex(b.month)).map((rateChange) => {
                   const plan = plans.find((p) => p.id === rateChange.planId);
                   return (
                     <motion.div

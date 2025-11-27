@@ -23,6 +23,12 @@ export function getPlanDisplayName(
 export function parseDateToMonthIndex(dateStr: string): number {
   if (!dateStr) return 0;
   const parts = dateStr.split('/');
+  if (parts.length === 2) {
+    const [month, year] = parts.map(Number);
+    // Return month index + day fraction (day / 100)
+    // e.g., 01/2024 -> (2024-2000)*12 + 1 - 1 = 288
+    return (year - 2000) * 12 + month - 1;
+  }
   if (parts.length === 3) {
     const [day, month, year] = parts.map(Number);
     // Return month index + day fraction (day / 100)
