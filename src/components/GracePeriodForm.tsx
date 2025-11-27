@@ -3,7 +3,7 @@ import { Hourglass, CalendarClock, Plus, Trash2, Pencil, ToggleLeft, ToggleRight
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DateInput } from '@/components/ui/date-input';
-import { Select } from '@/components/ui/select';
+import { SlidingSelect } from '@/components/ui/sliding-select';
 import { Label } from '@/components/ui/label';
 import { useMortgage } from '@/context/MortgageProvider';
 import { getPlanDisplayName } from '@/lib/planUtils';
@@ -146,16 +146,17 @@ export function GracePeriodForm() {
 
                                                     <div className="space-y-2">
                                                         <div className="relative">
-                                                            <Select
+                                                            <SlidingSelect
                                                                 value={plan.gracePeriodType || 'capitalized'}
                                                                 onValueChange={(value: string) => updatePlan({ ...plan, gracePeriodType: value as 'capitalized' | 'interestOnly' })}
                                                                 options={[
                                                                     { value: 'capitalized', label: 'Capitalized (Add to Principal)' },
                                                                     { value: 'interestOnly', label: 'Interest Only (Pay Monthly)' },
                                                                 ]}
+                                                                color="bg-indigo-500"
                                                             />
                                                         </div>
-                                                        <p className="text-[10px] text-muted-foreground pl-1 flex items-start gap-1.5">
+                                                        <p className="text-[10px] text-muted-foreground pl-1 flex items-center gap-1.5">
                                                             <span className="mt-0.5 block w-1 h-1 rounded-full bg-indigo-400 shrink-0" />
                                                             {plan.gracePeriodType === 'interestOnly'
                                                                 ? 'You pay the accrued interest each month. Principal remains same.'
@@ -216,13 +217,15 @@ export function GracePeriodForm() {
                                                                     <div className="space-y-1.5 mb-3">
                                                                         <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Type</Label>
                                                                         <div className="relative">
-                                                                            <Select
+                                                                            <SlidingSelect
                                                                                 value={editForm.type!}
                                                                                 onValueChange={(value: string) => setEditForm({ ...editForm, type: value as "capitalized" | "interestOnly" })}
                                                                                 options={[
                                                                                     { value: 'capitalized', label: 'Capitalized' },
                                                                                     { value: 'interestOnly', label: 'Interest Only' },
                                                                                 ]}
+                                                                                defaultValue={editForm.type}
+                                                                                color="bg-indigo-500"
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -318,14 +321,14 @@ export function GracePeriodForm() {
                                                             <div className="space-y-1">
                                                                 <Label className="text-xs">Type</Label>
                                                                 <div className="relative">
-                                                                    <Select
+                                                                    <SlidingSelect
                                                                         value={newGracePeriod.type || 'capitalized'}
                                                                         onValueChange={(value: string) => setNewGracePeriod({ ...newGracePeriod, type: value as 'capitalized' | 'interestOnly' })}
                                                                         options={[
                                                                             { value: 'capitalized', label: 'Capitalized' },
                                                                             { value: 'interestOnly', label: 'Interest Only' },
                                                                         ]}
-                                                                        className="w-full h-8 bg-background/50 border-border/50 focus:ring-indigo-500/20 text-xs hover:bg-background/80"
+                                                                        color="bg-indigo-500"
                                                                     />
                                                                 </div>
                                                             </div>

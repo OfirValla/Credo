@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
+import { SlidingSelect } from '@/components/ui/sliding-select';
 
 import { useMortgage } from '@/context/MortgageProvider';
 
@@ -148,59 +149,41 @@ export function ExtraPaymentsForm() {
 
             <div className="space-y-2">
               <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Strategy</Label>
-              <div
-                className="relative grid grid-cols-2 gap-2 p-1 bg-background/50 rounded-lg border border-border/50"
-                style={{ "--index": type === 'reduceTerm' ? 0 : 1 } as React.CSSProperties}
-              >
-                {/* <!-- Sliding highlight --> */}
-                <div
-                  className="absolute top-1 left-1 h-[calc(100%-0.5rem)] w-[calc(50%-0.5rem)] bg-secondary rounded-md shadow-sm transition-all duration-300"
-                  style={{ transform: 'translateX(calc(var(--index, 0) * 100%))' }}>
-                </div>
-
-                {/* <!-- Buttons --> */}
-                <button
-                  type="button"
-                  className="relative z-10 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-secondary-foreground transition-all"
-                  onClick={() => setType('reduceTerm')}
-                >
-                  Reduce Term
-                </button>
-
-                <button
-                  type="button"
-                  className="relative z-10 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-secondary-foreground transition-all"
-                  onClick={() => setType('reducePayment')}
-                >
-                  Reduce Payment
-                </button>
-              </div>
+              <SlidingSelect
+                value={type}
+                onValueChange={(e) => setType(e as "reduceTerm" | "reducePayment")}
+                options={[
+                  { value: 'reduceTerm', label: 'Reduce Term' },
+                  { value: 'reducePayment', label: 'Reduce Payment' },
+                ]}
+                className="w-full"
+              />
             </div>
-          </div>
 
-          <div className="flex gap-2">
-            <Button
-              type="submit"
-              disabled={plans.length === 0}
-              className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg shadow-secondary/20 transition-all hover:scale-[1.02]"
-            >
-              {editingId ? (
-                <>
-                  <Pencil className="w-4 h-4 mr-2" />
-                  Update Payment
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Payment
-                </>
-              )}
-            </Button>
-            {editingId && (
-              <Button type="button" variant="outline" onClick={handleCancelEdit} className="px-3">
-                <X className="w-4 h-4" />
+            <div className="flex gap-2">
+              <Button
+                type="submit"
+                disabled={plans.length === 0}
+                className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg shadow-secondary/20 transition-all hover:scale-[1.02]"
+              >
+                {editingId ? (
+                  <>
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Update Payment
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Payment
+                  </>
+                )}
               </Button>
-            )}
+              {editingId && (
+                <Button type="button" variant="outline" onClick={handleCancelEdit} className="px-3">
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </form>
 
