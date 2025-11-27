@@ -47,7 +47,7 @@ export function getPlanDurationInfo(plan: MortgagePlan): { totalMonths: number, 
 
   // If plan hasn't started, remaining is total
   if (currentMonthIdx < startMonthIdx) {
-    return { totalMonths, remainingMonths: totalMonths };
+    return { totalMonths, remainingMonths: Math.floor(totalMonths) };
   }
 
   // If plan ended, remaining is 0
@@ -55,9 +55,15 @@ export function getPlanDurationInfo(plan: MortgagePlan): { totalMonths: number, 
     return { totalMonths, remainingMonths: 0 };
   }
 
-  const remainingMonths = Math.max(0, endMonthIdx - currentMonthIdx + 1); // Inclusive of current month? Usually yes if not paid yet.
-  // Let's assume if we are in the month, we still have to pay it (or it's just being paid).
+  const currentDay = now.getDate();
+  const paymentDay = parseInt(plan.firstPaymentDate.split('/')[0], 10) || 1;
+  if (currentDay < paymentDay) {
+    // Payment not made yet, so this month is still remaining
+    return { totalMonths, remainingMonths: Math.floor(totalMonths + 1) };
+  }
 
-  return { totalMonths, remainingMonths };
+  const remainingMonths = Math.max(0, endMonthIdx - currentMonthIdx);
+
+  return { totalMonths, remainingMonths: Math.floor(remainingMonths) };
 }
 

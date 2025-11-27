@@ -3,7 +3,7 @@ import { Activity, CreditCard } from 'lucide-react';
 import { MortgagePlan, AmortizationRow } from '@/types';
 import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { getPlanDisplayName } from '@/lib/planUtils';
+import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
 import { useMortgage } from '@/context/MortgageProvider';
 
 function parseMonth(dateStr: string): number {
@@ -41,6 +41,7 @@ export function MortgageStatus() {
             let currentBalance = plan.amount;
             let monthlyPayment = 0;
             let interestRate = plan.interestRate;
+            let remainingMonths = getPlanDurationInfo(plan).remainingMonths;
 
             if (currentMonthIndex < startMonthIndex) {
                 // Not started
@@ -48,7 +49,6 @@ export function MortgageStatus() {
             } else {
                 // Find row for current month or closest past month
                 const relevantRows = planRows.filter(r => parseMonth(r.month) <= currentMonthIndex);
-
                 if (relevantRows.length > 0) {
                     // Sort by month descending
                     relevantRows.sort((a, b) => parseMonth(b.month) - parseMonth(a.month));
@@ -57,22 +57,6 @@ export function MortgageStatus() {
                     currentBalance = latestRow.endingBalance;
                     monthlyPayment = latestRow.monthlyPayment;
                     interestRate = latestRow.monthlyRate * 12 * 100; // Annual rate
-
-                    // Special case: if we are exactly on the current month, check payment date
-                    // If payment hasn't happened yet, use starting balance?
-                    // The request was specifically for CurrentMonthPreview. 
-                    // For this status card, "Current Balance" usually implies "Outstanding Balance".
-                    // If I haven't paid yet, I owe the starting balance.
-                    // If I have paid, I owe the ending balance.
-                    // Let's match the logic from CurrentMonthPreview for consistency.
-
-                    if (parseMonth(latestRow.month) === currentMonthIndex) {
-                        const currentDay = now.getDate();
-                        const paymentDay = parseInt(plan.firstPaymentDate.split('/')[0], 10) || 1;
-                        if (currentDay < paymentDay) {
-                            currentBalance = latestRow.startingBalance;
-                        }
-                    }
                 } else {
                     // Should not happen if startMonthIndex check passed, unless rows are missing
                     // Assume full amount if no rows found but we are past start date (e.g. data error)
@@ -91,7 +75,8 @@ export function MortgageStatus() {
                 currentBalance,
                 progress,
                 monthlyPayment,
-                currentRate: interestRate
+                currentRate: interestRate,
+                remainingMonths
             };
         });
     }, [plans, rows]);
@@ -136,7 +121,7 @@ export function MortgageStatus() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div className="grid grid-cols-3 gap-4 text-sm">
                                         <div className="bg-secondary/10 p-2 rounded-md">
                                             <span className="text-muted-foreground block text-xs mb-1">Balance</span>
                                             <span className="font-bold text-foreground">
@@ -147,6 +132,12 @@ export function MortgageStatus() {
                                             <span className="text-muted-foreground block text-xs mb-1">Rate</span>
                                             <span className="font-bold text-foreground">
                                                 {plan.currentRate.toFixed(2)}%
+                                            </span>
+                                        </div>
+                                        <div className="bg-secondary/10 p-2 rounded-md">
+                                            <span className="text-muted-foreground block text-xs mb-1">Remaining</span>
+                                            <span className="font-bold text-foreground">
+                                                {plan.remainingMonths} months
                                             </span>
                                         </div>
                                     </div>
