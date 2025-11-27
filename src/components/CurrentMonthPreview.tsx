@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Calendar, DollarSign, TrendingUp, Sparkles, CalendarDays } from 'lucide-react';
-import { MortgagePlan, AmortizationRow } from '@/types';
-import { CurrencyCode, formatCurrency } from '@/lib/currency';
+import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useMortgage } from '@/context/MortgageProvider';
 
