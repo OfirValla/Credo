@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useCallback, ReactNode } from 'react';
+import { useEffect, createContext, useContext, useCallback, ReactNode } from 'react';
 import { MortgagePlan, ExtraPayment, RateChange, AmortizationRow, GracePeriod } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useMortgageCalculations } from '@/hooks/useMortgageCalculations';
+import { checkAndUpdateCPI } from '@/lib/cpiService';
 
 interface MortgageContextType {
     plans: MortgagePlan[];
@@ -43,6 +44,10 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
     const [currency, setCurrency] = useLocalStorage<CurrencyCode>('mortgage-currency', 'USD');
 
     const amortizationRows = useMortgageCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
+
+    useEffect(() => {
+        checkAndUpdateCPI();
+    }, []);
 
     const addPlan = useCallback((planData: Omit<MortgagePlan, 'id'>) => {
         const newPlan: MortgagePlan = {
