@@ -41,7 +41,6 @@ export function MortgageStatus() {
             let currentBalance = plan.amount;
             let monthlyPayment = 0;
             let interestRate = plan.interestRate;
-            let remainingMonths = getPlanDurationInfo(plan).remainingMonths;
 
             if (currentMonthIndex < startMonthIndex) {
                 // Not started
@@ -76,7 +75,7 @@ export function MortgageStatus() {
                 progress,
                 monthlyPayment,
                 currentRate: interestRate,
-                remainingMonths
+                remainingMonths: getPlanDurationInfo(plan).remainingMonths
             };
         });
     }, [plans, rows]);
