@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { MortgagePlan } from '@/types';
-import { CurrencyCode, getCurrencySymbol } from '@/lib/currency';
+import { getCurrencySymbol } from '@/lib/currency';
 import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 
 import { useMortgage } from '@/context/MortgageProvider';
@@ -157,11 +158,12 @@ export function MortgageForm() {
                 <Label htmlFor="takenDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Taken Date</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
+                  <DateInput
                     id="takenDate"
                     value={takenDate}
                     onChange={(e) => setTakenDate(e.target.value)}
                     placeholder="DD/MM/YYYY"
+                    format="DD/MM/YYYY"
                     className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                     required
                   />
@@ -171,11 +173,12 @@ export function MortgageForm() {
                 <Label htmlFor="firstPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">First Payment</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
+                  <DateInput
                     id="firstPaymentDate"
                     value={firstPaymentDate}
                     onChange={(e) => setFirstPaymentDate(e.target.value)}
                     placeholder="DD/MM/YYYY"
+                    format="DD/MM/YYYY"
                     className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                     required
                   />
@@ -185,11 +188,12 @@ export function MortgageForm() {
                 <Label htmlFor="lastPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Last Payment</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
+                  <DateInput
                     id="lastPaymentDate"
                     value={lastPaymentDate}
                     onChange={(e) => setLastPaymentDate(e.target.value)}
                     placeholder="DD/MM/YYYY"
+                    format="DD/MM/YYYY"
                     className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                     required
                   />

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Calendar, Percent, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
-import { RateChange, MortgagePlan } from '@/types';
-import { CurrencyCode } from '@/lib/currency';
+import { RateChange } from '@/types';
 import { getPlanDisplayName } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 
@@ -118,13 +118,12 @@ export function RateChangeForm() {
                 <Label htmlFor="rate-month" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Effective Month</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
+                  <DateInput
                     id="rate-month"
-                    type="text"
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
                     placeholder="MM/YYYY"
-                    pattern="(0[1-9]|1[0-2])\/\d{4}"
+                    format="MM/YYYY"
                     className="pl-9 bg-background/50 border-border/50 focus:ring-accent/20"
                     required
                   />

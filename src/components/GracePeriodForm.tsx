@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hourglass, CalendarClock, Plus, Trash2, Pencil, Save, X, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Hourglass, CalendarClock, Plus, Trash2, Pencil, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { DateInput } from '@/components/ui/date-input';
 import { Select } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useMortgage } from '@/context/MortgageProvider';
@@ -194,19 +194,21 @@ export function GracePeriodForm() {
                                                                     <div className="grid grid-cols-2 gap-3 mb-3">
                                                                         <div className="space-y-1.5">
                                                                             <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Start Date</Label>
-                                                                            <Input
-                                                                                value={editForm.startDate}
+                                                                            <DateInput
+                                                                                value={editForm.startDate || ''}
                                                                                 onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
                                                                                 placeholder="MM/YYYY"
+                                                                                format="MM/YYYY"
                                                                                 className="h-8 text-xs bg-muted/30"
                                                                             />
                                                                         </div>
                                                                         <div className="space-y-1.5">
                                                                             <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">End Date</Label>
-                                                                            <Input
-                                                                                value={editForm.endDate}
+                                                                            <DateInput
+                                                                                value={editForm.endDate || ''}
                                                                                 onChange={(e) => setEditForm({ ...editForm, endDate: e.target.value })}
                                                                                 placeholder="MM/YYYY"
+                                                                                format="MM/YYYY"
                                                                                 className="h-8 text-xs bg-muted/30"
                                                                             />
                                                                         </div>
@@ -294,19 +296,21 @@ export function GracePeriodForm() {
                                                             <div className="grid grid-cols-2 gap-2">
                                                                 <div className="space-y-1">
                                                                     <Label className="text-xs">Start (MM/YYYY)</Label>
-                                                                    <Input
-                                                                        value={newGracePeriod.startDate}
+                                                                    <DateInput
+                                                                        value={newGracePeriod.startDate || ''}
                                                                         onChange={(e) => setNewGracePeriod({ ...newGracePeriod, startDate: e.target.value })}
                                                                         placeholder="MM/YYYY"
+                                                                        format="MM/YYYY"
                                                                         className="h-8 text-xs"
                                                                     />
                                                                 </div>
                                                                 <div className="space-y-1">
                                                                     <Label className="text-xs">End (MM/YYYY)</Label>
-                                                                    <Input
-                                                                        value={newGracePeriod.endDate}
+                                                                    <DateInput
+                                                                        value={newGracePeriod.endDate || ''}
                                                                         onChange={(e) => setNewGracePeriod({ ...newGracePeriod, endDate: e.target.value })}
                                                                         placeholder="MM/YYYY"
+                                                                        format="MM/YYYY"
                                                                         className="h-8 text-xs"
                                                                     />
                                                                 </div>
