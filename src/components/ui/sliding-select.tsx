@@ -11,7 +11,8 @@ interface SlidingSelectProps {
     options: SlidingSelectOption[]
     placeholder?: string
     color?: string,
-    defaultValue?: string
+    textColor?: string,
+    defaultValue?: string,
 }
 
 export function SlidingSelect({
@@ -19,6 +20,7 @@ export function SlidingSelect({
     onValueChange,
     options = [],
     color = "bg-secondary",
+    textColor = "text-secondary-foreground",
     defaultValue
 }: SlidingSelectProps) {
     const [selected, setSelected] = React.useState(defaultValue || options.at(0)?.value)
@@ -35,7 +37,7 @@ export function SlidingSelect({
             {/* <!-- Sliding highlight --> */}
             <div
                 className={`absolute top-1 left-1 h-[calc(100%-0.5rem)] w-[calc(50%-0.5rem)] ${color} rounded-md shadow-sm transition-all duration-300`}
-                style={{ transform: 'translateX(calc(var(--index, 0) * 100%))' }}>
+                style={{ transform: 'translateX(calc(var(--index, 0) * 100% + var(--index, 0) * 0.5rem))' }}>
             </div>
 
             {/* <!-- Options --> */}
@@ -43,7 +45,7 @@ export function SlidingSelect({
                 <button
                     key={option.value}
                     type="button"
-                    className="relative z-10 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-secondary-foreground transition-all"
+                    className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium ${selected === option.value ? textColor : "text-muted-foreground"} transition-all`}
                     onClick={() => setSelected(option.value)}
                 >
                     {option.label}
