@@ -154,6 +154,7 @@ export function GracePeriodForm() {
                                                                     { value: 'interestOnly', label: 'Interest Only (Pay Monthly)' },
                                                                 ]}
                                                                 color="bg-indigo-500"
+                                                                textColor="text-primary-foreground"
                                                             />
                                                         </div>
                                                         <p className="text-[10px] text-muted-foreground pl-1 flex items-center gap-1.5">
@@ -224,8 +225,8 @@ export function GracePeriodForm() {
                                                                                     { value: 'capitalized', label: 'Capitalized' },
                                                                                     { value: 'interestOnly', label: 'Interest Only' },
                                                                                 ]}
-                                                                                defaultValue={editForm.type}
                                                                                 color="bg-indigo-500"
+                                                                                textColor="text-primary-foreground"
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -329,6 +330,7 @@ export function GracePeriodForm() {
                                                                             { value: 'interestOnly', label: 'Interest Only' },
                                                                         ]}
                                                                         color="bg-indigo-500"
+                                                                        textColor="text-primary-foreground"
                                                                     />
                                                                 </div>
                                                             </div>
