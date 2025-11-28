@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Table2, Filter, Check } from 'lucide-react';
+import { Table2, Filter, Check, Download } from 'lucide-react';
 import { AmortizationRow } from '@/types';
 import { formatCurrency } from '@/lib/currency';
 import { getPlanDisplayName } from '@/lib/planUtils';
@@ -48,6 +48,54 @@ export function AmortizationTable() {
         ? prev.filter((id) => id !== planId)
         : [...prev, planId]
     );
+  };
+
+  const downloadCSV = () => {
+    if (displayedRows.length === 0) return;
+
+    // Define headers
+    const headers = [
+      viewMode === 'monthly' ? 'Month' : 'Year',
+      'Plan',
+      'Starting Balance',
+      'Payment',
+      'Principal',
+      'Interest',
+      'Ending Balance',
+      'Tags'
+    ];
+
+    // Convert rows to CSV data
+    const csvContent = [
+      headers.join(','),
+      ...displayedRows.map(row => {
+        const planLabel = getPlanLabel(row.planId).replace(/,/g, ''); // Remove commas to avoid CSV issues
+        const tags = row.tags?.map(t => t.label).join('; ') || '';
+        return [
+          row.month,
+          `"${planLabel}"`, // Quote strings that might contain spaces
+          row.startingBalance.toFixed(2),
+          row.monthlyPayment.toFixed(2),
+          row.principal.toFixed(2),
+          row.interest.toFixed(2),
+          row.endingBalance.toFixed(2),
+          `"${tags}"`
+        ].join(',');
+      })
+    ].join('\n');
+
+    // Create blob and download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `amortization_schedule_${viewMode}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const filteredRows = useMemo(() => {
@@ -129,6 +177,17 @@ export function AmortizationTable() {
             color="bg-primary"
             textColor="text-primary-foreground"
           />
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 border-dashed"
+            onClick={downloadCSV}
+            disabled={displayedRows.length === 0}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Export CSV
+          </Button>
 
           {/* Plan Filter */}
           <Popover>
