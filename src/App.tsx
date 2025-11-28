@@ -17,7 +17,7 @@ import { MortgageProvider } from '@/context/MortgageProvider';
 
 function AppContent() {
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 overflow-x-hidden">
       {/* Background Gradients */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-50 animate-pulse" />
