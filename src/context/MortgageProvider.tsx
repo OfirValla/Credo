@@ -52,6 +52,7 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
     const addPlan = useCallback((planData: Omit<MortgagePlan, 'id'>) => {
         const newPlan: MortgagePlan = {
             ...planData,
+            enabled: true,
             id: `plan-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         };
         setPlans([...plans, newPlan]);
