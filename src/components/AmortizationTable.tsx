@@ -166,7 +166,7 @@ export function AmortizationTable() {
           "flex flex-col transition-all duration-300",
           isZoomed
             ? "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[70vw] h-[80vh] z-50 shadow-2xl border-primary/20"
-            : ""
+            : "h-[calc(100vh-10.5rem)] sticky top-4"
         )}
         gradient
       >
