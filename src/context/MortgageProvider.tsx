@@ -41,7 +41,7 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
     const [extraPayments, setExtraPayments] = useLocalStorage<ExtraPayment[]>('mortgage-extra-payments', []);
     const [rateChanges, setRateChanges] = useLocalStorage<RateChange[]>('mortgage-rate-changes', []);
     const [gracePeriods, setGracePeriods] = useLocalStorage<GracePeriod[]>('mortgage-grace-periods', []);
-    const [currency, setCurrency] = useLocalStorage<CurrencyCode>('mortgage-currency', 'USD');
+    const [currency, setCurrency] = useLocalStorage<CurrencyCode>('mortgage-currency', 'ILS');
 
     const amortizationRows = useMortgageCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 
