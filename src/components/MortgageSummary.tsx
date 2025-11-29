@@ -103,7 +103,7 @@ export function MortgageSummary() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {/* Total Principal */}
                   <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-xl p-4 space-y-3">
                     <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">

@@ -107,7 +107,7 @@ export function MortgageStatus() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-4 text-sm">
+                                    <div className="grid grid-cols-3 sm:grid-cols-2 gap-4 text-sm">
                                         <div className="bg-secondary/10 p-2 rounded-md">
                                             <span className="text-muted-foreground block text-xs mb-1">Balance</span>
                                             <span className="font-bold text-foreground">
