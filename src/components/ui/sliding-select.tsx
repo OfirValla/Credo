@@ -1,6 +1,9 @@
+import { LucideIcon } from "lucide-react"
+
 export interface SlidingSelectOption {
     value: string
     label: string
+    icon?: LucideIcon
 }
 
 interface SlidingSelectProps {
@@ -8,8 +11,8 @@ interface SlidingSelectProps {
     onValueChange: (value: string) => void
     options: SlidingSelectOption[]
     placeholder?: string
-    color?: string,
-    textColor?: string,
+    color?: string
+    textColor?: string
 }
 
 export function SlidingSelect({
@@ -41,6 +44,13 @@ export function SlidingSelect({
                     className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium ${value === option.value ? textColor : "text-muted-foreground"} transition-all`}
                     onClick={() => onValueChange(option.value)}
                 >
+                    {(() => {
+                        if (option.icon) {
+                            const Icon = option.icon;
+                            return <Icon />;
+                        }
+                        return null;
+                    })()}
                     {option.label}
                 </button>
             ))}

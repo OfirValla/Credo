@@ -28,7 +28,7 @@ export function AmortizationTable() {
   const { plans: allPlans, amortizationRows: rows, currency } = useMortgage();
   const plans = allPlans.filter(p => p.enabled !== false);
 
-  const tableHeaderRef = useRef<HTMLTableCellElement>(null);
+  const tableHeaderRef = useRef<HTMLTableSectionElement>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const [viewMode, setViewMode] = useState<ViewMode>('monthly');
