@@ -434,12 +434,13 @@ export function useMortgageCalculations(
 
   return useMemo(() => {
     // 0. Filter Enabled
-    const enabledPlans = plans.filter(p => p.enabled !== false);
+    const enabledPlans = plans.filter(p => p.enabled);
     if (enabledPlans.length === 0) return [];
 
-    const enabledExtra = extraPayments.filter(e => e.enabled !== false);
-    const enabledRates = rateChanges.filter(r => r.enabled !== false);
-    const enabledGrace = gracePeriods.filter(g => g.enabled !== false);
+    const enabledPlansIds = enabledPlans.map(p => p.id);
+    const enabledExtra = extraPayments.filter(e => e.enabled && enabledPlansIds.includes(e.planId));
+    const enabledRates = rateChanges.filter(r => r.enabled && enabledPlansIds.includes(r.planId));
+    const enabledGrace = gracePeriods.filter(g => g.enabled && enabledPlansIds.includes(g.planId));
 
     const ctx: CalculationContext = {
       plans: enabledPlans,
