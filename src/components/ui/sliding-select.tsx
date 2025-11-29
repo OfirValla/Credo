@@ -1,11 +1,6 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
-
 export interface SlidingSelectOption {
     value: string
     label: string
-    icon?: React.ElementType
 }
 
 interface SlidingSelectProps {
@@ -24,40 +19,31 @@ export function SlidingSelect({
     color = "bg-secondary",
     textColor = "text-secondary-foreground",
 }: SlidingSelectProps) {
-    const layoutId = React.useId();
-
     return (
-        <div className="bg-background/50 backdrop-blur-sm p-1 rounded-2xl border border-border/50 shadow-sm">
-            <div className="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar overflow-x-hidden">
-                {options.map((option) => {
-                    const isActive = value === option.value;
+        <div
+            className="relative grid grid-flow-col auto-cols-fr gap-2 p-1 bg-background/50 rounded-lg border border-border/50"
+            style={{ "--index": options.findIndex((option) => option.value === value) } as React.CSSProperties}
+        >
+            {/* <!-- Sliding highlight --> */}
+            <div
+                className={`absolute top-1 left-1 h-[calc(100%-0.5rem)] ${color} rounded-md shadow-sm transition-all duration-300`}
+                style={{
+                    transform: `translateX(calc(var(--index, 0) * 100% + var(--index, 0) * 0.5rem))`,
+                    width: `calc((100% - 0.5rem - (0.5rem * (${options.length} - 1))) / ${options.length})`
+                }}
+            />
 
-                    return (
-                        <button
-                            key={option.value}
-                            onClick={() => onValueChange(option.value)}
-                            className={cn(
-                                "relative flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex-1 min-w-[80px]",
-                                isActive
-                                    ? cn("shadow-sm", textColor)
-                                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                            )}
-                        >
-                            {isActive && (
-                                <motion.div
-                                    layoutId={layoutId}
-                                    className={cn("absolute inset-0 rounded-xl", color)}
-                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                />
-                            )}
-                            <span className="relative z-10 flex items-center gap-2">
-                                {option.icon && <option.icon className="w-4 h-4" />}
-                                {option.label}
-                            </span>
-                        </button>
-                    );
-                })}
-            </div>
+            {/* <!-- Options --> */}
+            {options.map((option) => (
+                <button
+                    key={option.value}
+                    type="button"
+                    className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium ${value === option.value ? textColor : "text-muted-foreground"} transition-all`}
+                    onClick={() => onValueChange(option.value)}
+                >
+                    {option.label}
+                </button>
+            ))}
         </div>
     )
 }
