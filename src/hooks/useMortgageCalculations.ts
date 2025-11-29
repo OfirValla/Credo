@@ -157,9 +157,17 @@ function calculateCPIAdjustment(
     return { linkageDiff: 0, newBalance: state.balance, newPayment: state.monthlyPayment };
   }
 
-  // CPI logic: Compare Index(M-1) with Index(M-2)
-  const currentCPI = getCPI(cpiData, Math.floor(monthNum) - 1);
-  const prevCPI = getCPI(cpiData, Math.floor(monthNum) - 2);
+  const paymentDay = monthNum % 1;
+  let prevMonthIdx = paymentDay > 15 ? Math.floor(monthNum) - 2 : Math.floor(monthNum) - 3;
+  let currentMonthIdx = paymentDay > 15 ? Math.floor(monthNum) - 1 : Math.floor(monthNum) - 2;
+
+  const currentCPI = getCPI(cpiData, currentMonthIdx);
+  const prevCPI = getCPI(cpiData, prevMonthIdx);
+
+  console.groupCollapsed(`CPI : ${formatMonth(monthNum)}`);
+  console.log("Prev: ", formatMonth(prevMonthIdx), prevCPI);
+  console.log("Current: ", formatMonth(currentMonthIdx), currentCPI);
+  console.groupEnd();
 
   if (currentCPI && prevCPI && prevCPI !== 0) {
     const inflationFactor = currentCPI / prevCPI;
