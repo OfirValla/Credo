@@ -1,8 +1,9 @@
 services:
   mortgage-manager:
     build: .
-    # ports:
-    #   - "8080:80"
+    container_name: mortgage-manager
+    #ports:
+    #  - "8080:80"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mortgage-manager.rule=Host(`mortgage.personal.valla`)"
