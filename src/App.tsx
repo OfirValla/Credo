@@ -41,7 +41,7 @@ function AppContent() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex justify-end gap-3 flex-wrap">
               <DataImport />
               <DataExport />
               <CurrencySelector />
