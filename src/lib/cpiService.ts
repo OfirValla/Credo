@@ -107,7 +107,7 @@ export const checkAndUpdateCPI = () => {
     }
 };
 
-export const useCPI = () => {
-    const [cpiData,] = useLocalStorage(CPI_STORAGE_KEY, {});
+export const useCPI = (): CPIData => {
+    const [cpiData] = useLocalStorage<CPIData>(CPI_STORAGE_KEY, {});
     return cpiData;
 };
