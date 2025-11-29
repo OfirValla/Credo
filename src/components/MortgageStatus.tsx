@@ -116,24 +116,9 @@ export function MortgageStatus() {
                             </div>
 
                             <div className="grid grid-cols-3 sm:grid-cols-2 gap-4 text-sm">
-                                <div className="bg-secondary/10 p-2 rounded-md">
-                                    <span className="text-muted-foreground block text-xs mb-1">Balance</span>
-                                    <span className="font-bold text-foreground">
-                                        {formatCurrency(plan.currentBalance, currency)}
-                                    </span>
-                                </div>
-                                <div className="bg-secondary/10 p-2 rounded-md">
-                                    <span className="text-muted-foreground block text-xs mb-1">Rate</span>
-                                    <span className="font-bold text-foreground">
-                                        {plan.currentRate.toFixed(2)}%
-                                    </span>
-                                </div>
-                                <div className="bg-secondary/10 p-2 rounded-md">
-                                    <span className="text-muted-foreground block text-xs mb-1">Remaining</span>
-                                    <span className="font-bold text-foreground">
-                                        {plan.remainingMonths} months
-                                    </span>
-                                </div>
+                                <MortgagePlanInfo title="Balance" data={formatCurrency(plan.currentBalance, currency)} />
+                                <MortgagePlanInfo title="Rate" data={`${plan.currentRate.toFixed(2)}%`} />
+                                <MortgagePlanInfo title="Remaining" data={`${plan.remainingMonths} months`} />
                             </div>
                         </div>
                     ))
@@ -142,3 +127,12 @@ export function MortgageStatus() {
         </Card>
     );
 }
+
+const MortgagePlanInfo = ({ title, data }: { title: string, data: string }) => (
+    <div className="bg-secondary/10 p-2 rounded-md">
+        <span className="text-muted-foreground block text-xs mb-1">{title}</span>
+        <span className="font-bold text-foreground">
+            {data}
+        </span>
+    </div>
+)
