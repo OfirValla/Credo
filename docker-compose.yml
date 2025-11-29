@@ -6,6 +6,11 @@ services:
     #  - "8080:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mortgage-manager.rule=Host(`mortgage.personal.valla`)"
-      - "traefik.http.services.mortgage-manager.loadbalancer.server.port=80"
+      - "traefik.http.routers.mortgage_manager.rule=Host(`mortgage.personal.valla`)"
+      - "traefik.http.services.mortgage_manager.loadbalancer.server.port=80"
     restart: unless-stopped
+
+networks:
+  default:
+    name: homelab
+    external: true
