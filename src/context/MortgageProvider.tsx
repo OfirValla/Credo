@@ -143,11 +143,13 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
         });
     }, [plans, amortizationRows]);
 
+    const enabledPlansIds = useMemo(() => plans.filter(p => p.enabled).map(p => p.id), [plans]);
+
     const value = {
         plans: calculatedPlans,
-        extraPayments,
-        rateChanges,
-        gracePeriods,
+        extraPayments: extraPayments.filter(e => e.enabled && enabledPlansIds.includes(e.planId)),
+        rateChanges: rateChanges.filter(r => r.enabled && enabledPlansIds.includes(r.planId)),
+        gracePeriods: gracePeriods.filter(g => g.enabled && enabledPlansIds.includes(g.planId)),
         currency,
         amortizationRows,
         setCurrency,
