@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  mortgage-manager:
+    build: .
+    # ports:
+    #   - "8080:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mortgage-manager.rule=Host(`mortgage.personal.valla`)"
+      - "traefik.http.services.mortgage-manager.loadbalancer.server.port=80"
+    restart: unless-stopped
