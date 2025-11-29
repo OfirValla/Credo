@@ -2,10 +2,7 @@ import { motion } from 'framer-motion';
 import { LayoutDashboard } from 'lucide-react';
 import { DataExport } from '@/components/DataExport';
 import { DataImport } from '@/components/DataImport';
-import { MortgageForm } from '@/components/MortgageForm';
-import { ExtraPaymentsForm } from '@/components/ExtraPaymentsForm';
-import { RateChangeForm } from '@/components/RateChangeForm';
-import { GracePeriodForm } from '@/components/GracePeriodForm';
+import { PlanningSection } from '@/components/PlanningSection';
 import { CurrentMonthPreview } from '@/components/CurrentMonthPreview';
 import { AmortizationTable } from '@/components/AmortizationTable';
 import { MortgageStatus } from '@/components/MortgageStatus';
@@ -53,7 +50,7 @@ function AppContent() {
           </div>
         </motion.header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8">
           {/* Column 1: Planning Phase */}
           <div className="space-y-6">
             <motion.div
@@ -61,75 +58,46 @@ function AppContent() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <MortgageForm />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <ExtraPaymentsForm />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <RateChangeForm />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <GracePeriodForm />
+              <PlanningSection />
             </motion.div>
           </div>
 
-          {/* Wrapper for Preview + Amortization */}
-          {/* Tablet: Col 2 (Stacked) | Desktop: Cols 2 & 3 (Side by Side) */}
-          <div className="space-y-6 xl:col-span-2 xl:grid xl:grid-cols-2 xl:gap-8 xl:space-y-0">
-            {/* Column 2 (Desktop): Preview */}
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <CurrentMonthPreview />
-              </motion.div>
+          {/* Column 2: Summary & Status */}
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <CurrentMonthPreview />
+            </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <MortgageSummary />
-              </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <MortgageSummary />
+            </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-              >
-                <MortgageStatus />
-              </motion.div>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+            >
+              <MortgageStatus />
+            </motion.div>
+          </div>
 
-            {/* Column 3 (Desktop): Amortization Table */}
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className='sticky top-4'
-              >
-                <AmortizationTable />
-              </motion.div>
-            </div>
+          {/* Column 3: Amortization Table */}
+          <div className="space-y-6 md:col-span-2 2xl:col-span-1">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <AmortizationTable />
+            </motion.div>
           </div>
         </div>
       </div>

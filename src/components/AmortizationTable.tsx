@@ -194,7 +194,7 @@ export function AmortizationTable() {
         className={cn(
           isZoomed
             ? "fixed inset-0 m-auto w-[90vw] md:w-[70vw] h-[80vh] z-50"
-            : "h-[calc(100vh-10.5rem)] sticky top-4"
+            : "h-[calc(100vh-10.5rem)] w-[100%] sticky top-4"
         )}
       >
         <Card
