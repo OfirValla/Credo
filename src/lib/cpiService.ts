@@ -1,3 +1,4 @@
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export interface CPIEntry {
     year: number;
@@ -104,4 +105,9 @@ export const checkAndUpdateCPI = () => {
     if (now.getMonth() !== lastFetchDate.getMonth() || now.getFullYear() !== lastFetchDate.getFullYear()) {
         fetchAndStoreCPIData();
     }
+};
+
+export const useCPI = () => {
+    const [cpiData,] = useLocalStorage(CPI_STORAGE_KEY, {});
+    return cpiData;
 };

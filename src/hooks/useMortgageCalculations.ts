@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange, RowTag, GracePeriod } from '@/types';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { formatCurrency, CurrencyCode } from '@/lib/currency';
-import { CPIData, CPI_STORAGE_KEY } from '@/lib/cpiService';
+import { CPIData, CPI_STORAGE_KEY, useCPI } from '@/lib/cpiService';
+import { useLocalStorage } from './useLocalStorage';
 
 /**
  * Calculate monthly payment using PMT formula
@@ -52,16 +53,7 @@ export function useMortgageCalculations(
   gracePeriods: GracePeriod[] = [],
   currency: CurrencyCode = 'USD'
 ): AmortizationRow[] {
-  // Read CPI data from localStorage
-  const cpiData: CPIData = useMemo(() => {
-    try {
-      const stored = localStorage.getItem(CPI_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : {};
-    } catch (e) {
-      console.error('Failed to parse CPI data', e);
-      return {};
-    }
-  }, []);
+  const cpiData = useCPI();
 
   const getCPI = (monthNum: number): number | null => {
     const year = 2000 + Math.floor(monthNum / 12);
