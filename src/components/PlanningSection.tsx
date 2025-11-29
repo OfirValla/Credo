@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, TrendingDown, Percent, CalendarClock, GitCompare } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Home, Wallet, Percent, Hourglass } from 'lucide-react';
 import { MortgageForm } from './MortgageForm';
 import { ExtraPaymentsForm } from './ExtraPaymentsForm';
 import { RateChangeForm } from './RateChangeForm';
 import { GracePeriodForm } from './GracePeriodForm';
-import { Card, CardContent } from './ui/card';
 import { SlidingSelect } from './ui/sliding-select';
 
 type TabId = 'plans' | 'extra' | 'rates' | 'grace'; //| 'compare';
@@ -21,10 +19,10 @@ export function PlanningSection() {
                 value={activeTab}
                 onValueChange={(value) => setActiveTab(value as TabId)}
                 options={[
-                    { value: 'plans', label: 'Plans', icon: Building2 },
-                    { value: 'extra', label: 'Extra', icon: TrendingDown },
+                    { value: 'plans', label: 'Plans', icon: Home },
+                    { value: 'extra', label: 'Extra', icon: Wallet },
                     { value: 'rates', label: 'Rates', icon: Percent },
-                    { value: 'grace', label: 'Grace', icon: CalendarClock },
+                    { value: 'grace', label: 'Grace', icon: Hourglass },
                     //{ value: 'compare', label: 'Compare', icon: GitCompare },
                 ]}
                 color="bg-indigo-500"
