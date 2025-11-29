@@ -36,17 +36,6 @@ function calculatePMT(principal: number, monthlyRate: number, numPayments: numbe
   return principal * (monthlyRate * factor) / (factor - 1);
 }
 
-function parseMonth(dateStr: string): number {
-  if (!dateStr) return 0;
-  const parts = dateStr.split('/');
-  if (parts.length === 3) return parseDateToMonthIndex(dateStr);
-  if (parts.length === 2) {
-    const [month, year] = parts.map(Number);
-    return (year - 2000) * 12 + month - 1;
-  }
-  return 0;
-}
-
 function formatMonth(monthNum: number): string {
   const year = 2000 + Math.floor(monthNum / 12);
   const month = (Math.floor(monthNum) % 12) + 1;
@@ -131,7 +120,7 @@ function collectRelevantMonths(ctx: CalculationContext, planPaymentDays: Map<str
       if (!plans.find(p => p.id === item.planId)) return;
 
       const paymentDayFraction = planPaymentDays.get(item.planId) || 0.01;
-      const index = parseMonth(item.month);
+      const index = parseDateToMonthIndex(item.month);
       const dayFraction = index % 1;
 
       // Use specific day if provided, otherwise align to plan payment day
@@ -145,8 +134,8 @@ function collectRelevantMonths(ctx: CalculationContext, planPaymentDays: Map<str
   // 3. Grace Periods
   gracePeriods.forEach(gp => {
     if (!plans.find(p => p.id === gp.planId)) return;
-    const start = Math.floor(parseMonth(gp.startDate));
-    const end = Math.floor(parseMonth(gp.endDate));
+    const start = Math.floor(parseDateToMonthIndex(gp.startDate));
+    const end = Math.floor(parseDateToMonthIndex(gp.endDate));
     const dayFraction = planPaymentDays.get(gp.planId) || 0.01;
 
     for (let i = start; i <= end; i++) {
@@ -234,7 +223,7 @@ function calculateExtraPayment(
 
   const relevantPayments = ctx.extraPayments.filter(ep =>
     ep.planId === planId &&
-    Math.floor(parseMonth(ep.month)) === Math.floor(monthNum)
+    Math.floor(parseDateToMonthIndex(ep.month)) === Math.floor(monthNum)
   );
 
   for (const ep of relevantPayments) {
@@ -322,8 +311,8 @@ function processPlanMonth(
   // 4. Check Grace Period
   const activeGracePeriod = ctx.gracePeriods.find(gp =>
     gp.planId === state.plan.id &&
-    monthNum >= parseMonth(gp.startDate) - 0.0001 &&
-    monthNum <= parseMonth(gp.endDate) + 0.0001
+    monthNum >= parseDateToMonthIndex(gp.startDate) - 0.0001 &&
+    monthNum <= parseDateToMonthIndex(gp.endDate) + 0.0001
   );
 
   const isInitialGracePeriod = monthNum < firstPaymentIdx - 0.0001;
@@ -334,7 +323,7 @@ function processPlanMonth(
   const currentMonthInt = Math.floor(monthNum);
   const monthRateChanges = ctx.rateChanges.filter(rc =>
     rc.planId === state.plan.id &&
-    Math.floor(parseMonth(rc.month)) === currentMonthInt
+    Math.floor(parseDateToMonthIndex(rc.month)) === currentMonthInt
   ).sort((a, b) => a.id.localeCompare(b.id));
 
   const activeRateChange = monthRateChanges.length > 0 ? monthRateChanges[monthRateChanges.length - 1] : undefined;
@@ -451,13 +440,15 @@ export function useMortgageCalculations(
       currency
     };
 
+    debugger
+
     // 1. Initialize
     const planStates = initializePlanStates(enabledPlans);
 
     // 2. Pre-calculate Payment Days (for sorting/aligning months)
     const planPaymentDays = new Map<string, number>();
     enabledPlans.forEach(plan => {
-      planPaymentDays.set(plan.id, parseDateToMonthIndex(plan.firstPaymentDate) % 1);
+      planPaymentDays.set(plan.id, Number((parseDateToMonthIndex(plan.firstPaymentDate) % 1).toFixed(2)));
     });
 
     // 3. Get Time Timeline
@@ -475,8 +466,8 @@ export function useMortgageCalculations(
 
     // 5. Final Sort (Month -> Plan Start Date)
     rows.sort((a, b) => {
-      const monthA = parseMonth(a.month);
-      const monthB = parseMonth(b.month);
+      const monthA = parseDateToMonthIndex(a.month);
+      const monthB = parseDateToMonthIndex(b.month);
       if (Math.abs(monthA - monthB) > 0.0001) return monthA - monthB;
 
       const planA = planStates.get(a.planId)?.plan;
