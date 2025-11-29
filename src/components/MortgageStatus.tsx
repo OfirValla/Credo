@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Activity, CreditCard } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { getPlanDisplayName } from '@/lib/planUtils';
+import { getPlanDisplayName, parseMonth } from '@/lib/planUtils';
 import { useMortgage } from '@/context/MortgageProvider';
 
 export function MortgageStatus() {
@@ -19,7 +19,7 @@ export function MortgageStatus() {
         return enabledPlans.map(plan => {
             const planRows = rows.filter(r => r.planId === plan.id);
 
-            const startMonthIndex = (parseInt(plan.takenDate.split('/')[2]) - 2000) * 12 + parseInt(plan.takenDate.split('/')[1]) - 1;
+            const startMonthIndex = parseMonth(plan.takenDate);
 
             let currentBalance = plan.amount;
             let monthlyPayment = 0;
@@ -30,16 +30,10 @@ export function MortgageStatus() {
                 currentBalance = plan.amount;
             } else {
                 // Find row for current month or closest past month
-                // We need to parse row.month (MM/YYYY)
-                const parseRowMonth = (m: string) => {
-                    const [month, year] = m.split('/').map(Number);
-                    return (year - 2000) * 12 + month - 1;
-                };
-
-                const relevantRows = planRows.filter(r => parseRowMonth(r.month) <= currentMonthIndex);
+                const relevantRows = planRows.filter(r => parseMonth(r.month) <= currentMonthIndex);
                 if (relevantRows.length > 0) {
                     // Sort by month descending
-                    relevantRows.sort((a, b) => parseRowMonth(b.month) - parseRowMonth(a.month));
+                    relevantRows.sort((a, b) => parseMonth(b.month) - parseMonth(a.month));
                     const latestRow = relevantRows[0];
 
                     currentBalance = latestRow.endingBalance;
