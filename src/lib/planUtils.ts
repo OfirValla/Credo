@@ -73,3 +73,15 @@ export function getPlanDurationInfo(plan: MortgagePlan): { totalMonths: number, 
   return { totalMonths, remainingMonths: Math.floor(remainingMonths) };
 }
 
+export function parseMonth(dateStr: string): number {
+  if (!dateStr) return 0;
+  const parts = dateStr.split('/');
+  if (parts.length === 3) {
+    const [, month, year] = parts.map(Number);
+    return (year - 2000) * 12 + month - 1;
+  } else if (parts.length === 2) {
+    const [month, year] = parts.map(Number);
+    return (year - 2000) * 12 + month - 1;
+  }
+  return 0;
+}

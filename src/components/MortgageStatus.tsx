@@ -1,27 +1,14 @@
 import { useMemo } from 'react';
 import { Activity, CreditCard } from 'lucide-react';
-import { MortgagePlan, AmortizationRow } from '@/types';
-import { CurrencyCode, formatCurrency } from '@/lib/currency';
+import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
+import { getPlanDisplayName } from '@/lib/planUtils';
 import { useMortgage } from '@/context/MortgageProvider';
-
-function parseMonth(dateStr: string): number {
-    if (!dateStr) return 0;
-    const parts = dateStr.split('/');
-    if (parts.length === 3) {
-        const [, month, year] = parts.map(Number);
-        return (year - 2000) * 12 + month - 1;
-    } else if (parts.length === 2) {
-        const [month, year] = parts.map(Number);
-        return (year - 2000) * 12 + month - 1;
-    }
-    return 0;
-}
 
 export function MortgageStatus() {
     const { plans: allPlans, amortizationRows: rows, currency } = useMortgage();
     const plans = allPlans.filter(p => p.enabled !== false);
+
     const statusData = useMemo(() => {
         const now = new Date();
         const currentMonthIndex = (now.getFullYear() - 2000) * 12 + now.getMonth();
@@ -32,11 +19,7 @@ export function MortgageStatus() {
         return enabledPlans.map(plan => {
             const planRows = rows.filter(r => r.planId === plan.id);
 
-            // Find the row for the current month, or the latest row before current month
-            // If plan hasn't started, balance is full amount
-            // If plan is finished, balance is 0
-
-            const startMonthIndex = parseMonth(plan.takenDate);
+            const startMonthIndex = (parseInt(plan.takenDate.split('/')[2]) - 2000) * 12 + parseInt(plan.takenDate.split('/')[1]) - 1;
 
             let currentBalance = plan.amount;
             let monthlyPayment = 0;
@@ -47,18 +30,22 @@ export function MortgageStatus() {
                 currentBalance = plan.amount;
             } else {
                 // Find row for current month or closest past month
-                const relevantRows = planRows.filter(r => parseMonth(r.month) <= currentMonthIndex);
+                // We need to parse row.month (MM/YYYY)
+                const parseRowMonth = (m: string) => {
+                    const [month, year] = m.split('/').map(Number);
+                    return (year - 2000) * 12 + month - 1;
+                };
+
+                const relevantRows = planRows.filter(r => parseRowMonth(r.month) <= currentMonthIndex);
                 if (relevantRows.length > 0) {
                     // Sort by month descending
-                    relevantRows.sort((a, b) => parseMonth(b.month) - parseMonth(a.month));
+                    relevantRows.sort((a, b) => parseRowMonth(b.month) - parseRowMonth(a.month));
                     const latestRow = relevantRows[0];
 
                     currentBalance = latestRow.endingBalance;
                     monthlyPayment = latestRow.monthlyPayment;
                     interestRate = latestRow.monthlyRate * 12 * 100; // Annual rate
                 } else {
-                    // Should not happen if startMonthIndex check passed, unless rows are missing
-                    // Assume full amount if no rows found but we are past start date (e.g. data error)
                     currentBalance = plan.amount;
                 }
             }
@@ -75,7 +62,7 @@ export function MortgageStatus() {
                 progress,
                 monthlyPayment,
                 currentRate: interestRate,
-                remainingMonths: getPlanDurationInfo(plan).remainingMonths
+                remainingMonths: plan.remainingMonths ?? 0
             };
         });
     }, [plans, rows]);

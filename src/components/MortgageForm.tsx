@@ -241,99 +241,97 @@ export function MortgageForm() {
           </div>
         </form>
 
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-muted-foreground">Current Plans</h3>
-          <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-            <AnimatePresence mode="popLayout">
-              {plans.length === 0 ? (
+        <h3 className="text-sm font-medium text-muted-foreground">Current Plans</h3>
+        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          <AnimatePresence mode="popLayout">
+            {plans.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg"
+              >
+                No mortgage plans added yet
+              </motion.div>
+            ) : (
+              plans.map((plan) => (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg"
+                  key={plan.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  layout
+                  className={`group flex items-center justify-between p-3 border rounded-lg transition-colors ${editingId === plan.id
+                    ? 'bg-primary/10 border-primary/50'
+                    : plan.enabled === false
+                      ? 'bg-muted/30 border-border/30 opacity-60'
+                      : 'bg-background/40 border-border/50 hover:bg-background/60'
+                    }`}
                 >
-                  No mortgage plans added yet
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className={`font-medium text-sm ${!plan.enabled ? 'line-through text-muted-foreground' : ''}`}>
+                        {getPlanDisplayName(plan, currency)}
+                      </div>
+                      {plan.enabled === false && (
+                        <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">Disabled</span>
+                      )}
+                    </div>
+                    <div className="text-xs text-muted-foreground flex items-center gap-2">
+                      <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
+                        {plan.interestRate}%
+                      </span>
+                      <span>{plan.firstPaymentDate} - {plan.lastPaymentDate}</span>
+                      <span>•</span>
+                      {(() => {
+                        const { totalMonths } = getPlanDurationInfo(plan);
+                        return <>
+                          <span>{`${totalMonths} months total`}</span>
+                          <span>•</span>
+                          <span>{`${plan.remainingMonths ?? 0} months remaining`}</span>
+                        </>;
+                      })()}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className={`h-8 w-8 ${plan.enabled !== false ? 'text-secondary hover:text-secondary hover:bg-secondary/10' : 'text-muted-foreground hover:text-muted-foreground hover:bg-muted/10'}`}
+                      onClick={() => onUpdatePlan({ ...plan, enabled: !plan.enabled })}
+                      title={plan.enabled !== false ? 'Enable plan' : 'Disable plan'}
+                    >
+                      {plan.enabled ? (
+                        <ToggleRight className="h-5 w-5" />
+                      ) : (
+                        <ToggleLeft className="h-5 w-5" />
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      onClick={() => handleEdit(plan)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => onDeletePlan(plan.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </motion.div>
-              ) : (
-                plans.map((plan) => (
-                  <motion.div
-                    key={plan.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    layout
-                    className={`group flex items-center justify-between p-3 border rounded-lg transition-colors ${editingId === plan.id
-                      ? 'bg-primary/10 border-primary/50'
-                      : plan.enabled === false
-                        ? 'bg-muted/30 border-border/30 opacity-60'
-                        : 'bg-background/40 border-border/50 hover:bg-background/60'
-                      }`}
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <div className={`font-medium text-sm ${!plan.enabled ? 'line-through text-muted-foreground' : ''}`}>
-                          {getPlanDisplayName(plan, currency)}
-                        </div>
-                        {plan.enabled === false && (
-                          <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">Disabled</span>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-2">
-                        <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[10px] font-medium">
-                          {plan.interestRate}%
-                        </span>
-                        <span>{plan.firstPaymentDate} - {plan.lastPaymentDate}</span>
-                        <span>•</span>
-                        {(() => {
-                          const { totalMonths, remainingMonths } = getPlanDurationInfo(plan);
-                          return <>
-                            <span>{`${totalMonths} months total`}</span>
-                            <span>•</span>
-                            <span>{`${Math.floor(remainingMonths)} months remaining`}</span>
-                          </>;
-                        })()}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className={`h-8 w-8 ${plan.enabled !== false ? 'text-secondary hover:text-secondary hover:bg-secondary/10' : 'text-muted-foreground hover:text-muted-foreground hover:bg-muted/10'}`}
-                        onClick={() => onUpdatePlan({ ...plan, enabled: !plan.enabled })}
-                        title={plan.enabled !== false ? 'Enable plan' : 'Disable plan'}
-                      >
-                        {plan.enabled ? (
-                          <ToggleRight className="h-5 w-5" />
-                        ) : (
-                          <ToggleLeft className="h-5 w-5" />
-                        )}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
-                        onClick={() => handleEdit(plan)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => onDeletePlan(plan.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </AnimatePresence>
-          </div>
+              ))
+            )}
+          </AnimatePresence>
         </div>
-      </CardContent>
-    </Card>
+      </CardContent >
+    </Card >
   );
 }

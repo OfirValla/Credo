@@ -1,9 +1,10 @@
-import { useEffect, createContext, useContext, useCallback, ReactNode } from 'react';
+import { useEffect, createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import { MortgagePlan, ExtraPayment, RateChange, AmortizationRow, GracePeriod } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useMortgageCalculations } from '@/hooks/useMortgageCalculations';
 import { checkAndUpdateCPI } from '@/lib/cpiService';
+import { parseMonth } from '@/lib/planUtils';
 
 interface MortgageContextType {
     plans: MortgagePlan[];
@@ -131,8 +132,19 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
         setCurrency(data.currency);
     }, [setPlans, setExtraPayments, setRateChanges, setGracePeriods, setCurrency]);
 
+    const calculatedPlans = useMemo(() => {
+        const now = new Date();
+        const currentMonthIndex = (now.getFullYear() - 2000) * 12 + now.getMonth();
+
+        return plans.map(plan => {
+            const planRows = amortizationRows.filter(r => r.planId === plan.id);
+            const remainingMonths = planRows.filter(r => parseMonth(r.month) > currentMonthIndex).length;
+            return { ...plan, remainingMonths };
+        });
+    }, [plans, amortizationRows]);
+
     const value = {
-        plans,
+        plans: calculatedPlans,
         extraPayments,
         rateChanges,
         gracePeriods,
