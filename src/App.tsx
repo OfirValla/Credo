@@ -105,12 +105,28 @@ function AppContent() {
   );
 }
 
+import { MortgagePortfolioProvider, useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
+import { Sidebar } from '@/components/Sidebar';
+
+function AppWithPortfolio() {
+  const { currentPortfolioId } = useMortgagePortfolio();
+
+  return (
+    <MortgageProvider key={currentPortfolioId} portfolioId={currentPortfolioId}>
+      <Sidebar />
+      <div className="pl-16 transition-all duration-300">
+        <AppContent />
+      </div>
+    </MortgageProvider>
+  );
+}
+
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <MortgageProvider>
-        <AppContent />
-      </MortgageProvider>
+      <MortgagePortfolioProvider>
+        <AppWithPortfolio />
+      </MortgagePortfolioProvider>
     </ThemeProvider>
   );
 }

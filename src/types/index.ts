@@ -57,3 +57,11 @@ export interface AmortizationRow {
   isGracePeriod?: boolean;
   linkage?: number;
 }
+
+export interface MortgagePortfolio {
+  id: string;
+  name: string;
+  createdAt: number;
+  color?: string;
+  icon?: string;
+}
