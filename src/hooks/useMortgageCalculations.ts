@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange, RowTag, GracePeriod } from '@/types';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { formatCurrency, CurrencyCode } from '@/lib/currency';
-import { useCPI } from '@/lib/cpiService';
+import { useCPI } from '@/hooks/useCPI';
 
 // --- Types ---
 
@@ -447,8 +447,6 @@ export function useMortgageCalculations(
       cpiData,
       currency
     };
-
-    debugger
 
     // 1. Initialize
     const planStates = initializePlanStates(enabledPlans);

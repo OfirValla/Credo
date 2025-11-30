@@ -1,9 +1,9 @@
-import { useEffect, createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import { MortgagePlan, ExtraPayment, RateChange, AmortizationRow, GracePeriod } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useMortgageCalculations } from '@/hooks/useMortgageCalculations';
-import { checkAndUpdateCPI } from '@/lib/cpiService';
+
 import { parseMonth } from '@/lib/planUtils';
 
 interface MortgageContextType {
@@ -46,9 +46,7 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
 
     const amortizationRows = useMortgageCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 
-    useEffect(() => {
-        checkAndUpdateCPI();
-    }, []);
+
 
     const addPlan = useCallback((planData: Omit<MortgagePlan, 'id'>) => {
         const newPlan: MortgagePlan = {

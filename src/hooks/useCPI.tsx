@@ -1,6 +1,7 @@
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useEffect } from 'react';
 
-export interface CPIEntry {
+interface CPIEntry {
     year: number;
     month: number;
     monthDesc: string;
@@ -12,7 +13,7 @@ export interface CPIEntry {
     };
 }
 
-export interface CPIResponse {
+interface CPIResponse {
     month: {
         code: number;
         name: string;
@@ -33,11 +34,11 @@ export interface CPIData {
     };
 }
 
-export const CPI_STORAGE_KEY = 'cpi_data';
-export const LAST_FETCH_KEY = 'cpi_last_fetch';
+const CPI_STORAGE_KEY = 'cpi_data';
+const LAST_FETCH_KEY = 'cpi_last_fetch';
 const BASE_API_URL = 'https://api.cbs.gov.il/index/data/price?id=120010&format=json&download=false&PageSize=100';
 
-export const fetchAndStoreCPIData = async () => {
+const fetchCPIData = async (): Promise<CPIData | null> => {
     try {
         let allEntries: CPIEntry[] = [];
         let currentPage = 1;
@@ -81,16 +82,17 @@ export const fetchAndStoreCPIData = async () => {
                 formattedData[yearStr][monthStr] = entry.currBase.value;
             });
 
-            localStorage.setItem(CPI_STORAGE_KEY, JSON.stringify(formattedData));
-            localStorage.setItem(LAST_FETCH_KEY, new Date().toISOString());
-            console.log(`CPI Data updated successfully. Fetched ${allEntries.length} entries.`);
+            console.log(`CPI Data fetched successfully. Fetched ${allEntries.length} entries.`);
+            return formattedData;
         }
+        return null;
     } catch (error) {
         console.error('Failed to fetch CPI data:', error);
+        return null;
     }
 };
 
-export const shouldFetchCPI = (currentDate: Date, lastFetchDate: Date | null): boolean => {
+const shouldFetchCPI = (currentDate: Date, lastFetchDate: Date | null): boolean => {
     if (!lastFetchDate) {
         return true;
     }
@@ -115,18 +117,27 @@ export const shouldFetchCPI = (currentDate: Date, lastFetchDate: Date | null): b
     return lastFetchDate < targetFetchDate;
 };
 
-export const checkAndUpdateCPI = () => {
-    const lastFetch = localStorage.getItem(LAST_FETCH_KEY);
-    const now = new Date();
-    const lastFetchDate = lastFetch ? new Date(lastFetch) : null;
-
-    if (shouldFetchCPI(now, lastFetchDate)) {
-        console.log('Fetching CPI data...');
-        fetchAndStoreCPIData();
-    }
-};
-
 export const useCPI = (): CPIData => {
-    const [cpiData] = useLocalStorage<CPIData>(CPI_STORAGE_KEY, {});
+    const [cpiData, setCpiData] = useLocalStorage<CPIData>(CPI_STORAGE_KEY, {});
+    const [lastFetch, setLastFetch] = useLocalStorage<string>(LAST_FETCH_KEY, '');
+
+    useEffect(() => {
+        const checkAndFetch = async () => {
+            const now = new Date();
+            const lastFetchDate = lastFetch ? new Date(lastFetch) : null;
+
+            if (shouldFetchCPI(now, lastFetchDate)) {
+                console.log('Fetching new CPI data...');
+                const newData = await fetchCPIData();
+                if (newData) {
+                    setCpiData(newData);
+                    setLastFetch(new Date().toISOString());
+                }
+            }
+        };
+
+        checkAndFetch();
+    }, [lastFetch, setCpiData, setLastFetch]);
+
     return cpiData;
 };
