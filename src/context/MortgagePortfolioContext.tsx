@@ -39,7 +39,7 @@ export function MortgagePortfolioProvider({ children }: { children: ReactNode })
             id: `portfolio-${Date.now()}`,
             name,
             createdAt: Date.now(),
-            color: color || 'blue-500'
+            color: color || 'bg-blue-500'
         };
         setPortfolios([...portfolios, newPortfolio]);
         setCurrentPortfolioId(newPortfolio.id);

@@ -64,7 +64,7 @@ export function Sidebar() {
 
     const handleAdd = () => {
         if (newPortfolioName.trim()) {
-            addPortfolio(newPortfolioName.trim());
+            addPortfolio(newPortfolioName.trim(), PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)]);
             setNewPortfolioName('');
             setIsAdding(false);
         }
