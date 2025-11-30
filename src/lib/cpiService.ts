@@ -90,19 +90,38 @@ export const fetchAndStoreCPIData = async () => {
     }
 };
 
+export const shouldFetchCPI = (currentDate: Date, lastFetchDate: Date | null): boolean => {
+    if (!lastFetchDate) {
+        return true;
+    }
+
+    // Determine the target fetch date for the current month
+    // If today is before the 16th, we expect the data from the previous month to be available (published on the 15th usually)
+    // But actually, the requirement is "recollected on the 16th of each month".
+    // This implies that on the 16th, we should check for new data.
+    // So if today >= 16th, we want to ensure we have fetched AFTER the 16th of this month.
+    // If today < 16th, we want to ensure we have fetched AFTER the 16th of the PREVIOUS month.
+
+    let targetFetchDate: Date;
+
+    if (currentDate.getDate() >= 16) {
+        targetFetchDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 16);
+    } else {
+        // Go back to previous month
+        targetFetchDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 16);
+    }
+
+    // If our last fetch was before the target fetch date, we need to fetch again.
+    return lastFetchDate < targetFetchDate;
+};
+
 export const checkAndUpdateCPI = () => {
     const lastFetch = localStorage.getItem(LAST_FETCH_KEY);
     const now = new Date();
+    const lastFetchDate = lastFetch ? new Date(lastFetch) : null;
 
-    if (!lastFetch) {
-        fetchAndStoreCPIData();
-        return;
-    }
-
-    const lastFetchDate = new Date(lastFetch);
-
-    // Check if it's a new month since last fetch
-    if (now.getMonth() !== lastFetchDate.getMonth() || now.getFullYear() !== lastFetchDate.getFullYear()) {
+    if (shouldFetchCPI(now, lastFetchDate)) {
+        console.log('Fetching CPI data...');
         fetchAndStoreCPIData();
     }
 };
