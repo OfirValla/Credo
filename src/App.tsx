@@ -3,6 +3,7 @@ import { LayoutDashboard } from 'lucide-react';
 import { DataExport } from '@/components/DataExport';
 import { DataImport } from '@/components/DataImport';
 import { PlanningSection } from '@/components/PlanningSection';
+import { AffordabilityCalculator } from '@/components/AffordabilityCalculator';
 import { CurrentMonthPreview } from '@/components/CurrentMonthPreview';
 import { AmortizationTable } from '@/components/AmortizationTable';
 import { MortgageStatus } from '@/components/MortgageStatus';
@@ -59,6 +60,14 @@ function AppContent() {
               transition={{ delay: 0.1 }}
             >
               <PlanningSection />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <AffordabilityCalculator />
             </motion.div>
           </div>
 
