@@ -48,8 +48,6 @@ export function MortgageProvider({ children, portfolioId }: { children: ReactNod
 
     const amortizationRows = useMortgageCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 
-
-
     const addPlan = useCallback((planData: Omit<MortgagePlan, 'id'>) => {
         const newPlan: MortgagePlan = {
             ...planData,
@@ -147,9 +145,9 @@ export function MortgageProvider({ children, portfolioId }: { children: ReactNod
 
     const value = {
         plans: calculatedPlans,
-        extraPayments: extraPayments.filter(e => e.enabled && enabledPlansIds.includes(e.planId)),
-        rateChanges: rateChanges.filter(r => r.enabled && enabledPlansIds.includes(r.planId)),
-        gracePeriods: gracePeriods.filter(g => g.enabled && enabledPlansIds.includes(g.planId)),
+        extraPayments: extraPayments.filter(e => enabledPlansIds.includes(e.planId)),
+        rateChanges: rateChanges.filter(r => enabledPlansIds.includes(r.planId)),
+        gracePeriods: gracePeriods.filter(g => enabledPlansIds.includes(g.planId)),
         currency,
         amortizationRows,
         setCurrency,
