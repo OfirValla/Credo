@@ -24,6 +24,7 @@ export function MortgageStatus() {
             let currentBalance = plan.amount;
             let monthlyPayment = 0;
             let interestRate = plan.interestRate;
+            let totalInterestPaid = 0;
 
             if (currentMonthIndex < startMonthIndex) {
                 // Not started
@@ -39,8 +40,26 @@ export function MortgageStatus() {
                     currentBalance = latestRow.endingBalance;
                     monthlyPayment = latestRow.monthlyPayment;
                     interestRate = latestRow.monthlyRate * 12 * 100; // Annual rate
+
+                    // Calculate total interest paid up to the current month
+                    // Note: If we want total interest over the LIFETIME of the loan, we should sum all rows.
+                    // The user asked: "how much money the user will pay for each unit of principal"
+                    // "for a 880000 nis the rate is 1.67, and the inerest is 15,145 which means the user will pay 1.04 nis for each 1 nis he took"
+                    // This implies (Principal + Total Interest) / Principal.
+                    // Total Interest should be the projected total interest for the whole loan?
+                    // "inerest is 15,145" for 880k seems very low for a full mortgage, unless it's a short term or very low rate.
+                    // Or maybe it's interest paid SO FAR?
+                    // "user will pay" implies future tense. So it should be total projected interest.
+
+                    // Let's calculate TOTAL projected interest from the full schedule.
+                    const totalProjectedInterest = planRows.reduce((sum, r) => sum + r.interest, 0);
+                    totalInterestPaid = totalProjectedInterest;
+
                 } else {
                     currentBalance = plan.amount;
+                    // Even if not started, we can calculate projected interest if rows exist
+                    const totalProjectedInterest = planRows.reduce((sum, r) => sum + r.interest, 0);
+                    totalInterestPaid = totalProjectedInterest;
                 }
             }
 
@@ -50,13 +69,18 @@ export function MortgageStatus() {
             const principalPaid = plan.amount - currentBalance;
             const progress = (principalPaid / plan.amount) * 100;
 
+            // Cost per unit = (Principal + Total Interest) / Principal
+            const totalCost = plan.amount + totalInterestPaid;
+            const costPerUnit = plan.amount > 0 ? totalCost / plan.amount : 0;
+
             return {
                 ...plan,
                 currentBalance,
                 progress,
                 monthlyPayment,
                 currentRate: interestRate,
-                remainingMonths: plan.remainingMonths ?? 0
+                remainingMonths: plan.remainingMonths ?? 0,
+                costPerUnit
             };
         });
     }, [plans, rows]);
@@ -119,6 +143,7 @@ export function MortgageStatus() {
                                 <MortgagePlanInfo title="Balance" data={formatCurrency(plan.currentBalance, currency)} />
                                 <MortgagePlanInfo title="Rate" data={`${plan.currentRate.toFixed(2)}%`} />
                                 <MortgagePlanInfo title="Remaining" data={`${plan.remainingMonths} months`} />
+                                <MortgagePlanInfo title="Cost / Unit" data={formatCurrency(plan.costPerUnit, currency)} />
                             </div>
                         </div>
                     ))
