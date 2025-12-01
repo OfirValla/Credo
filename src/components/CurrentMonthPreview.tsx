@@ -30,8 +30,25 @@ function getDisplayDate(): string {
  * Get next payment date (e.g., "10 Dec")
  * Assuming payments are due on the 10th of the next month
  */
-function getNextPaymentDate(): string {
+/**
+ * Get next payment date (e.g., "10 Dec")
+ * If current date <= payment day, show this month's payment date
+ * Else show next month's payment date
+ */
+function getNextPaymentDate(paymentDay: number = 10): string {
   const now = new Date();
+  const currentDay = now.getDate();
+
+  // If we haven't passed the payment day yet (or it's today), show this month's payment
+  if (currentDay <= paymentDay) {
+    const paymentDateThisMonth = new Date(now);
+    paymentDateThisMonth.setDate(paymentDay);
+    return paymentDateThisMonth.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+    });
+  }
+
   // Move to next month
   if (now.getMonth() === 11) {
     now.setFullYear(now.getFullYear() + 1);
@@ -39,7 +56,7 @@ function getNextPaymentDate(): string {
   } else {
     now.setMonth(now.getMonth() + 1);
   }
-  now.setDate(10); // Assuming 10th is payment day
+  now.setDate(paymentDay);
 
   return now.toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -81,7 +98,19 @@ export function CurrentMonthPreview() {
 
   const currentMonth = getCurrentMonth();
   const displayDate = getDisplayDate();
-  const nextPaymentDate = getNextPaymentDate();
+
+  // Determine payment day from the first plan, or default to 10
+  const paymentDay = useMemo(() => {
+    if (plans.length > 0) {
+      const firstPlan = plans[0];
+      // Extract day from DD/MM/YYYY
+      const day = parseInt(firstPlan.firstPaymentDate.split('/')[0], 10);
+      return isNaN(day) ? 10 : day;
+    }
+    return 10;
+  }, [plans]);
+
+  const nextPaymentDate = getNextPaymentDate(paymentDay);
 
   const aggregatedData = useMemo(() => {
     const result = {
