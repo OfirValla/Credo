@@ -10,9 +10,64 @@ import { MortgageSummary } from '@/components/MortgageSummary';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { ModeToggle } from '@/components/ModeToggle';
 import { ThemeProvider } from '@/context/ThemeProvider';
-import { MortgageProvider } from '@/context/MortgageProvider';
+import { MortgageProvider, useMortgage } from '@/context/MortgageProvider';
+import { generatePDFReport } from '@/lib/pdfReportGenerator';
+import { useMortgageCalculations } from '@/hooks/useMortgageCalculations';
+import { Button } from '@/components/ui/button';
+import { FileText } from 'lucide-react';
+import { MortgagePortfolioProvider, useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
+import { Sidebar } from '@/components/Sidebar';
 
 function AppContent() {
+  const { plans, extraPayments, rateChanges, gracePeriods, currency } = useMortgage();
+  const amortizationSchedule = useMortgageCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
+
+  const handleDownloadPDF = async () => {
+    const totalBalance = plans.reduce((sum, plan) => sum + plan.amount, 0);
+    // Calculate monthly payment: try current month, otherwise fallback to first month
+    let monthlyPayment = 0;
+    if (amortizationSchedule.length > 0) {
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+
+      const currentMonthRows = amortizationSchedule.filter(row => {
+        const parts = row.month.split('/');
+        if (parts.length === 3) {
+          const [, m, y] = parts.map(Number);
+          return m === currentMonth && y === currentYear;
+        }
+        return false;
+      });
+
+      if (currentMonthRows.length > 0) {
+        monthlyPayment = currentMonthRows.reduce((sum, row) => sum + row.monthlyPayment, 0);
+      } else {
+        const firstMonth = amortizationSchedule[0].month;
+        monthlyPayment = amortizationSchedule
+          .filter(row => row.month === firstMonth)
+          .reduce((sum, row) => sum + row.monthlyPayment, 0);
+      }
+    }
+    const totalInterest = amortizationSchedule.reduce((sum, row) => sum + row.interest, 0);
+    const payoffDate = amortizationSchedule.length > 0 ? amortizationSchedule[amortizationSchedule.length - 1].month : '-';
+
+    await generatePDFReport({
+      plans,
+      extraPayments,
+      rateChanges,
+      gracePeriods,
+      amortizationSchedule,
+      currency,
+      summary: {
+        totalBalance,
+        monthlyPayment,
+        totalInterest,
+        payoffDate
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 overflow-x-hidden">
       {/* Background Gradients */}
@@ -44,6 +99,14 @@ function AppContent() {
             <div className="flex justify-end gap-3 flex-wrap">
               <DataImport />
               <DataExport />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleDownloadPDF}
+                title="Download PDF Report"
+              >
+                <FileText className="h-[1.2rem] w-[1.2rem]" />
+              </Button>
               <CurrencySelector />
               <ModeToggle />
             </div>
@@ -104,9 +167,6 @@ function AppContent() {
     </div>
   );
 }
-
-import { MortgagePortfolioProvider, useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
-import { Sidebar } from '@/components/Sidebar';
 
 function AppWithPortfolio() {
   const { currentPortfolioId } = useMortgagePortfolio();
