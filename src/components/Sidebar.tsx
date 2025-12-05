@@ -268,7 +268,7 @@ export function Sidebar() {
                                             <motion.span
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
-                                                className="truncate text-sm font-medium"
+                                                className="truncate text-sm font-medium select-none"
                                             >
                                                 {portfolio.name}
                                             </motion.span>
