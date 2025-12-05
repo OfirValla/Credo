@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
-    Plus, Trash2, Edit2, Check, X, FolderOpen,
+    Plus, Trash2, Edit2, Check, X, FolderOpen, Upload,
     Home, Building, Briefcase, Landmark, PiggyBank, Wallet, Key, Shield, Star, Heart
 } from 'lucide-react';
 import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
@@ -61,13 +61,61 @@ export function Sidebar() {
     const [newPortfolioName, setNewPortfolioName] = useState('');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
+    const importInputRef = useRef<HTMLInputElement>(null);
 
     const handleAdd = () => {
         if (newPortfolioName.trim()) {
-            addPortfolio(newPortfolioName.trim(), PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)]);
+            const newId = addPortfolio(newPortfolioName.trim(), PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)]);
+            setCurrentPortfolioId(newId);
             setNewPortfolioName('');
             setIsAdding(false);
         }
+    };
+
+    const handleImportPortfolio = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const content = e.target?.result as string;
+                const data = JSON.parse(content);
+
+                let name = `Imported Portfolio ${new Date().toLocaleDateString()}`;
+                let color = PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)];
+                let icon;
+
+                if (data.portfolio) {
+                    if (data.portfolio.name) name = data.portfolio.name;
+                    if (data.portfolio.color) color = data.portfolio.color;
+                    if (data.portfolio.icon) icon = data.portfolio.icon;
+                } else if (data.portfolioName) {
+                    name = data.portfolioName;
+                    if (data.portfolioColor) color = data.portfolioColor;
+                    if (data.portfolioIcon) icon = data.portfolioIcon;
+                }
+
+                const newId = addPortfolio(name, color, icon);
+
+                // Manually seed local storage for the new portfolio
+                if (data.mortgagePlans) localStorage.setItem(`mortgage-plans-${newId}`, JSON.stringify(data.mortgagePlans));
+                if (data.extraPayments) localStorage.setItem(`mortgage-extra-payments-${newId}`, JSON.stringify(data.extraPayments));
+                if (data.rateChanges) localStorage.setItem(`mortgage-rate-changes-${newId}`, JSON.stringify(data.rateChanges));
+                if (data.gracePeriods) localStorage.setItem(`mortgage-grace-periods-${newId}`, JSON.stringify(data.gracePeriods));
+                if (data.currency) localStorage.setItem(`mortgage-currency-${newId}`, JSON.stringify(data.currency));
+
+                setCurrentPortfolioId(newId);
+
+                // Clear input
+                if (importInputRef.current) importInputRef.current.value = '';
+
+            } catch (error) {
+                console.error("Failed to import portfolio", error);
+                alert("Failed to import portfolio. Invalid file.");
+            }
+        };
+        reader.readAsText(file);
     };
 
     const startEditing = (id: string, name: string) => {
@@ -272,7 +320,15 @@ export function Sidebar() {
                 })}
             </div>
 
-            <div className="p-2 border-t border-border">
+            <div className="p-2 border-t border-border space-y-1">
+                <input
+                    type="file"
+                    ref={importInputRef}
+                    onChange={handleImportPortfolio}
+                    accept=".json"
+                    className="hidden"
+                />
+
                 {isExpanded ? (
                     isAdding ? (
                         <div className="flex items-center gap-2 p-2">
@@ -295,20 +351,48 @@ export function Sidebar() {
                             </Button>
                         </div>
                     ) : (
-                        <Button
-                            variant="outline"
-                            className="w-full justify-start gap-2"
-                            onClick={() => setIsAdding(true)}
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span>New Portfolio</span>
-                        </Button>
+                        <>
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start gap-2"
+                                onClick={() => setIsAdding(true)}
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span>New Portfolio</span>
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start gap-2"
+                                onClick={() => importInputRef.current?.click()}
+                            >
+                                <Upload className="w-4 h-4" />
+                                <span>Import Portfolio</span>
+                            </Button>
+                        </>
                     )
                 ) : (
-                    <div className="flex justify-center">
-                        <Button size="icon" variant="ghost" onClick={() => { setIsExpanded(true); setIsAdding(true); }}>
-                            <Plus className="w-5 h-5" />
-                        </Button>
+                    <div className="flex flex-col gap-2 items-center">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button size="icon" variant="ghost" onClick={() => { setIsExpanded(true); setIsAdding(true); }}>
+                                        <Plus className="w-5 h-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">New Portfolio</TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button size="icon" variant="ghost" onClick={() => importInputRef.current?.click()}>
+                                        <Upload className="w-5 h-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">Import Portfolio</TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
                 )}
             </div>

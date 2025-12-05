@@ -5,7 +5,7 @@ import { MortgagePortfolio } from '@/types';
 interface MortgagePortfolioContextType {
     portfolios: MortgagePortfolio[];
     currentPortfolioId: string;
-    addPortfolio: (name: string, color?: string) => void;
+    addPortfolio: (name: string, color?: string, icon?: string) => string;
     removePortfolio: (id: string) => void;
     updatePortfolio: (id: string, updates: Partial<MortgagePortfolio>) => void;
     setCurrentPortfolioId: (id: string) => void;
@@ -34,16 +34,17 @@ export function MortgagePortfolioProvider({ children }: { children: ReactNode })
         setCurrentPortfolioId(portfolios[0].id);
     }
 
-    const addPortfolio = useCallback((name: string, color?: string) => {
+    const addPortfolio = useCallback((name: string, color?: string, icon?: string) => {
         const newPortfolio: MortgagePortfolio = {
             id: `portfolio-${Date.now()}`,
             name,
             createdAt: Date.now(),
-            color: color || 'bg-blue-500'
+            color: color || 'bg-blue-500',
+            icon: icon
         };
         setPortfolios([...portfolios, newPortfolio]);
-        setCurrentPortfolioId(newPortfolio.id);
-    }, [portfolios, setPortfolios, setCurrentPortfolioId]);
+        return newPortfolio.id;
+    }, [portfolios, setPortfolios]);
 
     const removePortfolio = useCallback((id: string) => {
         if (portfolios.length <= 1) {
