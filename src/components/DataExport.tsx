@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 
 import { MortgagePlan, ExtraPayment, RateChange } from '@/types';
 import { useMortgage } from '@/context/MortgageProvider';
+import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
 
 export const DataExport: React.FC = () => {
   const { plans, extraPayments, rateChanges, gracePeriods, currency } = useMortgage();
+  const { portfolios, currentPortfolioId } = useMortgagePortfolio();
 
   const exportData = () => {
     // Format dates to ISO string for consistency
@@ -31,12 +33,19 @@ export const DataExport: React.FC = () => {
       ...gp,
     }));
 
+    const currentPortfolio = portfolios.find(p => p.id === currentPortfolioId);
+
     const data = {
       mortgagePlans: formattedPlans,
       extraPayments: formattedExtraPayments,
       rateChanges: formattedRateChanges,
       gracePeriods: formattedGracePeriods,
       currency: currency,
+      portfolio: {
+        name: currentPortfolio?.name,
+        color: currentPortfolio?.color,
+        icon: currentPortfolio?.icon,
+      }
     };
 
     const jsonString = JSON.stringify(data, null, 2);

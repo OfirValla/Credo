@@ -2,9 +2,11 @@ import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMortgage } from '@/context/MortgageProvider';
+import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
 
 export const DataImport: React.FC = () => {
     const { importData } = useMortgage();
+    const { updatePortfolio, currentPortfolioId } = useMortgagePortfolio();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +46,7 @@ export const DataImport: React.FC = () => {
 
                 const gracePeriods = (data.gracePeriods || []).map((gp: any) => ({
                     ...gp,
+                    month: gp.month, // Ensure month property is preserved if it exists
                 }));
 
                 const currency = data.currency || 'USD';
@@ -55,6 +58,14 @@ export const DataImport: React.FC = () => {
                     gracePeriods,
                     currency,
                 });
+
+                if (data.portfolio) {
+                    updatePortfolio(currentPortfolioId, {
+                        name: data.portfolio.name,
+                        color: data.portfolio.color,
+                        icon: data.portfolio.icon
+                    });
+                }
 
                 alert('Data imported successfully!');
             } catch (error) {
