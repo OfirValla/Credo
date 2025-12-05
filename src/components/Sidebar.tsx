@@ -185,7 +185,7 @@ export function Sidebar() {
                             )}
                             onClick={() => !editingId && setCurrentPortfolioId(portfolio.id)}
                         >
-                            <div className="min-w-[2rem] flex justify-center items-center" onClick={(e) => e.stopPropagation()}>
+                            <div className="min-w-[2rem] flex justify-center items-center">
                                 {editingId === portfolio.id ? (
                                     <Popover>
                                         <PopoverTrigger asChild>
