@@ -107,7 +107,7 @@ export function Sidebar() {
                 isExpanded ? "w-64" : "w-16"
             )}
             onMouseEnter={() => setIsExpanded(true)}
-            onMouseLeave={() => setIsExpanded(false)}
+            onMouseLeave={() => !isAdding && setIsExpanded(false)}
         >
             <div className="p-4 flex items-center justify-center border-b border-border h-16">
                 <FolderOpen className="w-6 h-6" />
