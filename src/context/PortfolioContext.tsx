@@ -2,7 +2,7 @@ import { createContext, useContext, ReactNode, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { MortgagePortfolio } from '@/types';
 
-interface MortgagePortfolioContextType {
+interface PortfolioContextType {
     portfolios: MortgagePortfolio[];
     currentPortfolioId: string;
     addPortfolio: (name: string, color?: string, icon?: string) => string;
@@ -11,10 +11,10 @@ interface MortgagePortfolioContextType {
     setCurrentPortfolioId: (id: string) => void;
 }
 
-const MortgagePortfolioContext = createContext<MortgagePortfolioContextType | undefined>(undefined);
+const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
 
-export function MortgagePortfolioProvider({ children }: { children: ReactNode }) {
-    const [portfolios, setPortfolios] = useLocalStorage<MortgagePortfolio[]>('mortgage_portfolios', []);
+export function PortfolioProvider({ children }: { children: ReactNode }) {
+    const [portfolios, setPortfolios] = useLocalStorage<MortgagePortfolio[]>('portfolios', []);
     const [currentPortfolioId, setCurrentPortfolioId] = useLocalStorage<string>('current_portfolio_id', '');
 
     // Initialize default portfolio if none exist
@@ -36,7 +36,7 @@ export function MortgagePortfolioProvider({ children }: { children: ReactNode })
 
     const addPortfolio = useCallback((name: string, color?: string, icon?: string) => {
         const newPortfolio: MortgagePortfolio = {
-            id: `portfolio-${Date.now()}`,
+            id: `${Date.now()}`,
             name,
             createdAt: Date.now(),
             color: color || 'bg-blue-500',
@@ -74,24 +74,24 @@ export function MortgagePortfolioProvider({ children }: { children: ReactNode })
     };
 
     return (
-        <MortgagePortfolioContext.Provider value={value}>
+        <PortfolioContext.Provider value={value}>
             {children}
-        </MortgagePortfolioContext.Provider>
+        </PortfolioContext.Provider>
     );
 }
 
-export function useMortgagePortfolio() {
-    const context = useContext(MortgagePortfolioContext);
+export function usePortfolios() {
+    const context = useContext(PortfolioContext);
     if (context === undefined) {
-        throw new Error('useMortgagePortfolio must be used within a MortgagePortfolioProvider');
+        throw new Error('usePortfolios must be used within a PortfolioProvider');
     }
     return context;
 }
 
 export function useCurrentPortfolio() {
-    const context = useContext(MortgagePortfolioContext);
+    const context = useContext(PortfolioContext);
     if (context === undefined) {
-        throw new Error('useCurrentPortfolio must be used within a MortgagePortfolioProvider');
+        throw new Error('useCurrentPortfolio must be used within a PortfolioProvider');
     }
     const { currentPortfolioId, portfolios } = context;
     return portfolios.find(p => p.id === currentPortfolioId)!;

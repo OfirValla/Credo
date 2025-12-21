@@ -2,11 +2,11 @@ import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMortgage } from '@/context/MortgageProvider';
-import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
+import { usePortfolios } from '@/context/PortfolioContext';
 
 export const DataImport: React.FC = () => {
     const { importData } = useMortgage();
-    const { updatePortfolio, currentPortfolioId } = useMortgagePortfolio();
+    const { updatePortfolio, currentPortfolioId } = usePortfolios();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

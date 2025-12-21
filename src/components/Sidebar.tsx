@@ -5,7 +5,7 @@ import {
     Home, Building, Briefcase, Landmark, PiggyBank, Wallet, Key, Shield, Star, Heart,
     Car, Hospital, Plane, School, Hammer
 } from 'lucide-react';
-import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
+import { usePortfolios } from '@/context/PortfolioContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { Link } from 'react-router';
 
 const PORTFOLIO_COLORS = [
     'bg-slate-500',
@@ -61,7 +62,7 @@ const PORTFOLIO_ICONS = [
 ];
 
 export function Sidebar() {
-    const { portfolios, currentPortfolioId, setCurrentPortfolioId, addPortfolio, removePortfolio, updatePortfolio } = useMortgagePortfolio();
+    const { portfolios, currentPortfolioId, setCurrentPortfolioId, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
     const [newPortfolioName, setNewPortfolioName] = useState('');
@@ -177,7 +178,8 @@ export function Sidebar() {
             </div>
 
             <div className="px-2 py-2 border-b border-border">
-                <div
+                <Link
+                    to="/"
                     className={cn(
                         "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
                         currentPortfolioId === 'overview'
@@ -198,7 +200,7 @@ export function Sidebar() {
                             Overview
                         </motion.span>
                     )}
-                </div>
+                </Link>
             </div>
 
             <div className="flex-1 overflow-y-auto py-2 space-y-2 px-2">
@@ -206,8 +208,9 @@ export function Sidebar() {
                     const IconComponent = getIconComponent(portfolio.icon);
 
                     return (
-                        <div
+                        <Link
                             key={portfolio.id}
+                            to={`/${portfolio.type}/${portfolio.id}`}
                             className={cn(
                                 "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
                                 currentPortfolioId === portfolio.id
@@ -346,7 +349,7 @@ export function Sidebar() {
                                     )}
                                 </div>
                             )}
-                        </div>
+                        </Link>
                     );
                 })}
             </div>

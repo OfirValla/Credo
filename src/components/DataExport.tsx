@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 
 import { MortgagePlan, ExtraPayment, RateChange } from '@/types';
 import { useMortgage } from '@/context/MortgageProvider';
-import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
+import { usePortfolios } from '@/context/PortfolioContext';
 
 export const DataExport: React.FC = () => {
   const { plans, extraPayments, rateChanges, gracePeriods, currency } = useMortgage();
-  const { portfolios, currentPortfolioId } = useMortgagePortfolio();
+  const { portfolios, currentPortfolioId } = usePortfolios();
 
   const exportData = () => {
     // Format dates to ISO string for consistency

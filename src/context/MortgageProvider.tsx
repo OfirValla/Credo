@@ -5,6 +5,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useMortgageCalculations } from '@/hooks/useMortgageCalculations';
 
 import { parseMonth } from '@/lib/planUtils';
+import { useParams } from 'react-router';
 
 interface MortgageContextType {
     plans: MortgagePlan[];
@@ -37,8 +38,9 @@ interface MortgageContextType {
 
 const MortgageContext = createContext<MortgageContextType | undefined>(undefined);
 
-export function MortgageProvider({ children, portfolioId }: { children: ReactNode; portfolioId?: string }) {
-    const suffix = portfolioId && portfolioId !== 'default' ? `-${portfolioId}` : '';
+export function MortgageProvider({ children }: { children: ReactNode }) {
+    const { portfolioId } = useParams();
+    const suffix = `-${portfolioId}`;
 
     const [plans, setPlans] = useLocalStorage<MortgagePlan[]>(`mortgage-plans${suffix}`, []);
     const [extraPayments, setExtraPayments] = useLocalStorage<ExtraPayment[]>(`mortgage-extra-payments${suffix}`, []);

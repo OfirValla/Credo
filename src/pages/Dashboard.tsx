@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 import { LayoutDashboard, Plus } from 'lucide-react';
-import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
+import { usePortfolios } from '@/context/PortfolioContext';
 import { PortfolioSummaryCard } from '@/components/PortfolioSummaryCard';
 import { Button } from '@/components/ui/button';
 
 export function Dashboard() {
-    const { portfolios, addPortfolio, setCurrentPortfolioId } = useMortgagePortfolio();
+    const { portfolios, addPortfolio, setCurrentPortfolioId } = usePortfolios();
 
     const handleCreatePortfolio = () => {
         const name = `New Portfolio ${portfolios.length + 1}`;

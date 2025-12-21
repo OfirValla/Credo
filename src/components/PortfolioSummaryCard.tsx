@@ -3,20 +3,20 @@ import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { Building } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { MortgagePortfolio, MortgagePlan, ExtraPayment, RateChange, GracePeriod } from '@/types';
 import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCPI } from '@/hooks/useCPI';
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
-import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
+import { usePortfolios } from '@/context/PortfolioContext';
+import { Link } from 'react-router';
 
 interface PortfolioSummaryCardProps {
     portfolio: MortgagePortfolio;
 }
 
 export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
-    const { setCurrentPortfolioId } = useMortgagePortfolio();
+    const { setCurrentPortfolioId } = usePortfolios();
     const cpiData = useCPI();
 
     // Load portfolio specific data
@@ -24,11 +24,11 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
     // This mimics how the MortgageProvider loads data but for a specific portfolio ID
     const suffix = portfolio.id && portfolio.id !== 'default' ? `-${portfolio.id}` : '';
 
-    const [plans] = useLocalStorage<MortgagePlan[]>(`mortgage-plans${suffix}`, []);
-    const [extraPayments] = useLocalStorage<ExtraPayment[]>(`mortgage-extra-payments${suffix}`, []);
-    const [rateChanges] = useLocalStorage<RateChange[]>(`mortgage-rate-changes${suffix}`, []);
-    const [gracePeriods] = useLocalStorage<GracePeriod[]>(`mortgage-grace-periods${suffix}`, []);
-    const [currency] = useLocalStorage<CurrencyCode>(`mortgage-currency${suffix}`, 'ILS');
+    const [plans] = useLocalStorage<MortgagePlan[]>(`${portfolio.type}-plans${suffix}`, []);
+    const [extraPayments] = useLocalStorage<ExtraPayment[]>(`${portfolio.type}-extra-payments${suffix}`, []);
+    const [rateChanges] = useLocalStorage<RateChange[]>(`${portfolio.type}-rate-changes${suffix}`, []);
+    const [gracePeriods] = useLocalStorage<GracePeriod[]>(`${portfolio.type}-grace-periods${suffix}`, []);
+    const [currency] = useLocalStorage<CurrencyCode>(`${portfolio.type}-currency${suffix}`, 'ILS');
 
     const summary = useMemo(() => {
         if (!plans || plans.length === 0) {
@@ -100,13 +100,12 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
                             <Icon className="w-6 h-6" />
                         </div>
                         <CardTitle className="text-xl">{portfolio.name}</CardTitle>
-                        <Button
-                            variant="ghost"
-                            size="icon"
+                        <Link
+                            to={`/${portfolio.type}/${portfolio.id}`}
                             onClick={() => setCurrentPortfolioId(portfolio.id)}
                         >
                             <Icons.ArrowRight className="w-4 h-4" />
-                        </Button>
+                        </Link>
                     </div>
                 </CardHeader>
                 <CardContent>

@@ -60,6 +60,7 @@ export interface AmortizationRow {
 
 export interface MortgagePortfolio {
   id: string;
+  type: "mortgage" | "loan";
   name: string;
   createdAt: number;
   color?: string;
