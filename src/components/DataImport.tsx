@@ -61,6 +61,7 @@ export const DataImport: React.FC = () => {
 
                 if (data.portfolio) {
                     updatePortfolio(currentPortfolioId, {
+                        type: data.portfolio.type,
                         name: data.portfolio.name,
                         color: data.portfolio.color,
                         icon: data.portfolio.icon

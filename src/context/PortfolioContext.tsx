@@ -5,7 +5,7 @@ import { MortgagePortfolio } from '@/types';
 interface PortfolioContextType {
     portfolios: MortgagePortfolio[];
     currentPortfolioId: string;
-    addPortfolio: (name: string, color?: string, icon?: string) => string;
+    addPortfolio: (name: string, color?: string, icon?: string, type?: "mortgage" | "loan") => string;
     removePortfolio: (id: string) => void;
     updatePortfolio: (id: string, updates: Partial<MortgagePortfolio>) => void;
     setCurrentPortfolioId: (id: string) => void;
@@ -21,6 +21,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     if (portfolios.length === 0) {
         const defaultPortfolio: MortgagePortfolio = {
             id: 'default',
+            type: 'mortgage',
             name: 'Default Portfolio',
             createdAt: Date.now(),
             color: 'blue-500'
@@ -34,9 +35,10 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         setCurrentPortfolioId('overview');
     }
 
-    const addPortfolio = useCallback((name: string, color?: string, icon?: string) => {
+    const addPortfolio = useCallback((name: string, color?: string, icon?: string, type?: "mortgage" | "loan") => {
         const newPortfolio: MortgagePortfolio = {
             id: `${Date.now()}`,
+            type: type || 'mortgage',
             name,
             createdAt: Date.now(),
             color: color || 'bg-blue-500',
@@ -52,11 +54,21 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
             return;
         }
 
+        const portfolioToDelete = portfolios.find(p => p.id === id);
+
         const newPortfolios = portfolios.filter(p => p.id !== id);
         setPortfolios(newPortfolios);
 
         if (currentPortfolioId === id) {
             setCurrentPortfolioId(newPortfolios[0].id);
+        }
+
+        if (portfolioToDelete?.type === 'mortgage') {
+            localStorage.removeItem(`mortgage-plans-${id}`);
+            localStorage.removeItem(`mortgage-extra-payments-${id}`);
+            localStorage.removeItem(`mortgage-rate-changes-${id}`);
+            localStorage.removeItem(`mortgage-grace-periods-${id}`);
+            localStorage.removeItem(`mortgage-currency-${id}`);
         }
     }, [portfolios, currentPortfolioId, setPortfolios, setCurrentPortfolioId]);
 

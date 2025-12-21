@@ -89,11 +89,13 @@ export function Sidebar() {
                 const content = e.target?.result as string;
                 const data = JSON.parse(content);
 
+                let type: "mortgage" | "loan" = 'mortgage';
                 let name = `Imported Portfolio ${new Date().toLocaleDateString()}`;
                 let color = PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)];
                 let icon;
 
                 if (data.portfolio) {
+                    if (data.portfolio.type) type = data.portfolio.type;
                     if (data.portfolio.name) name = data.portfolio.name;
                     if (data.portfolio.color) color = data.portfolio.color;
                     if (data.portfolio.icon) icon = data.portfolio.icon;
@@ -103,7 +105,7 @@ export function Sidebar() {
                     if (data.portfolioIcon) icon = data.portfolioIcon;
                 }
 
-                const newId = addPortfolio(name, color, icon);
+                const newId = addPortfolio(name, color, icon, type);
 
                 // Manually seed local storage for the new portfolio
                 if (data.mortgagePlans) localStorage.setItem(`mortgage-plans-${newId}`, JSON.stringify(data.mortgagePlans));

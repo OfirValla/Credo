@@ -43,6 +43,7 @@ export const DataExport: React.FC = () => {
       currency: currency,
       portfolio: {
         name: currentPortfolio?.name,
+        type: currentPortfolio?.type,
         color: currentPortfolio?.color,
         icon: currentPortfolio?.icon,
       }
