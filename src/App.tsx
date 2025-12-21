@@ -1,5 +1,6 @@
+import type { ElementType } from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import { DataExport } from '@/components/DataExport';
 import { DataImport } from '@/components/DataImport';
 import { PlanningSection } from '@/components/PlanningSection';
@@ -15,10 +16,13 @@ import { generatePDFReport } from '@/lib/pdfReportGenerator';
 import { useMortgageCalculations } from '@/hooks/useMortgageCalculations';
 import { Button } from '@/components/ui/button';
 import { FileText } from 'lucide-react';
-import { MortgagePortfolioProvider, useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
+import { MortgagePortfolioProvider, useMortgagePortfolio, useCurrentPortfolio } from '@/context/MortgagePortfolioContext';
 import { Sidebar } from '@/components/Sidebar';
+import { Dashboard } from '@/components/Dashboard';
 
 function AppContent() {
+  const currentPortfolio = useCurrentPortfolio();
+
   const { plans, extraPayments, rateChanges, gracePeriods, currency } = useMortgage();
   const amortizationSchedule = useMortgageCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 
@@ -68,6 +72,7 @@ function AppContent() {
     });
   };
 
+  const Icon = (currentPortfolio.icon ? Icons[currentPortfolio.icon as keyof typeof Icons] : Icons['LayoutDashboard']) as ElementType;
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 overflow-x-hidden">
       {/* Background Gradients */}
@@ -85,11 +90,11 @@ function AppContent() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-primary/10 rounded-xl backdrop-blur-sm border border-primary/20">
-                <LayoutDashboard className="w-8 h-8 text-primary" />
+                <Icon className="w-8 h-8 text-primary" />
               </div>
               <div>
                 <h1 className="text-4xl font-bold tracking-tight text-gradient">
-                  Mortgage Manager
+                  Mortgage - {currentPortfolio.name}
                 </h1>
                 <p className="text-muted-foreground mt-1">
                   Smart analytics for your property investments
@@ -170,6 +175,17 @@ function AppContent() {
 
 function AppWithPortfolio() {
   const { currentPortfolioId } = useMortgagePortfolio();
+
+  if (currentPortfolioId === 'overview') {
+    return (
+      <>
+        <Sidebar />
+        <div className="pl-16 transition-all duration-300">
+          <Dashboard />
+        </div>
+      </>
+    );
+  }
 
   return (
     <MortgageProvider key={currentPortfolioId} portfolioId={currentPortfolioId}>

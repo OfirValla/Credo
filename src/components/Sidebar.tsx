@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
-    Plus, Trash2, Edit2, Check, X, FolderOpen, Upload,
-    Home, Building, Briefcase, Landmark, PiggyBank, Wallet, Key, Shield, Star, Heart
+    Plus, Trash2, Edit2, Check, X, FolderOpen, Upload, LayoutDashboard,
+    Home, Building, Briefcase, Landmark, PiggyBank, Wallet, Key, Shield, Star, Heart,
+    Car, Hospital, Plane, School, Hammer
 } from 'lucide-react';
 import { useMortgagePortfolio } from '@/context/MortgagePortfolioContext';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,11 @@ const PORTFOLIO_ICONS = [
     { name: 'Shield', icon: Shield },
     { name: 'Star', icon: Star },
     { name: 'Heart', icon: Heart },
+    { name: 'Car', icon: Car },
+    { name: 'Hospital', icon: Hospital },
+    { name: 'Plane', icon: Plane },
+    { name: 'School', icon: School },
+    { name: 'Hammer', icon: Hammer },
 ];
 
 export function Sidebar() {
@@ -170,7 +176,32 @@ export function Sidebar() {
                 )}
             </div>
 
-            <div className="flex-1 overflow-y-auto py-4 space-y-2 px-2">
+            <div className="px-2 py-2 border-b border-border">
+                <div
+                    className={cn(
+                        "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
+                        currentPortfolioId === 'overview'
+                            ? "bg-primary/10 text-primary"
+                            : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                    )}
+                    onClick={() => setCurrentPortfolioId('overview')}
+                >
+                    <div className="min-w-[2rem] flex justify-center items-center">
+                        <LayoutDashboard className="w-5 h-5" />
+                    </div>
+                    {isExpanded && (
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                        >
+                            Overview
+                        </motion.span>
+                    )}
+                </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto py-2 space-y-2 px-2">
                 {portfolios.map((portfolio) => {
                     const IconComponent = getIconComponent(portfolio.icon);
 

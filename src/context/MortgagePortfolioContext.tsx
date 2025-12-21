@@ -29,9 +29,9 @@ export function MortgagePortfolioProvider({ children }: { children: ReactNode })
         if (currentPortfolioId !== 'default') {
             setCurrentPortfolioId('default');
         }
-    } else if (!currentPortfolioId || !portfolios.find(p => p.id === currentPortfolioId)) {
-        // Ensure valid current portfolio
-        setCurrentPortfolioId(portfolios[0].id);
+    } else if (!currentPortfolioId || (currentPortfolioId !== 'overview' && !portfolios.find(p => p.id === currentPortfolioId))) {
+        // Ensure valid current portfolio, default to overview if available or first portfolio
+        setCurrentPortfolioId('overview');
     }
 
     const addPortfolio = useCallback((name: string, color?: string, icon?: string) => {
@@ -86,4 +86,13 @@ export function useMortgagePortfolio() {
         throw new Error('useMortgagePortfolio must be used within a MortgagePortfolioProvider');
     }
     return context;
+}
+
+export function useCurrentPortfolio() {
+    const context = useContext(MortgagePortfolioContext);
+    if (context === undefined) {
+        throw new Error('useCurrentPortfolio must be used within a MortgagePortfolioProvider');
+    }
+    const { currentPortfolioId, portfolios } = context;
+    return portfolios.find(p => p.id === currentPortfolioId)!;
 }
