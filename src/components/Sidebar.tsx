@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     Plus, Trash2, Edit2, Check, X, FolderOpen, Upload, LayoutDashboard,
@@ -275,13 +275,13 @@ export function Sidebar() {
                                             </div>
                                         ) : (
                                             <>
-                                                <motion.span
+                                                <motion.div
                                                     initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1 }}
-                                                    className="truncate text-sm font-medium select-none"
+                                                    className="flex-1 overflow-hidden min-w-0"
                                                 >
-                                                    {portfolio.name}
-                                                </motion.span>
+                                                    <ScrollingName name={portfolio.name} />
+                                                </motion.div>
                                                 <div className="flex opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                                                     <TooltipProvider>
                                                         <Tooltip>
@@ -394,3 +394,73 @@ export function Sidebar() {
     );
 }
 
+function ScrollingName({ name }: { name: string }) {
+    const [isOverflowing, setIsOverflowing] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const textRef = useRef<HTMLSpanElement>(null);
+    const [scrollDistance, setScrollDistance] = useState(0);
+
+    useEffect(() => {
+        const checkOverflow = () => {
+            if (containerRef.current) {
+                const { clientWidth, scrollWidth } = containerRef.current;
+                const isOver = scrollWidth > clientWidth;
+                setIsOverflowing(isOver);
+                if (isOver) {
+                    setScrollDistance(clientWidth - scrollWidth);
+                } else {
+                    setScrollDistance(0);
+                }
+            }
+        };
+
+        // Initial check
+        checkOverflow();
+
+        // Use ResizeObserver for robust monitoring
+        const resizeObserver = new ResizeObserver(() => {
+            checkOverflow();
+        });
+
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [name]);
+
+    return (
+        <div
+            ref={containerRef}
+            className="overflow-hidden w-full mask-linear-fade"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <motion.div
+                className="whitespace-nowrap inline-block"
+                initial={{ x: 0 }}
+                animate={isHovered && isOverflowing ? {
+                    x: scrollDistance,
+                    transition: {
+                        duration: Math.abs(scrollDistance) / 30,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        repeatDelay: 1,
+                        ease: "linear",
+                        type: "tween"
+                    }
+                } : {
+                    x: 0,
+                    transition: { duration: 0.3 }
+                }}
+            >
+                <span ref={textRef} className="text-sm font-medium select-none pr-2">
+                    {name}
+                </span>
+            </motion.div>
+        </div>
+    );
+}
