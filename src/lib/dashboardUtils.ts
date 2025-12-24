@@ -88,10 +88,10 @@ export function getAggregateDashboardData(
                 // If we found rows for this month, sum them up
                 if (currentMonthRows.length > 0) {
                     currentMonthlyPayment = currentMonthRows.reduce((sum, row) => sum + row.monthlyPayment, 0);
-                    // To get the balance *after* this month's payment, we can sum ending balances
-                    // But strictly speaking, "Outstanding Balance" is usually before payment or after last payment. 
-                    // Let's use the starting balance of the current month effectively.
-                    currentScheduleBalance = currentMonthRows.reduce((sum, row) => sum + row.startingBalance, 0);
+                    currentScheduleBalance = currentMonthRows.reduce((sum, row) => {
+                        const paymentDay = parseInt(row.month.split('/')[0], 10);
+                        return now.getDate() < paymentDay ? sum + row.startingBalance : sum + row.endingBalance;
+                    }, 0);
                 } else {
                     // If we are before the mortgage starts, it's the full amount.
                     // If we are after, it's 0.
