@@ -309,7 +309,12 @@ export function Sidebar() {
                                                                         className="h-6 w-6 text-destructive hover:text-destructive"
                                                                         onClick={() => {
                                                                             if (confirm(`Delete portfolio "${portfolio.name}"?`)) {
+                                                                                const isCurrent = currentPortfolioId === portfolio.id;
                                                                                 removePortfolio(portfolio.id);
+                                                                                if (isCurrent) {
+                                                                                    setCurrentPortfolioId('overview');
+                                                                                    navigate('/');
+                                                                                }
                                                                             }
                                                                         }}
                                                                     >
