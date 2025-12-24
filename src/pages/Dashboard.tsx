@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { LayoutDashboard, Plus } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfolioContext';
 import { PortfolioSummaryCard } from '@/components/PortfolioSummaryCard';
+import { DashboardStats } from '@/components/DashboardStats';
 import { Button } from '@/components/ui/button';
 
 export function Dashboard() {
@@ -35,13 +36,15 @@ export function Dashboard() {
                 </div>
             </motion.div>
 
+            <DashboardStats />
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {portfolios.map((portfolio, index) => (
                     <motion.div
                         key={portfolio.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
+                        transition={{ delay: index * 0.1 + 0.5 }} // Added delay to stagger after stats
                     >
                         <PortfolioSummaryCard portfolio={portfolio} />
                     </motion.div>
@@ -50,7 +53,7 @@ export function Dashboard() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: portfolios.length * 0.1 }}
+                    transition={{ delay: portfolios.length * 0.1 + 0.5 }}
                 >
                     <Button
                         variant="outline"
