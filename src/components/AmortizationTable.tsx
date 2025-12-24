@@ -168,7 +168,7 @@ export function AmortizationTable() {
     return (
       <Card className="flex flex-col" gradient>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-xl">
+          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
             <Table2 className="w-5 h-5 text-primary" />
             Amortization Table
           </CardTitle>
@@ -207,7 +207,7 @@ export function AmortizationTable() {
                 <Table2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl font-bold">Amortization Table</CardTitle>
+                <CardTitle className="text-lg font-semibold">Amortization Table</CardTitle>
                 <CardDescription>Detailed payment schedule</CardDescription>
               </div>
             </div>

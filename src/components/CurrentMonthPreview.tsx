@@ -192,7 +192,7 @@ export function CurrentMonthPreview() {
               <CalendarDays className="w-6 h-6 text-white" />
             </div>
             <div>
-              <CardTitle className="text-xl font-bold">Current Month Preview</CardTitle>
+              <CardTitle className="text-lg font-semibold">Current Month Preview</CardTitle>
               <CardDescription>{displayDate}</CardDescription>
             </div>
           </div>
@@ -213,7 +213,7 @@ export function CurrentMonthPreview() {
             <CalendarDays className="w-6 h-6 text-white" />
           </div>
           <div>
-            <CardTitle className="text-xl font-bold">Current Month Preview</CardTitle>
+            <CardTitle className="text-lg font-semibold">Current Month Preview</CardTitle>
             <CardDescription>{displayDate}</CardDescription>
           </div>
         </div>
