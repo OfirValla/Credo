@@ -5,7 +5,7 @@ import { useCPI } from '@/hooks/useCPI';
 import { getAggregateDashboardData } from '@/lib/dashboardUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/currency';
-import { motion } from 'framer-motion';
+import { color, motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Coins, CreditCard, Building, Wallet } from 'lucide-react';
 
@@ -29,21 +29,29 @@ export function DashboardStats() {
     // This is a simplified mapping. In a real app we might use a proper theme provider or utility
     const getColorHex = (colorName: string) => {
         const colors: Record<string, string> = {
-            'blue-500': '#3b82f6',
-            'green-500': '#22c55e',
-            'red-500': '#ef4444',
-            'yellow-500': '#eab308',
-            'purple-500': '#a855f7',
-            'pink-500': '#ec4899',
-            'indigo-500': '#6366f1',
-            'orange-500': '#f97316',
-            'teal-500': '#14b8a6',
-            'cyan-500': '#06b6d4',
+            'bg-slate-500': 'oklch(55.4% 0.046 257.417)',
+            'bg-red-500': 'oklch(63.7% 0.237 25.331)',
+            'bg-orange-500': 'oklch(70.5% 0.213 47.604)',
+            'bg-amber-500': 'oklch(76.9% 0.188 70.08)',
+            'bg-yellow-500': 'oklch(79.5% 0.184 86.047)',
+            'bg-lime-500': 'oklch(76.8% 0.233 130.85)',
+            'bg-green-500': 'oklch(72.3% 0.219 149.579)',
+            'bg-emerald-500': 'oklch(69.6% 0.17 162.48)',
+            'bg-teal-500': 'oklch(70.4% 0.14 182.503)',
+            'bg-cyan-500': 'oklch(71.5% 0.143 215.221)',
+            'bg-sky-500': 'oklch(68.5% 0.169 237.323)',
+            'bg-blue-500': 'oklch(62.3% 0.214 259.815)',
+            'bg-indigo-500': 'oklch(58.5% 0.233 277.117)',
+            'bg-violet-500': 'oklch(60.6% 0.25 292.717)',
+            'bg-purple-500': 'oklch(62.7% 0.265 303.9)',
+            'bg-fuchsia-500': 'oklch(66.7% 0.295 322.15)',
+            'bg-pink-500': 'oklch(65.6% 0.241 354.308)',
+            'bg-rose-500': 'oklch(64.5% 0.246 16.439)',
         };
-        // fallback to extracting from portfolio color if possible or default
-        const baseColor = colorName.replace('bg-', '').split('-')[0] + '-500';
-        return colors[baseColor] || '#3b82f6';
+        return colors[colorName] || '#3b82f6';
     };
+
+    console.log(data)
 
     return (
         <div className="space-y-6 mb-8">
