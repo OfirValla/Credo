@@ -20,7 +20,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 const PORTFOLIO_COLORS = [
     'bg-slate-500',
@@ -69,6 +69,7 @@ export function Sidebar() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const importInputRef = useRef<HTMLInputElement>(null);
+    const navigate = useNavigate();
 
     const handleAdd = () => {
         if (newPortfolioName.trim()) {
@@ -127,7 +128,10 @@ export function Sidebar() {
         reader.readAsText(file);
     };
 
-    const startEditing = (id: string, name: string) => {
+    const startEditing = (e: React.MouseEvent, id: string, name: string) => {
+        e.stopPropagation();
+        e.preventDefault();
+
         setEditingId(id);
         setEditName(name);
     };
@@ -210,16 +214,20 @@ export function Sidebar() {
                     const IconComponent = getIconComponent(portfolio.icon);
 
                     return (
-                        <Link
+                        <div
                             key={portfolio.id}
-                            to={`/${portfolio.type}/${portfolio.id}`}
                             className={cn(
                                 "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
                                 currentPortfolioId === portfolio.id
                                     ? "bg-primary/10"
                                     : "hover:bg-muted text-muted-foreground hover:text-foreground"
                             )}
-                            onClick={() => !editingId && setCurrentPortfolioId(portfolio.id)}
+                            onClick={() => {
+                                if (!editingId) {
+                                    setCurrentPortfolioId(portfolio.id);
+                                    navigate(`/${portfolio.type}/${portfolio.id}`);
+                                }
+                            }}
                         >
                             <div className="min-w-[2rem] flex justify-center items-center">
                                 {editingId === portfolio.id ? (
@@ -316,7 +324,7 @@ export function Sidebar() {
                                                                 size="icon"
                                                                 variant="ghost"
                                                                 className="h-6 w-6"
-                                                                onClick={() => startEditing(portfolio.id, portfolio.name)}
+                                                                onClick={(e) => startEditing(e, portfolio.id, portfolio.name)}
                                                             >
                                                                 <Edit2 className="w-3 h-3" />
                                                             </Button>
@@ -351,7 +359,7 @@ export function Sidebar() {
                                     )}
                                 </div>
                             )}
-                        </Link>
+                        </div>
                     );
                 })}
             </div>

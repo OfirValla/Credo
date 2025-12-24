@@ -69,7 +69,7 @@ export function Mortgage() {
         });
     };
 
-    const Icon = (currentPortfolio.icon ? Icons[currentPortfolio.icon as keyof typeof Icons] : Icons['LayoutDashboard']) as ElementType;
+    const Icon = (currentPortfolio?.icon ? Icons[currentPortfolio.icon as keyof typeof Icons] : Icons['LayoutDashboard']) as ElementType;
     return (
         <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 overflow-x-hidden">
             {/* Background Gradients */}
@@ -91,7 +91,7 @@ export function Mortgage() {
                             </div>
                             <div>
                                 <h1 className="text-4xl font-bold tracking-tight text-gradient">
-                                    Mortgage - {currentPortfolio.name}
+                                    Mortgage - {currentPortfolio?.name}
                                 </h1>
                                 <p className="text-muted-foreground mt-1">
                                     Smart analytics for your property investments
