@@ -2,8 +2,7 @@ import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
     Plus, Trash2, Edit2, Check, X, FolderOpen, Upload, LayoutDashboard,
-    Home, Building, Briefcase, Landmark, PiggyBank, Wallet, Key, Shield, Star, Heart,
-    Car, Hospital, Plane, School, Hammer
+    Home
 } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfolioContext';
 import { cn } from '@/lib/utils';
@@ -21,63 +20,23 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Link, useNavigate } from 'react-router';
-
-const PORTFOLIO_COLORS = [
-    'bg-slate-500',
-    'bg-red-500',
-    'bg-orange-500',
-    'bg-amber-500',
-    'bg-yellow-500',
-    'bg-lime-500',
-    'bg-green-500',
-    'bg-emerald-500',
-    'bg-teal-500',
-    'bg-cyan-500',
-    'bg-sky-500',
-    'bg-blue-500',
-    'bg-indigo-500',
-    'bg-violet-500',
-    'bg-purple-500',
-    'bg-fuchsia-500',
-    'bg-pink-500',
-    'bg-rose-500',
-];
-
-const PORTFOLIO_ICONS = [
-    { name: 'Home', icon: Home },
-    { name: 'Building', icon: Building },
-    { name: 'Briefcase', icon: Briefcase },
-    { name: 'Landmark', icon: Landmark },
-    { name: 'PiggyBank', icon: PiggyBank },
-    { name: 'Wallet', icon: Wallet },
-    { name: 'Key', icon: Key },
-    { name: 'Shield', icon: Shield },
-    { name: 'Star', icon: Star },
-    { name: 'Heart', icon: Heart },
-    { name: 'Car', icon: Car },
-    { name: 'Hospital', icon: Hospital },
-    { name: 'Plane', icon: Plane },
-    { name: 'School', icon: School },
-    { name: 'Hammer', icon: Hammer },
-];
+import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
+import { PortfolioCreationModal } from './PortfolioCreationModal';
 
 export function Sidebar() {
     const { portfolios, currentPortfolioId, setCurrentPortfolioId, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
-    const [isAdding, setIsAdding] = useState(false);
-    const [newPortfolioName, setNewPortfolioName] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const importInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
 
-    const handleAdd = () => {
-        if (newPortfolioName.trim()) {
-            const newId = addPortfolio(newPortfolioName.trim(), PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)]);
-            setCurrentPortfolioId(newId);
-            setNewPortfolioName('');
-            setIsAdding(false);
-        }
+    const handleCreatePortfolio = (name: string, type: "mortgage" | "loan", color: string, icon: string) => {
+        const newId = addPortfolio(name, color, icon, type);
+        setCurrentPortfolioId(newId);
+        setIsModalOpen(false);
+        navigate(`/${type}/${newId}`);
     };
 
     const handleImportPortfolio = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,244 +121,230 @@ export function Sidebar() {
     };
 
     return (
-        <motion.div
-            className={cn(
-                "fixed left-0 top-0 h-full bg-background/80 backdrop-blur-md border-r border-border z-50 shadow-lg transition-all duration-300 ease-in-out flex flex-col",
-                isExpanded ? "w-64" : "w-16"
-            )}
-            onMouseEnter={() => setIsExpanded(true)}
-            onMouseLeave={() => !isAdding && setIsExpanded(false)}
-        >
-            <div className="p-4 flex items-center justify-center border-b border-border h-16">
-                <FolderOpen className="w-6 h-6" />
-                {isExpanded && (
-                    <motion.span
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="ml-3 font-semibold text-lg whitespace-nowrap overflow-hidden"
-                    >
-                        Portfolios
-                    </motion.span>
-                )}
-            </div>
+        <>
+            <PortfolioCreationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onCreate={handleCreatePortfolio}
+            />
 
-            <div className="px-2 py-2 border-b border-border">
-                <Link
-                    to="/"
-                    className={cn(
-                        "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
-                        currentPortfolioId === 'overview'
-                            ? "bg-primary/10 text-primary"
-                            : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                    )}
-                    onClick={() => setCurrentPortfolioId('overview')}
-                >
-                    <div className="min-w-[2rem] flex justify-center items-center">
-                        <LayoutDashboard className="w-5 h-5" />
-                    </div>
+            <motion.div
+                className={cn(
+                    "fixed left-0 top-0 h-full bg-background/80 backdrop-blur-md border-r border-border z-40 shadow-lg transition-all duration-300 ease-in-out flex flex-col",
+                    isExpanded ? "w-64" : "w-16"
+                )}
+                onMouseEnter={() => setIsExpanded(true)}
+                onMouseLeave={() => setIsExpanded(false)}
+            >
+                <div className="p-4 flex items-center justify-center border-b border-border h-16">
+                    <FolderOpen className="w-6 h-6" />
                     {isExpanded && (
                         <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="ml-3 font-semibold text-lg whitespace-nowrap overflow-hidden"
                         >
-                            Overview
+                            Portfolios
                         </motion.span>
                     )}
-                </Link>
-            </div>
+                </div>
 
-            <div className="flex-1 overflow-y-auto py-2 space-y-2 px-2">
-                {portfolios.map((portfolio) => {
-                    const IconComponent = getIconComponent(portfolio.icon);
+                <div className="px-2 py-2 border-b border-border">
+                    <Link
+                        to="/"
+                        className={cn(
+                            "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
+                            currentPortfolioId === 'overview'
+                                ? "bg-primary/10 text-primary"
+                                : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                        )}
+                        onClick={() => setCurrentPortfolioId('overview')}
+                    >
+                        <div className="min-w-[2rem] flex justify-center items-center">
+                            <LayoutDashboard className="w-5 h-5" />
+                        </div>
+                        {isExpanded && (
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                            >
+                                Overview
+                            </motion.span>
+                        )}
+                    </Link>
+                </div>
 
-                    return (
-                        <div
-                            key={portfolio.id}
-                            className={cn(
-                                "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
-                                currentPortfolioId === portfolio.id
-                                    ? "bg-primary/10"
-                                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                            )}
-                            onClick={() => {
-                                if (!editingId) {
-                                    setCurrentPortfolioId(portfolio.id);
-                                    navigate(`/${portfolio.type}/${portfolio.id}`);
-                                }
-                            }}
-                        >
-                            <div className="min-w-[2rem] flex justify-center items-center">
-                                {editingId === portfolio.id ? (
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <div className={cn(
-                                                "w-8 h-8 rounded-full cursor-pointer ring-2 ring-offset-2 ring-offset-background flex items-center justify-center text-white shadow-sm",
-                                                portfolio.color || 'bg-primary'
-                                            )}>
-                                                <IconComponent className="w-4 h-4" />
-                                            </div>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-72 p-4 space-y-4">
-                                            <div className="space-y-2">
-                                                <h4 className="font-medium text-sm text-muted-foreground">Color</h4>
-                                                <div className="grid grid-cols-6 gap-2">
-                                                    {PORTFOLIO_COLORS.map((color) => (
-                                                        <div
-                                                            key={color}
-                                                            className={cn(
-                                                                "w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform",
-                                                                color,
-                                                                portfolio.color === color && "ring-2 ring-offset-2 ring-primary"
-                                                            )}
-                                                            onClick={() => handleColorChange(portfolio.id, color)}
-                                                        />
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <h4 className="font-medium text-sm text-muted-foreground">Icon</h4>
-                                                <div className="grid grid-cols-5 gap-2">
-                                                    {PORTFOLIO_ICONS.map(({ name, icon: Icon }) => (
-                                                        <div
-                                                            key={name}
-                                                            className={cn(
-                                                                "w-8 h-8 rounded-md flex items-center justify-center cursor-pointer hover:bg-muted transition-colors border border-transparent",
-                                                                portfolio.icon === name && "bg-primary/10 border-primary text-primary"
-                                                            )}
-                                                            onClick={() => handleIconChange(portfolio.id, name)}
-                                                        >
-                                                            <Icon className="w-4 h-4" />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
-                                ) : (
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm transition-all group-hover:scale-110",
-                                        portfolio.color || 'bg-primary'
-                                    )}>
-                                        <IconComponent className="w-4 h-4" />
-                                    </div>
+                <div className="flex-1 overflow-y-auto py-2 space-y-2 px-2">
+                    {portfolios.map((portfolio) => {
+                        const IconComponent = getIconComponent(portfolio.icon);
+
+                        return (
+                            <div
+                                key={portfolio.id}
+                                className={cn(
+                                    "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
+                                    currentPortfolioId === portfolio.id
+                                        ? "bg-primary/10"
+                                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
                                 )}
-                            </div>
-
-                            {isExpanded && (
-                                <div className="flex-1 flex items-center justify-between overflow-hidden ml-3">
+                                onClick={() => {
+                                    if (!editingId) {
+                                        setCurrentPortfolioId(portfolio.id);
+                                        navigate(`/${portfolio.type}/${portfolio.id}`);
+                                    }
+                                }}
+                            >
+                                <div className="min-w-[2rem] flex justify-center items-center">
                                     {editingId === portfolio.id ? (
-                                        <div className="flex items-center gap-1 w-full" onClick={(e) => e.stopPropagation()}>
-                                            <Input
-                                                value={editName}
-                                                onChange={(e) => setEditName(e.target.value)}
-                                                className="h-7 text-sm px-1"
-                                                autoFocus
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') saveEdit();
-                                                    if (e.key === 'Escape') cancelEdit();
-                                                }}
-                                            />
-                                            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={saveEdit}>
-                                                <Check className="w-3 h-3 text-green-500" />
-                                            </Button>
-                                            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelEdit}>
-                                                <X className="w-3 h-3 text-red-500" />
-                                            </Button>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <motion.span
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                className="truncate text-sm font-medium select-none"
-                                            >
-                                                {portfolio.name}
-                                            </motion.span>
-                                            <div className="flex opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                                                <TooltipProvider>
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <Button
-                                                                size="icon"
-                                                                variant="ghost"
-                                                                className="h-6 w-6"
-                                                                onClick={(e) => startEditing(e, portfolio.id, portfolio.name)}
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <div className={cn(
+                                                    "w-8 h-8 rounded-full cursor-pointer ring-2 ring-offset-2 ring-offset-background flex items-center justify-center text-white shadow-sm",
+                                                    portfolio.color || 'bg-primary'
+                                                )}>
+                                                    <IconComponent className="w-4 h-4" />
+                                                </div>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-72 p-4 space-y-4">
+                                                <div className="space-y-2">
+                                                    <h4 className="font-medium text-sm text-muted-foreground">Color</h4>
+                                                    <div className="grid grid-cols-6 gap-2">
+                                                        {PORTFOLIO_COLORS.map((color) => (
+                                                            <div
+                                                                key={color}
+                                                                className={cn(
+                                                                    "w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform",
+                                                                    color,
+                                                                    portfolio.color === color && "ring-2 ring-offset-2 ring-primary"
+                                                                )}
+                                                                onClick={() => handleColorChange(portfolio.id, color)}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <h4 className="font-medium text-sm text-muted-foreground">Icon</h4>
+                                                    <div className="grid grid-cols-5 gap-2">
+                                                        {PORTFOLIO_ICONS.map(({ name, icon: Icon }) => (
+                                                            <div
+                                                                key={name}
+                                                                className={cn(
+                                                                    "w-8 h-8 rounded-md flex items-center justify-center cursor-pointer hover:bg-muted transition-colors border border-transparent",
+                                                                    portfolio.icon === name && "bg-primary/10 border-primary text-primary"
+                                                                )}
+                                                                onClick={() => handleIconChange(portfolio.id, name)}
                                                             >
-                                                                <Edit2 className="w-3 h-3" />
-                                                            </Button>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>Edit</TooltipContent>
-                                                    </Tooltip>
-                                                </TooltipProvider>
+                                                                <Icon className="w-4 h-4" />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </PopoverContent>
+                                        </Popover>
+                                    ) : (
+                                        <div className={cn(
+                                            "w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm transition-all group-hover:scale-110",
+                                            portfolio.color || 'bg-primary'
+                                        )}>
+                                            <IconComponent className="w-4 h-4" />
+                                        </div>
+                                    )}
+                                </div>
 
-                                                {portfolios.length > 1 && (
+                                {isExpanded && (
+                                    <div className="flex-1 flex items-center justify-between overflow-hidden ml-3">
+                                        {editingId === portfolio.id ? (
+                                            <div className="flex items-center gap-1 w-full" onClick={(e) => e.stopPropagation()}>
+                                                <Input
+                                                    value={editName}
+                                                    onChange={(e) => setEditName(e.target.value)}
+                                                    className="h-7 text-sm px-1"
+                                                    autoFocus
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') saveEdit();
+                                                        if (e.key === 'Escape') cancelEdit();
+                                                    }}
+                                                />
+                                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={saveEdit}>
+                                                    <Check className="w-3 h-3 text-green-500" />
+                                                </Button>
+                                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelEdit}>
+                                                    <X className="w-3 h-3 text-red-500" />
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <motion.span
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    className="truncate text-sm font-medium select-none"
+                                                >
+                                                    {portfolio.name}
+                                                </motion.span>
+                                                <div className="flex opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                                                     <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <Button
                                                                     size="icon"
                                                                     variant="ghost"
-                                                                    className="h-6 w-6 text-destructive hover:text-destructive"
-                                                                    onClick={() => {
-                                                                        if (confirm(`Delete portfolio "${portfolio.name}"?`)) {
-                                                                            removePortfolio(portfolio.id);
-                                                                        }
-                                                                    }}
+                                                                    className="h-6 w-6"
+                                                                    onClick={(e) => startEditing(e, portfolio.id, portfolio.name)}
                                                                 >
-                                                                    <Trash2 className="w-3 h-3" />
+                                                                    <Edit2 className="w-3 h-3" />
                                                                 </Button>
                                                             </TooltipTrigger>
-                                                            <TooltipContent>Delete</TooltipContent>
+                                                            <TooltipContent>Edit</TooltipContent>
                                                         </Tooltip>
                                                     </TooltipProvider>
-                                                )}
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
 
-            <div className="p-2 border-t border-border space-y-1">
-                <input
-                    type="file"
-                    ref={importInputRef}
-                    onChange={handleImportPortfolio}
-                    accept=".json"
-                    className="hidden"
-                />
+                                                    {portfolios.length > 1 && (
+                                                        <TooltipProvider>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button
+                                                                        size="icon"
+                                                                        variant="ghost"
+                                                                        className="h-6 w-6 text-destructive hover:text-destructive"
+                                                                        onClick={() => {
+                                                                            if (confirm(`Delete portfolio "${portfolio.name}"?`)) {
+                                                                                removePortfolio(portfolio.id);
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <Trash2 className="w-3 h-3" />
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>Delete</TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
 
-                {isExpanded ? (
-                    isAdding ? (
-                        <div className="flex items-center gap-2 p-2">
-                            <Input
-                                placeholder="Name..."
-                                value={newPortfolioName}
-                                onChange={(e) => setNewPortfolioName(e.target.value)}
-                                className="h-8 text-sm"
-                                autoFocus
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleAdd();
-                                    if (e.key === 'Escape') setIsAdding(false);
-                                }}
-                            />
-                            <Button size="icon" className="h-8 w-8 shrink-0" onClick={handleAdd}>
-                                <Check className="w-4 h-4" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 shrink-0" onClick={() => setIsAdding(false)}>
-                                <X className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    ) : (
+                <div className="p-2 border-t border-border space-y-1">
+                    <input
+                        type="file"
+                        ref={importInputRef}
+                        onChange={handleImportPortfolio}
+                        accept=".json"
+                        className="hidden"
+                    />
+
+                    {isExpanded ? (
                         <>
                             <Button
                                 variant="ghost"
                                 className="w-full justify-start gap-2"
-                                onClick={() => setIsAdding(true)}
+                                onClick={() => setIsModalOpen(true)}
                             >
                                 <Plus className="w-4 h-4" />
                                 <span>New Portfolio</span>
@@ -413,33 +358,34 @@ export function Sidebar() {
                                 <span>Import Portfolio</span>
                             </Button>
                         </>
-                    )
-                ) : (
-                    <div className="flex flex-col gap-2 items-center">
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button size="icon" variant="ghost" onClick={() => { setIsExpanded(true); setIsAdding(true); }}>
-                                        <Plus className="w-5 h-5" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">New Portfolio</TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                    ) : (
+                        <div className="flex flex-col gap-2 items-center">
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button size="icon" variant="ghost" onClick={() => { setIsExpanded(true); setIsModalOpen(true); }}>
+                                            <Plus className="w-5 h-5" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right">New Portfolio</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
 
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button size="icon" variant="ghost" onClick={() => importInputRef.current?.click()}>
-                                        <Upload className="w-5 h-5" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">Import Portfolio</TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
-                )}
-            </div>
-        </motion.div>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button size="icon" variant="ghost" onClick={() => importInputRef.current?.click()}>
+                                            <Upload className="w-5 h-5" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right">Import Portfolio</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+        </>
     );
 }
+

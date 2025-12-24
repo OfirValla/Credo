@@ -1,21 +1,33 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LayoutDashboard, Plus } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfolioContext';
 import { PortfolioSummaryCard } from '@/components/PortfolioSummaryCard';
 import { DashboardStats } from '@/components/DashboardStats';
 import { Button } from '@/components/ui/button';
+import { PortfolioCreationModal } from '@/components/PortfolioCreationModal';
+import { useNavigate } from 'react-router';
 
 export function Dashboard() {
     const { portfolios, addPortfolio, setCurrentPortfolioId } = usePortfolios();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
 
-    const handleCreatePortfolio = () => {
-        const name = `New Portfolio ${portfolios.length + 1}`;
-        const id = addPortfolio(name);
+    const handleCreatePortfolio = (name: string, type: "mortgage" | "loan", color: string, icon: string) => {
+        const id = addPortfolio(name, color, icon, type);
         setCurrentPortfolioId(id);
+        setIsModalOpen(false);
+        navigate(`/${type}/${id}`);
     };
 
     return (
         <div className="min-h-screen bg-background text-foreground p-8">
+            <PortfolioCreationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onCreate={handleCreatePortfolio}
+            />
+
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -58,7 +70,7 @@ export function Dashboard() {
                     <Button
                         variant="outline"
                         className="w-full h-full min-h-[200px] border-dashed flex flex-col gap-4 hover:border-primary hover:bg-primary/5 transition-all"
-                        onClick={handleCreatePortfolio}
+                        onClick={() => setIsModalOpen(true)}
                     >
                         <div className="p-4 rounded-full bg-secondary">
                             <Plus className="w-6 h-6" />
