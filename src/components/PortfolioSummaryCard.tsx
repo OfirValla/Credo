@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { Building } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MortgagePortfolio, MortgagePlan, ExtraPayment, RateChange, GracePeriod } from '@/types';
+import { MortgagePortfolio, Plan, ExtraPayment, RateChange, GracePeriod } from '@/types';
 import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCPI } from '@/hooks/useCPI';
@@ -21,10 +21,10 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
 
     // Load portfolio specific data
     // Note: We are reading directly from local storage to avoid loading all contexts at once
-    // This mimics how the MortgageProvider loads data but for a specific portfolio ID
+    // This mimics how the PlanProvider loads data but for a specific portfolio ID
     const suffix = portfolio.id && portfolio.id !== 'default' ? `-${portfolio.id}` : '';
 
-    const [plans] = useLocalStorage<MortgagePlan[]>(`${portfolio.type}-plans${suffix}`, []);
+    const [plans] = useLocalStorage<Plan[]>(`${portfolio.type}-plans${suffix}`, []);
     const [extraPayments] = useLocalStorage<ExtraPayment[]>(`${portfolio.type}-extra-payments${suffix}`, []);
     const [rateChanges] = useLocalStorage<RateChange[]>(`${portfolio.type}-rate-changes${suffix}`, []);
     const [gracePeriods] = useLocalStorage<GracePeriod[]>(`${portfolio.type}-grace-periods${suffix}`, []);
@@ -95,7 +95,7 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
             <Card className="h-full overflow-hidden border-l-4" style={{ borderLeftColor: `var(--${portfolio.color?.replace('bg-', '') || 'primary'})` }}>
                 <CardHeader className="pb-2">
                     <div className="grid grid-flow-col items-center justify-start gap-[20px] [grid-template-columns:auto_1fr_min-content]">
-                        <div className={`p-2 rounded-lg ${portfolio.color ? portfolio.color.replace('bg-', 'bg-').replace('500', '100') : 'bg-primary/10'} text-primary`}>
+                        <div className={`p-2 rounded-lg ${portfolio.color ? portfolio.color : 'bg-primary/10'} text-white`}>
                             {/* Icon placeholder - in a real app we'd map the string icon name to a component again */}
                             <Icon className="w-6 h-6" />
                         </div>

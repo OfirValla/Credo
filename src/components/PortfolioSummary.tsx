@@ -2,10 +2,11 @@ import { useMemo } from 'react';
 import { PieChart, DollarSign, TrendingUp, Calendar, CreditCard, Layers } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 
-export function MortgageSummary() {
-  const { plans: allPlans, amortizationRows: rows, currency, extraPayments: allExtraPayments } = useMortgage();
+
+export function PortfolioSummary() {
+  const { plans: allPlans, amortizationRows: rows, currency, extraPayments: allExtraPayments } = usePlans();
   const plans = allPlans.filter(p => p.enabled !== false);
   const extraPayments = allExtraPayments.filter(ep => ep.enabled !== false);
 
@@ -69,12 +70,12 @@ export function MortgageSummary() {
             <PieChart className="w-6 h-6 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
-            <CardTitle className="text-lg font-semibold">Mortgage Summary</CardTitle>
+            <CardTitle className="text-lg font-semibold">Portfolio Summary</CardTitle>
             <CardDescription>Complete lifecycle overview</CardDescription>
           </div>
         </CardHeader>
         <CardContent className="p-8 text-center text-muted-foreground">
-          Add a mortgage plan to see the summary.
+          Add a plan to see the summary.
         </CardContent>
       </Card>
     );
@@ -87,7 +88,7 @@ export function MortgageSummary() {
           <PieChart className="w-6 h-6 text-purple-600 dark:text-purple-400" />
         </div>
         <div>
-          <CardTitle className="text-lg font-semibold">Mortgage Summary</CardTitle>
+          <CardTitle className="text-lg font-semibold">Portfolio Summary</CardTitle>
           <CardDescription>Complete lifecycle overview</CardDescription>
         </div>
       </CardHeader>
@@ -97,13 +98,13 @@ export function MortgageSummary() {
           <div className="flex h-8 w-full overflow-hidden rounded-[0.5rem] text-white text-sm font-medium gap-2">
             <div
               className="bg-blue-600 flex items-center justify-center transition-all duration-500 rounded-l-[0.5rem]"
-              style={{ width: `${summary.principalPct}%` }}
+              style={{ width: `${summary.principalPct}% ` }}
             >
               Principal
             </div>
             <div
               className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500 rounded-r-[0.5rem]"
-              style={{ width: `${summary.interestPct}%` }}
+              style={{ width: `${summary.interestPct}% ` }}
             >
               Interest
             </div>

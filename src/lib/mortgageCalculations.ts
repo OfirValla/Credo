@@ -1,11 +1,11 @@
-import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange, RowTag, GracePeriod } from '@/types';
+import { Plan, ExtraPayment, AmortizationRow, RateChange, RowTag, GracePeriod } from '@/types';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { formatCurrency, CurrencyCode } from '@/lib/currency';
 
 // --- Types ---
 
 export interface PlanState {
-    plan: MortgagePlan;
+    plan: Plan;
     balance: number;
     monthlyPayment: number;
     monthlyRate: number;
@@ -15,7 +15,7 @@ export interface PlanState {
 }
 
 export interface CalculationContext {
-    plans: MortgagePlan[];
+    plans: Plan[];
     extraPayments: ExtraPayment[];
     rateChanges: RateChange[];
     gracePeriods: GracePeriod[];
@@ -27,11 +27,13 @@ export interface CalculationContext {
 
 /**
  * PMT Formula: P * [r(1+r)^n] / [(1+r)^n - 1]
+ * Supports FV (Future Value / Balloon Amount)
+ * PMT = (P * (1+r)^n - FV) * r / ((1+r)^n - 1)
  */
-export function calculatePMT(principal: number, monthlyRate: number, numPayments: number): number {
-    if (monthlyRate === 0) return principal / numPayments;
+export function calculatePMT(principal: number, monthlyRate: number, numPayments: number, fv: number = 0): number {
+    if (monthlyRate === 0) return (principal - fv) / numPayments;
     const factor = Math.pow(1 + monthlyRate, numPayments);
-    return principal * (monthlyRate * factor) / (factor - 1);
+    return (principal * factor - fv) * monthlyRate / (factor - 1);
 }
 
 export function formatMonth(monthNum: number): string {
@@ -58,7 +60,7 @@ function getCPI(cpiData: any, monthNum: number): number | null {
 /**
  * Initializes the tracking state for all enabled plans
  */
-function initializePlanStates(plans: MortgagePlan[]): Map<string, PlanState> {
+function initializePlanStates(plans: Plan[]): Map<string, PlanState> {
     const planData = new Map<string, PlanState>();
 
     for (const plan of plans) {
@@ -69,7 +71,7 @@ function initializePlanStates(plans: MortgagePlan[]): Map<string, PlanState> {
 
         // Calculate term in months
         const termMonths = Math.max(1, Math.floor(endMonthIdx) - Math.floor(startPaymentMonthIdx) + 1);
-        const monthlyPayment = calculatePMT(plan.amount, monthlyRate, termMonths);
+        const monthlyPayment = calculatePMT(plan.amount, monthlyRate, termMonths, plan.balloonValue || 0);
 
         planData.set(plan.id, {
             plan,
@@ -337,7 +339,7 @@ function processPlanMonth(
     if (activeRateChange) {
         state.monthlyRate = activeRateChange.newAnnualRate / 100 / 12;
         if (state.balance > 0 && state.remainingPayments > 0 && !isGracePeriod) {
-            state.monthlyPayment = calculatePMT(state.balance, state.monthlyRate, state.remainingPayments);
+            state.monthlyPayment = calculatePMT(state.balance, state.monthlyRate, state.remainingPayments, state.plan.balloonValue || 0);
         }
     }
 
@@ -352,7 +354,7 @@ function processPlanMonth(
         currentPayment = (type === 'interestOnly') ? interest : 0;
     } else if (isFirstPaymentMonth && state.balance > 0 && state.originalTermMonths > 0) {
         // Recalculate on first payment to ensure accuracy after startup interest accumulation
-        state.monthlyPayment = calculatePMT(state.balance, state.monthlyRate, state.originalTermMonths);
+        state.monthlyPayment = calculatePMT(state.balance, state.monthlyRate, state.originalTermMonths, state.plan.balloonValue || 0);
         currentPayment = state.monthlyPayment;
     }
 
@@ -363,28 +365,51 @@ function processPlanMonth(
     // 9. Amortization Math
     let principal = currentPayment - interest;
     principal += extraPaymentAmount;
-    principal = Math.min(principal, state.balance); // Cannot pay more than balance
+    principal = Math.min(principal, state.balance); // Cannot pay more than balance (though balloon should remain)
+
+    // For balloon, we don't want to pay off the balloon part with normal payment.
+    // However, the PMT is calculated to leave exactly Balloon amount.
+    // So 'principal' calculated here should naturally reduce balance towards Balloon.
 
     let endingBalance = Math.max(0, state.balance - principal);
     let adjustedPayment = false;
 
-    // Handle small remainders (snap to 0)
-    if (endingBalance > 0 && endingBalance < 0.01) {
-        principal += endingBalance;
-        endingBalance = 0;
-        adjustedPayment = true;
+    // Handle small remainders (snap to 0 or balloon)
+    // If we are at the very last payment, we might need to snap to balloon value?
+    // Actually, remainingPayments reaches 0.
+
+    // Logic: if endingBalance is close to 0 (and no balloon) snap to 0. (line 372 original)
+    // If we have balloon, we shouldn't snap to 0 unless balloon is 0.
+
+    const balloonTarget = state.plan.balloonValue || 0;
+
+    // If this is the last payment and we are close to balloon target?
+    // Not explicitly handled, but math should work.
+    // However, floating point errors might occur.
+    if (endingBalance > balloonTarget && endingBalance < balloonTarget + 0.01) {
+        // Snap to balloon?
+        // Actually, if we overpaid slightly, principal changes.
+        // Let's keep the snap to 0 logic only if balloon is 0 for safety.
+        if (balloonTarget === 0 && endingBalance < 0.01) {
+            principal += endingBalance;
+            endingBalance = 0;
+            adjustedPayment = true;
+        }
     }
 
     // Recalculate future payments if requested (e.g. Reduce Payment extra payment type)
-    if (extra.recalculate && endingBalance > 0) {
-        state.monthlyPayment = calculatePMT(endingBalance, state.monthlyRate, state.remainingPayments - 1);
+    if (extra.recalculate && endingBalance > balloonTarget) {
+        state.monthlyPayment = calculatePMT(endingBalance, state.monthlyRate, state.remainingPayments - 1, balloonTarget);
     }
 
     // Update State for next iteration
     const startingBalance = state.balance;
     state.balance = endingBalance;
     if (!isGracePeriod) state.remainingPayments -= 1;
-    if (endingBalance <= 0.01) state.remainingPayments = 0;
+    if (endingBalance <= balloonTarget + 0.01 && state.remainingPayments <= 0) {
+        // We are done.
+        state.remainingPayments = 0;
+    }
 
     const totalPayment = adjustedPayment
         ? principal + interest
@@ -417,7 +442,7 @@ function processPlanMonth(
 }
 
 export function calculateAmortizationSchedule(
-    plans: MortgagePlan[],
+    plans: Plan[],
     extraPayments: ExtraPayment[],
     rateChanges: RateChange[],
     gracePeriods: GracePeriod[],

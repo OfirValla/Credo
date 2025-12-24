@@ -2,17 +2,17 @@ import React from 'react';
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-import { MortgagePlan, ExtraPayment, RateChange } from '@/types';
-import { useMortgage } from '@/context/MortgageProvider';
+import { Plan, ExtraPayment, RateChange } from '@/types';
+import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfolioContext';
 
 export const DataExport: React.FC = () => {
-  const { plans, extraPayments, rateChanges, gracePeriods, currency } = useMortgage();
+  const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
   const { portfolios, currentPortfolioId } = usePortfolios();
 
   const exportData = () => {
     // Format dates to ISO string for consistency
-    const formattedPlans = plans.map((plan: MortgagePlan) => ({
+    const formattedPlans = plans.map((plan: Plan) => ({
       ...plan,
       takenDate: plan.takenDate,
       firstPaymentDate: plan.firstPaymentDate,
@@ -36,7 +36,7 @@ export const DataExport: React.FC = () => {
     const currentPortfolio = portfolios.find(p => p.id === currentPortfolioId);
 
     const data = {
-      mortgagePlans: formattedPlans,
+      Plans: formattedPlans,
       extraPayments: formattedExtraPayments,
       rateChanges: formattedRateChanges,
       gracePeriods: formattedGracePeriods,

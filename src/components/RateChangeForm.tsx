@@ -10,10 +10,10 @@ import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 
 export function RateChangeForm() {
-  const { plans, currency, rateChanges, addRateChange, updateRateChange, deleteRateChange } = useMortgage();
+  const { plans, currency, rateChanges, addRateChange, updateRateChange, deleteRateChange } = usePlans();
   const onAddRateChange = addRateChange;
   const onUpdateRateChange = updateRateChange;
   const onDeleteRateChange = deleteRateChange;

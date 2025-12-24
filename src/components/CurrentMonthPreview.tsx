@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Calendar, DollarSign, TrendingUp, Sparkles, CalendarDays } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 
 /**
  * Get current month in MM/YYYY format
@@ -93,7 +93,7 @@ function compareMonths(month1: string, month2: string): number {
 }
 
 export function CurrentMonthPreview() {
-  const { plans: allPlans, amortizationRows: rows, currency } = useMortgage();
+  const { plans: allPlans, amortizationRows: rows, currency } = usePlans();
   const plans = allPlans.filter(p => p.enabled !== false);
 
   const currentMonth = getCurrentMonth();

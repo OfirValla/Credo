@@ -1,4 +1,4 @@
-export interface MortgagePlan {
+export interface Plan {
   id: string;
   name?: string; // Optional custom name for the plan
   amount: number;
@@ -10,6 +10,8 @@ export interface MortgagePlan {
   enabled?: boolean; // Optional, defaults to true
   linkedToCPI?: boolean; // Optional, defaults to false
   remainingMonths?: number; // Calculated field
+  balloonValue?: number; // Optional balloon amount to remain at end of term
+  type?: 'regular' | 'balloon'; // Optional type
 }
 
 export interface ExtraPayment {

@@ -1,5 +1,5 @@
 
-import { MortgagePortfolio, MortgagePlan, ExtraPayment, RateChange, GracePeriod } from '@/types';
+import { MortgagePortfolio, Plan, ExtraPayment, RateChange, GracePeriod } from '@/types';
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
 import { CurrencyCode } from '@/lib/currency';
 
@@ -36,7 +36,7 @@ export function getAggregateDashboardData(
             const gracePeriodsStr = localStorage.getItem(`${portfolio.type}-grace-periods${suffix}`);
             const currencyStr = localStorage.getItem(`${portfolio.type}-currency${suffix}`);
 
-            const plans: MortgagePlan[] = plansStr ? JSON.parse(plansStr) : [];
+            const plans: Plan[] = plansStr ? JSON.parse(plansStr) : [];
             const extraPayments: ExtraPayment[] = extraPaymentsStr ? JSON.parse(extraPaymentsStr) : [];
             const rateChanges: RateChange[] = rateChangesStr ? JSON.parse(rateChangesStr) : [];
             const gracePeriods: GracePeriod[] = gracePeriodsStr ? JSON.parse(gracePeriodsStr) : [];

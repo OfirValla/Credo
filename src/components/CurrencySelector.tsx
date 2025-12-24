@@ -1,10 +1,10 @@
 import { CurrencyCode, CURRENCIES } from '@/lib/currency';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 
 export function CurrencySelector() {
-  const { currency, setCurrency } = useMortgage();
+  const { currency, setCurrency } = usePlans();
   const currencyOptions = CURRENCIES.map((curr) => ({
     value: curr.code,
     label: `${curr.symbol} ${curr.code} - ${curr.name}`,

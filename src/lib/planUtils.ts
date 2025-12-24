@@ -1,4 +1,4 @@
-import { MortgagePlan } from '@/types';
+import { Plan } from '@/types';
 import { CurrencyCode, getCurrencySymbol } from '@/lib/currency';
 
 /**
@@ -6,7 +6,7 @@ import { CurrencyCode, getCurrencySymbol } from '@/lib/currency';
  * Returns the custom name if provided, otherwise returns the default format
  */
 export function getPlanDisplayName(
-  plan: MortgagePlan,
+  plan: Plan,
   currency: CurrencyCode
 ): string {
   if (plan.name && plan.name.trim()) {
@@ -41,7 +41,7 @@ export function parseDateToMonthIndex(dateStr: string): number {
 /**
  * Get plan duration information
  */
-export function getPlanDurationInfo(plan: MortgagePlan): { totalMonths: number, remainingMonths: number } {
+export function getPlanDurationInfo(plan: Plan): { totalMonths: number, remainingMonths: number } {
   const startMonthIdx = parseDateToMonthIndex(plan.firstPaymentDate);
   const endMonthIdx = parseDateToMonthIndex(plan.lastPaymentDate);
 

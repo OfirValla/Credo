@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Wallet, Percent, Hourglass } from 'lucide-react';
-import { MortgageForm } from './MortgageForm';
+import { PlanForm } from './PlanForm';
 import { ExtraPaymentsForm } from './ExtraPaymentsForm';
 import { RateChangeForm } from './RateChangeForm';
 import { GracePeriodForm } from './GracePeriodForm';
@@ -39,7 +39,7 @@ export function PlanningSection() {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        {activeTab === 'plans' && <MortgageForm />}
+                        {activeTab === 'plans' && <PlanForm />}
                         {activeTab === 'extra' && <ExtraPaymentsForm />}
                         {activeTab === 'rates' && <RateChangeForm />}
                         {activeTab === 'grace' && <GracePeriodForm />}

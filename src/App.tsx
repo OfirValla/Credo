@@ -1,13 +1,15 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 
 import { ThemeProvider } from '@/context/ThemeProvider';
-import { MortgageProvider } from '@/context/MortgageProvider';
-import { PortfolioProvider, usePortfolios } from '@/context/PortfolioContext';
+import { PlanProvider } from '@/context/PlanProvider';
+import { PortfolioProvider } from '@/context/PortfolioContext';
 
 import { Sidebar } from '@/components/Sidebar';
 
 import { Dashboard } from '@/pages/Dashboard';
-import { Mortgage } from '@/pages/mortgage';
+import { PortfolioPage } from '@/pages/PortfolioPage';
+import { useParams, Navigate } from 'react-router';
+
 
 function App() {
   return (
@@ -18,16 +20,26 @@ function App() {
           <div className="pl-16 transition-all duration-300">
             <Routes>
               <Route index element={<Dashboard />} />
-              <Route path="mortgage/:portfolioId" element={
-                <MortgageProvider>
-                  <Mortgage />
-                </MortgageProvider>
-              } />
+              <Route path=":type/:portfolioId" element={<PortfolioPageWrapper />} />
             </Routes>
           </div>
         </BrowserRouter>
       </PortfolioProvider>
     </ThemeProvider>
+  );
+}
+
+function PortfolioPageWrapper() {
+  const { type, portfolioId } = useParams<{ type: string; portfolioId: string }>();
+
+  if (type !== 'mortgage' && type !== 'loan') {
+    return <Navigate to="/" replace />;
+  }
+
+  return (
+    <PlanProvider key={`${type}-${portfolioId}`} storagePrefix={type}>
+      <PortfolioPage />
+    </PlanProvider>
   );
 }
 

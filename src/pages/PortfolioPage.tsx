@@ -1,31 +1,45 @@
 import type { ElementType } from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
+import { useParams, Navigate } from 'react-router';
 import { DataExport } from '@/components/DataExport';
 import { DataImport } from '@/components/DataImport';
 import { PlanningSection } from '@/components/PlanningSection';
 import { CurrentMonthPreview } from '@/components/CurrentMonthPreview';
 import { AmortizationTable } from '@/components/AmortizationTable';
-import { MortgageStatus } from '@/components/MortgageStatus';
-import { MortgageSummary } from '@/components/MortgageSummary';
+import { PortfolioStatus } from '@/components/PortfolioStatus';
+import { PortfolioSummary } from '@/components/PortfolioSummary';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { ModeToggle } from '@/components/ModeToggle';
 import { useCurrentPortfolio } from "@/context/PortfolioContext";
-import { useMortgage } from "@/context/MortgageProvider";
-import { useMortgageCalculations } from "@/hooks/useMortgageCalculations";
+import { usePlans } from "@/context/PlanProvider";
+import { usePlanCalculations } from "@/hooks/usePlanCalculations";
 import { generatePDFReport } from "@/lib/pdfReportGenerator";
 import { Button } from '@/components/ui/button';
 
-
-export function Mortgage() {
+export function PortfolioPage() {
+    const { type } = useParams<{ type: string }>();
     const currentPortfolio = useCurrentPortfolio();
+    const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
+    const amortizationSchedule = usePlanCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 
-    const { plans, extraPayments, rateChanges, gracePeriods, currency } = useMortgage();
-    const amortizationSchedule = useMortgageCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
+    // Validate type parameter
+    if (type !== 'mortgage' && type !== 'loan') {
+        return <Navigate to="/" replace />;
+    }
+
+    const isLoan = type === 'loan';
+    const pageTitle = isLoan ? 'Loan' : 'Mortgage';
+    const pageDescription = isLoan
+        ? 'Manage and track your loans efficiently'
+        : 'Smart analytics for your property investments';
+
+    const DefaultIcon = isLoan ? Icons.Banknote : Icons.LayoutDashboard;
+    const Icon = (currentPortfolio?.icon ? Icons[currentPortfolio.icon as keyof typeof Icons] : DefaultIcon) as ElementType;
 
     const handleDownloadPDF = async () => {
         const totalBalance = plans.reduce((sum, plan) => sum + plan.amount, 0);
-        // Calculate monthly payment: try current month, otherwise fallback to first month
+
         let monthlyPayment = 0;
         if (amortizationSchedule.length > 0) {
             const now = new Date();
@@ -69,7 +83,6 @@ export function Mortgage() {
         });
     };
 
-    const Icon = (currentPortfolio?.icon ? Icons[currentPortfolio.icon as keyof typeof Icons] : Icons['LayoutDashboard']) as ElementType;
     return (
         <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 overflow-x-hidden">
             {/* Background Gradients */}
@@ -86,15 +99,15 @@ export function Mortgage() {
                 >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-primary/10 rounded-xl backdrop-blur-sm border border-primary/20">
-                                <Icon className="w-8 h-8 text-primary" />
+                            <div className={`p-3 ${currentPortfolio.color ? currentPortfolio.color : 'bg-primary/10'} rounded-xl backdrop-blur-sm border`}>
+                                <Icon className="w-8 h-8 text-white" />
                             </div>
                             <div>
                                 <h1 className="text-4xl font-bold tracking-tight text-gradient">
-                                    Mortgage - {currentPortfolio?.name}
+                                    {pageTitle} - {currentPortfolio?.name}
                                 </h1>
                                 <p className="text-muted-foreground mt-1">
-                                    Smart analytics for your property investments
+                                    {pageDescription}
                                 </p>
                             </div>
                         </div>
@@ -142,7 +155,7 @@ export function Mortgage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                         >
-                            <MortgageSummary />
+                            <PortfolioSummary />
                         </motion.div>
 
                         <motion.div
@@ -150,7 +163,7 @@ export function Mortgage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.35 }}
                         >
-                            <MortgageStatus />
+                            <PortfolioStatus />
                         </motion.div>
                     </div>
 

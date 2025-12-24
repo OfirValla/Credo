@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { MortgagePlan, ExtraPayment, AmortizationRow, RateChange, GracePeriod } from '@/types';
+import { Plan, ExtraPayment, AmortizationRow, RateChange, GracePeriod } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 import { useCPI } from '@/hooks/useCPI';
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
 
-export function useMortgageCalculations(
-  plans: MortgagePlan[],
+export function usePlanCalculations(
+  plans: Plan[],
   extraPayments: ExtraPayment[],
   rateChanges: RateChange[] = [],
   gracePeriods: GracePeriod[] = [],

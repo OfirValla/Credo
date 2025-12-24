@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
-import { MortgagePlan } from '@/types';
+import { Plan } from '@/types';
 import { getCurrencySymbol } from '@/lib/currency';
 import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,10 +11,11 @@ import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
+import { useCurrentPortfolio } from '@/context/PortfolioContext';
 
-export function MortgageForm() {
-  const { plans, currency, addPlan, updatePlan, deletePlan } = useMortgage();
+export function PlanForm() {
+  const { plans, currency, addPlan, updatePlan, deletePlan } = usePlans();
   const onAddPlan = addPlan;
   const onUpdatePlan = updatePlan;
   const onDeletePlan = deletePlan;
@@ -26,10 +27,14 @@ export function MortgageForm() {
   const [firstPaymentDate, setFirstPaymentDate] = useState('');
   const [lastPaymentDate, setLastPaymentDate] = useState('');
   const [linkedToCPI, setLinkedToCPI] = useState(false);
+  const [balloonValue, setBalloonValue] = useState('');
+  const [loanType, setLoanType] = useState<'regular' | 'balloon'>('regular');
+  const currentPortfolio = useCurrentPortfolio();
+  const isLoanPortfolio = currentPortfolio?.type === 'loan';
 
   const currencySymbol = getCurrencySymbol(currency);
 
-  const handleEdit = (plan: MortgagePlan) => {
+  const handleEdit = (plan: Plan) => {
     setEditingId(plan.id);
     setName(plan.name || '');
     setAmount(plan.amount.toString());
@@ -38,6 +43,8 @@ export function MortgageForm() {
     setFirstPaymentDate(plan.firstPaymentDate);
     setLastPaymentDate(plan.lastPaymentDate);
     setLinkedToCPI(plan.linkedToCPI || false);
+    setBalloonValue(plan.balloonValue?.toString() || '');
+    setLoanType(plan.type || 'regular');
   };
 
   const handleCancelEdit = () => {
@@ -49,6 +56,8 @@ export function MortgageForm() {
     setFirstPaymentDate('');
     setLastPaymentDate('');
     setLinkedToCPI(false);
+    setBalloonValue('');
+    setLoanType('regular');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -72,6 +81,8 @@ export function MortgageForm() {
       firstPaymentDate,
       lastPaymentDate,
       linkedToCPI,
+      balloonValue: balloonValue ? parseFloat(balloonValue) : undefined,
+      type: loanType,
     };
 
     if (editingId) {
@@ -91,6 +102,8 @@ export function MortgageForm() {
     setFirstPaymentDate('');
     setLastPaymentDate('');
     setLinkedToCPI(false);
+    setBalloonValue('');
+    setLoanType('regular');
   };
 
   return (
@@ -102,7 +115,7 @@ export function MortgageForm() {
           </div>
           <div>
             <CardTitle className="text-xl font-bold">
-              {editingId ? 'Edit Mortgage Plan' : 'Mortgage Plans'}
+              {editingId ? 'Edit Plan' : 'Plans'}
             </CardTitle>
             <CardDescription>
               Manage your property financing details
@@ -217,6 +230,50 @@ export function MortgageForm() {
                 Link to CPI (Consumer Price Index)
               </Label>
             </div>
+
+            {isLoanPortfolio && (
+              <div className="pt-2 border-t border-border/50 space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Loan Structure</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant={loanType === 'regular' ? 'default' : 'outline'}
+                      className="flex-1"
+                      onClick={() => setLoanType('regular')}
+                    >
+                      Regular
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={loanType === 'balloon' ? 'default' : 'outline'}
+                      className="flex-1"
+                      onClick={() => setLoanType('balloon')}
+                    >
+                      Balloon
+                    </Button>
+                  </div>
+                </div>
+
+                {loanType === 'balloon' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="balloonValue" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Balloon Amount ({currencySymbol})</Label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="balloonValue"
+                        type="number"
+                        step="0.01"
+                        value={balloonValue}
+                        onChange={(e) => setBalloonValue(e.target.value)}
+                        placeholder="100000"
+                        className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">
@@ -250,7 +307,7 @@ export function MortgageForm() {
                 animate={{ opacity: 1 }}
                 className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg"
               >
-                No mortgage plans added yet
+                No plans added yet
               </motion.div>
             ) : (
               plans.map((plan) => (

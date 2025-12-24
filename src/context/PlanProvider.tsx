@@ -1,22 +1,22 @@
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
-import { MortgagePlan, ExtraPayment, RateChange, AmortizationRow, GracePeriod } from '@/types';
+import { Plan, ExtraPayment, RateChange, AmortizationRow, GracePeriod } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { useMortgageCalculations } from '@/hooks/useMortgageCalculations';
+import { usePlanCalculations } from '@/hooks/usePlanCalculations';
 
 import { parseMonth } from '@/lib/planUtils';
 import { useParams } from 'react-router';
 
-interface MortgageContextType {
-    plans: MortgagePlan[];
+interface PlanContextType {
+    plans: Plan[];
     extraPayments: ExtraPayment[];
     rateChanges: RateChange[];
     gracePeriods: GracePeriod[];
     currency: CurrencyCode;
     amortizationRows: AmortizationRow[];
     setCurrency: (currency: CurrencyCode) => void;
-    addPlan: (plan: Omit<MortgagePlan, 'id'>) => void;
-    updatePlan: (plan: MortgagePlan) => void;
+    addPlan: (plan: Omit<Plan, 'id'>) => void;
+    updatePlan: (plan: Plan) => void;
     deletePlan: (id: string) => void;
     addExtraPayment: (payment: Omit<ExtraPayment, 'id'>) => void;
     updateExtraPayment: (payment: ExtraPayment) => void;
@@ -28,7 +28,7 @@ interface MortgageContextType {
     updateGracePeriod: (gracePeriod: GracePeriod) => void;
     deleteGracePeriod: (id: string) => void;
     importData: (data: {
-        plans: MortgagePlan[];
+        plans: Plan[];
         extraPayments: ExtraPayment[];
         rateChanges: RateChange[];
         gracePeriods: GracePeriod[];
@@ -36,22 +36,22 @@ interface MortgageContextType {
     }) => void;
 }
 
-const MortgageContext = createContext<MortgageContextType | undefined>(undefined);
+export const PlanContext = createContext<PlanContextType | undefined>(undefined);
 
-export function MortgageProvider({ children }: { children: ReactNode }) {
+export function PlanProvider({ children, storagePrefix = 'mortgage' }: { children: ReactNode; storagePrefix?: string }) {
     const { portfolioId } = useParams();
     const suffix = `-${portfolioId}`;
 
-    const [plans, setPlans] = useLocalStorage<MortgagePlan[]>(`mortgage-plans${suffix}`, []);
-    const [extraPayments, setExtraPayments] = useLocalStorage<ExtraPayment[]>(`mortgage-extra-payments${suffix}`, []);
-    const [rateChanges, setRateChanges] = useLocalStorage<RateChange[]>(`mortgage-rate-changes${suffix}`, []);
-    const [gracePeriods, setGracePeriods] = useLocalStorage<GracePeriod[]>(`mortgage-grace-periods${suffix}`, []);
-    const [currency, setCurrency] = useLocalStorage<CurrencyCode>(`mortgage-currency${suffix}`, 'ILS');
+    const [plans, setPlans] = useLocalStorage<Plan[]>(`${storagePrefix}-plans${suffix}`, []);
+    const [extraPayments, setExtraPayments] = useLocalStorage<ExtraPayment[]>(`${storagePrefix}-extra-payments${suffix}`, []);
+    const [rateChanges, setRateChanges] = useLocalStorage<RateChange[]>(`${storagePrefix}-rate-changes${suffix}`, []);
+    const [gracePeriods, setGracePeriods] = useLocalStorage<GracePeriod[]>(`${storagePrefix}-grace-periods${suffix}`, []);
+    const [currency, setCurrency] = useLocalStorage<CurrencyCode>(`${storagePrefix}-currency${suffix}`, 'ILS');
 
-    const amortizationRows = useMortgageCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
+    const amortizationRows = usePlanCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 
-    const addPlan = useCallback((planData: Omit<MortgagePlan, 'id'>) => {
-        const newPlan: MortgagePlan = {
+    const addPlan = useCallback((planData: Omit<Plan, 'id'>) => {
+        const newPlan: Plan = {
             ...planData,
             enabled: true,
             id: `plan-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -59,7 +59,7 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
         setPlans([...plans, newPlan]);
     }, [plans, setPlans]);
 
-    const updatePlan = useCallback((updatedPlan: MortgagePlan) => {
+    const updatePlan = useCallback((updatedPlan: Plan) => {
         setPlans(plans.map((p) => (p.id === updatedPlan.id ? updatedPlan : p)));
     }, [plans, setPlans]);
 
@@ -119,7 +119,7 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
     }, [gracePeriods, setGracePeriods]);
 
     const importData = useCallback((data: {
-        plans: MortgagePlan[];
+        plans: Plan[];
         extraPayments: ExtraPayment[];
         rateChanges: RateChange[];
         gracePeriods: GracePeriod[];
@@ -169,16 +169,16 @@ export function MortgageProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <MortgageContext.Provider value={value}>
+        <PlanContext.Provider value={value}>
             {children}
-        </MortgageContext.Provider>
+        </PlanContext.Provider>
     );
 }
 
-export function useMortgage() {
-    const context = useContext(MortgageContext);
+export function usePlans() {
+    const context = useContext(PlanContext);
     if (context === undefined) {
-        throw new Error('useMortgage must be used within a MortgageProvider');
+        throw new Error('usePlans must be used within a PlanProvider');
     }
     return context;
 }

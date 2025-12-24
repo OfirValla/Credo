@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfolioContext';
 
 export const DataImport: React.FC = () => {
-    const { importData } = useMortgage();
+    const { importData } = usePlans();
     const { updatePortfolio, currentPortfolioId } = usePortfolios();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -20,12 +20,12 @@ export const DataImport: React.FC = () => {
                 const data = JSON.parse(content);
 
                 // Basic validation
-                if (!data.mortgagePlans || !Array.isArray(data.mortgagePlans)) {
-                    throw new Error('Invalid format: Missing mortgagePlans');
+                if (!data.Plans || !Array.isArray(data.Plans)) {
+                    throw new Error('Invalid format: Missing Plans');
                 }
 
                 // Transform data to match internal state structure if needed
-                const plans = data.mortgagePlans.map((p: any) => ({
+                const plans = data.Plans.map((p: any) => ({
                     ...p,
                     amount: p.amount,
                     interestRate: p.interestRate,

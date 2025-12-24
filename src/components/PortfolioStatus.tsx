@@ -3,11 +3,12 @@ import { Activity, CreditCard } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getPlanDisplayName, parseMonth } from '@/lib/planUtils';
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 
-export function MortgageStatus() {
-    const { plans: allPlans, amortizationRows: rows, currency } = useMortgage();
-    const plans = allPlans.filter(p => p.enabled !== false);
+
+export function PortfolioStatus() {
+    const { plans, amortizationRows: rows, currency } = usePlans();
+    const enabledPlans = plans.filter(p => p.enabled !== false);
 
     const statusData = useMemo(() => {
         const now = new Date();
@@ -100,7 +101,7 @@ export function MortgageStatus() {
                     </div>
                 </CardHeader>
                 <CardContent className="p-8 text-center text-muted-foreground">
-                    Add a mortgage plan to see the summary.
+                    Add a plan to see the summary.
                 </CardContent>
             </Card>
         )
@@ -135,15 +136,15 @@ export function MortgageStatus() {
                             <div className="h-2 w-full bg-secondary/30 rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                                    style={{ width: `${Math.min(100, Math.max(0, plan.progress))}%` }}
+                                    style={{ width: `${Math.min(100, Math.max(0, plan.progress))}% ` }}
                                 />
                             </div>
 
                             <div className="grid grid-cols-3 sm:grid-cols-2 gap-4 text-sm">
-                                <MortgagePlanInfo title="Balance" data={formatCurrency(plan.currentBalance, currency)} />
-                                <MortgagePlanInfo title="Rate" data={`${plan.currentRate.toFixed(2)}%`} />
-                                <MortgagePlanInfo title="Remaining" data={`${plan.remainingMonths} months`} />
-                                <MortgagePlanInfo title="Cost / Unit" data={formatCurrency(plan.costPerUnit, currency)} />
+                                <PlanInfo title="Balance" data={formatCurrency(plan.currentBalance, currency)} />
+                                <PlanInfo title="Rate" data={`${plan.currentRate.toFixed(2)}% `} />
+                                <PlanInfo title="Remaining" data={`${plan.remainingMonths} months`} />
+                                <PlanInfo title="Cost / Unit" data={formatCurrency(plan.costPerUnit, currency)} />
                             </div>
                         </div>
                     ))
@@ -153,7 +154,7 @@ export function MortgageStatus() {
     );
 }
 
-const MortgagePlanInfo = ({ title, data }: { title: string, data: string }) => (
+const PlanInfo = ({ title, data }: { title: string, data: string }) => (
     <div className="bg-secondary/10 p-2 rounded-md">
         <span className="text-muted-foreground block text-xs mb-1">{title}</span>
         <span className="font-bold text-foreground">

@@ -17,21 +17,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     const [portfolios, setPortfolios] = useLocalStorage<MortgagePortfolio[]>('portfolios', []);
     const [currentPortfolioId, setCurrentPortfolioId] = useLocalStorage<string>('current_portfolio_id', '');
 
-    // Initialize default portfolio if none exist
-    if (portfolios.length === 0) {
-        const defaultPortfolio: MortgagePortfolio = {
-            id: 'default',
-            type: 'mortgage',
-            name: 'Default Portfolio',
-            createdAt: Date.now(),
-            color: 'blue-500'
-        };
-        setPortfolios([defaultPortfolio]);
-        if (currentPortfolioId !== 'default') {
-            setCurrentPortfolioId('default');
-        }
-    } else if (!currentPortfolioId || (currentPortfolioId !== 'overview' && !portfolios.find(p => p.id === currentPortfolioId))) {
-        // Ensure valid current portfolio, default to overview if available or first portfolio
+    if (!currentPortfolioId || (currentPortfolioId !== 'overview' && !portfolios.find(p => p.id === currentPortfolioId))) {
         setCurrentPortfolioId('overview');
     }
 

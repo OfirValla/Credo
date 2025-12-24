@@ -19,13 +19,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 import { SlidingSelect } from './ui/sliding-select';
 
 type ViewMode = 'monthly' | 'yearly';
 
 export function AmortizationTable() {
-  const { plans: allPlans, amortizationRows: rows, currency } = useMortgage();
+  const { plans: allPlans, amortizationRows: rows, currency } = usePlans();
   const plans = allPlans.filter(p => p.enabled !== false);
 
   const tableHeaderRef = useRef<HTMLTableSectionElement>(null);

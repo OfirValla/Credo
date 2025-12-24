@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { DateInput } from '@/components/ui/date-input';
 import { SlidingSelect } from '@/components/ui/sliding-select';
 import { Label } from '@/components/ui/label';
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 import { getPlanDisplayName } from '@/lib/planUtils';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { useState } from 'react';
 import { GracePeriod } from '@/types';
 
 export function GracePeriodForm() {
-    const { plans, currency, updatePlan, gracePeriods, addGracePeriod, deleteGracePeriod, updateGracePeriod } = useMortgage();
+    const { plans, currency, updatePlan, gracePeriods, addGracePeriod, deleteGracePeriod, updateGracePeriod } = usePlans();
     const [isAdding, setIsAdding] = useState<string | null>(null); // planId if adding
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<GracePeriod>>({});

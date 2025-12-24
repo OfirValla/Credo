@@ -12,10 +12,10 @@ import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { SlidingSelect } from '@/components/ui/sliding-select';
 
-import { useMortgage } from '@/context/MortgageProvider';
+import { usePlans } from '@/context/PlanProvider';
 
 export function ExtraPaymentsForm() {
-  const { plans, currency, extraPayments, addExtraPayment, updateExtraPayment, deleteExtraPayment } = useMortgage();
+  const { plans, currency, extraPayments, addExtraPayment, updateExtraPayment, deleteExtraPayment } = usePlans();
   const onAddExtraPayment = addExtraPayment;
   const onUpdateExtraPayment = updateExtraPayment;
   const onDeleteExtraPayment = deleteExtraPayment;

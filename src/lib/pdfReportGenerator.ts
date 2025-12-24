@@ -1,12 +1,12 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { MortgagePlan, AmortizationRow, ExtraPayment, RateChange, GracePeriod } from '@/types';
+import { Plan, AmortizationRow, ExtraPayment, RateChange, GracePeriod } from '@/types';
 import { CurrencyCode, CURRENCIES } from '@/lib/currency';
 import { getPlanDurationInfo } from '@/lib/planUtils';
 import { loadHebrewFont } from '@/lib/fontLoader';
 
 interface ReportData {
-    plans: MortgagePlan[];
+    plans: Plan[];
     extraPayments: ExtraPayment[];
     rateChanges: RateChange[];
     gracePeriods: GracePeriod[];
