@@ -136,6 +136,7 @@ export function Sidebar() {
                 onMouseEnter={() => setIsExpanded(true)}
                 onMouseLeave={() => setIsExpanded(false)}
             >
+                {/* Title */}
                 <div className="p-4 flex items-center justify-center border-b border-border h-16">
                     <FolderOpen className="w-6 h-6" />
                     {isExpanded && (
@@ -149,6 +150,7 @@ export function Sidebar() {
                     )}
                 </div>
 
+                {/* Overview */}
                 <div className="px-2 py-2 border-b border-border">
                     <Link
                         to="/"
@@ -176,83 +178,88 @@ export function Sidebar() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto py-2 space-y-2 px-2">
-                    {portfolios.map((portfolio) => {
-                        const IconComponent = getIconComponent(portfolio.icon);
 
-                        return (
-                            <div
-                                key={portfolio.id}
-                                className={cn(
-                                    "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
-                                    currentPortfolioId === portfolio.id
-                                        ? "bg-primary/10"
-                                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                                )}
-                                onClick={() => {
-                                    if (!editingId) {
-                                        setCurrentPortfolioId(portfolio.id);
-                                        navigate(`/${portfolio.type}/${portfolio.id}`);
-                                    }
-                                }}
-                            >
-                                <div className="min-w-[2rem] flex justify-center items-center">
-                                    {editingId === portfolio.id ? (
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <div className={cn(
-                                                    "w-8 h-8 rounded-full cursor-pointer ring-2 ring-offset-2 ring-offset-background flex items-center justify-center text-white shadow-sm",
-                                                    portfolio.color || 'bg-primary'
-                                                )}>
-                                                    <IconComponent className="w-4 h-4" />
-                                                </div>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-72 p-4 space-y-4">
-                                                <div className="space-y-2">
-                                                    <h4 className="font-medium text-sm text-muted-foreground">Color</h4>
-                                                    <div className="grid grid-cols-6 gap-2">
-                                                        {PORTFOLIO_COLORS.map((color) => (
-                                                            <div
-                                                                key={color}
-                                                                className={cn(
-                                                                    "w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform",
-                                                                    color,
-                                                                    portfolio.color === color && "ring-2 ring-offset-2 ring-primary"
-                                                                )}
-                                                                onClick={() => handleColorChange(portfolio.id, color)}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <h4 className="font-medium text-sm text-muted-foreground">Icon</h4>
-                                                    <div className="grid grid-cols-5 gap-2">
-                                                        {PORTFOLIO_ICONS.map(({ name, icon: Icon }) => (
-                                                            <div
-                                                                key={name}
-                                                                className={cn(
-                                                                    "w-8 h-8 rounded-md flex items-center justify-center cursor-pointer hover:bg-muted transition-colors border border-transparent",
-                                                                    portfolio.icon === name && "bg-primary/10 border-primary text-primary"
-                                                                )}
-                                                                onClick={() => handleIconChange(portfolio.id, name)}
-                                                            >
-                                                                <Icon className="w-4 h-4" />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </PopoverContent>
-                                        </Popover>
-                                    ) : (
-                                        <div className={cn(
-                                            "w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm transition-all group-hover:scale-110",
-                                            portfolio.color || 'bg-primary'
-                                        )}>
-                                            <IconComponent className="w-4 h-4" />
-                                        </div>
+                    {/* Portfolios */}
+                    {
+                        portfolios.map((portfolio) => {
+                            const IconComponent = getIconComponent(portfolio.icon);
+
+                            return (
+                                <div
+                                    key={portfolio.id}
+                                    className={cn(
+                                        "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
+                                        currentPortfolioId === portfolio.id
+                                            ? "bg-primary/10"
+                                            : "hover:bg-muted text-muted-foreground hover:text-foreground"
                                     )}
-                                </div>
+                                    onClick={() => {
+                                        if (!editingId) {
+                                            setCurrentPortfolioId(portfolio.id);
+                                            navigate(`/${portfolio.type}/${portfolio.id}`);
+                                        }
+                                    }}
+                                >
 
-                                {isExpanded && (
+                                    {/* Portfolio icon */}
+                                    <div className="min-w-[2rem] flex justify-center items-center">
+                                        {editingId === portfolio.id ? (
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <div className={cn(
+                                                        "w-8 h-8 rounded-full cursor-pointer ring-2 ring-offset-2 ring-offset-background flex items-center justify-center text-white shadow-sm",
+                                                        portfolio.color || 'bg-primary'
+                                                    )}>
+                                                        <IconComponent className="w-4 h-4" />
+                                                    </div>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-72 p-4 space-y-4">
+                                                    <div className="space-y-2">
+                                                        <h4 className="font-medium text-sm text-muted-foreground">Color</h4>
+                                                        <div className="grid grid-cols-6 gap-2">
+                                                            {PORTFOLIO_COLORS.map((color) => (
+                                                                <div
+                                                                    key={color}
+                                                                    className={cn(
+                                                                        "w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform",
+                                                                        color,
+                                                                        portfolio.color === color && "ring-2 ring-offset-2 ring-primary"
+                                                                    )}
+                                                                    onClick={() => handleColorChange(portfolio.id, color)}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <h4 className="font-medium text-sm text-muted-foreground">Icon</h4>
+                                                        <div className="grid grid-cols-5 gap-2">
+                                                            {PORTFOLIO_ICONS.map(({ name, icon: Icon }) => (
+                                                                <div
+                                                                    key={name}
+                                                                    className={cn(
+                                                                        "w-8 h-8 rounded-md flex items-center justify-center cursor-pointer hover:bg-muted transition-colors border border-transparent",
+                                                                        portfolio.icon === name && "bg-primary/10 border-primary text-primary"
+                                                                    )}
+                                                                    onClick={() => handleIconChange(portfolio.id, name)}
+                                                                >
+                                                                    <Icon className="w-4 h-4" />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </PopoverContent>
+                                            </Popover>
+                                        ) : (
+                                            <div className={cn(
+                                                "w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm transition-all group-hover:scale-110",
+                                                portfolio.color || 'bg-primary'
+                                            )}>
+                                                <IconComponent className="w-4 h-4" />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Portfolio name + Action Icons */}
                                     <div className="flex-1 flex items-center justify-between overflow-hidden ml-3">
                                         {editingId === portfolio.id ? (
                                             <div className="flex items-center gap-1 w-full" onClick={(e) => e.stopPropagation()}>
@@ -282,6 +289,7 @@ export function Sidebar() {
                                                 >
                                                     <ScrollingName name={portfolio.name} />
                                                 </motion.div>
+
                                                 <div className="flex opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                                                     <TooltipProvider>
                                                         <Tooltip>
@@ -329,10 +337,10 @@ export function Sidebar() {
                                             </>
                                         )}
                                     </div>
-                                )}
-                            </div>
-                        );
-                    })}
+                                </div>
+                            );
+                        })
+                    }
                 </div>
 
                 <div className="p-2 border-t border-border space-y-1">
@@ -344,50 +352,47 @@ export function Sidebar() {
                         className="hidden"
                     />
 
-                    {isExpanded ? (
-                        <>
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start gap-2"
-                                onClick={() => setIsModalOpen(true)}
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>New Portfolio</span>
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start gap-2"
-                                onClick={() => importInputRef.current?.click()}
-                            >
-                                <Upload className="w-4 h-4" />
-                                <span>Import Portfolio</span>
-                            </Button>
-                        </>
-                    ) : (
-                        <div className="flex flex-col gap-2 items-center">
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button size="icon" variant="ghost" onClick={() => { setIsExpanded(true); setIsModalOpen(true); }}>
-                                            <Plus className="w-5 h-5" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="right">New Portfolio</TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button size="icon" variant="ghost" onClick={() => importInputRef.current?.click()}>
-                                            <Upload className="w-5 h-5" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="right">Import Portfolio</TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                    <Button
+                        variant="ghost"
+                        className={cn(
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
+                        )}
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        <div className="min-w-[2rem] flex justify-center items-center">
+                            <Plus className="w-5 h-5" />
                         </div>
-                    )}
+                        {isExpanded && (
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                            >
+                                New Portfolio
+                            </motion.span>
+                        )}
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        className={cn(
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
+                        )}
+                        onClick={() => importInputRef.current?.click()}
+                    >
+                        <div className="min-w-[2rem] flex justify-center items-center">
+                            <Upload className="w-5 h-5" />
+                        </div>
+                        {isExpanded && (
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                            >
+                                Import Portfolio
+                            </motion.span>
+                        )}
+                    </Button>
                 </div>
             </motion.div>
         </>
