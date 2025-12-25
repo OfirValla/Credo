@@ -137,17 +137,24 @@ export function Sidebar() {
                 onMouseLeave={() => setIsExpanded(false)}
             >
                 {/* Title */}
-                <div className="p-4 flex items-center justify-center border-b border-border h-16">
-                    <FolderOpen className="w-6 h-6" />
-                    {isExpanded && (
-                        <motion.span
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="ml-3 font-semibold text-lg whitespace-nowrap overflow-hidden"
-                        >
-                            Portfolios
-                        </motion.span>
-                    )}
+                <div
+                    className={"group flex items-center rounded-lg cursor-pointer transition-colors relative h-16 p-4 flex items-center justify-center border-b border-border"}
+                    onClick={() => setCurrentPortfolioId('overview')}
+                >
+                    <div className="min-w-[2rem] flex justify-center items-center">
+                        <FolderOpen className="w-6 h-6" />
+                    </div>
+                    {
+                        isExpanded && (
+                            <motion.span
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="ml-3 font-semibold text-lg whitespace-nowrap overflow-hidden"
+                            >
+                                Portfolios
+                            </motion.span>
+                        )
+                    }
                 </div>
 
                 {/* Overview */}
@@ -165,15 +172,13 @@ export function Sidebar() {
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <LayoutDashboard className="w-5 h-5" />
                         </div>
-                        {isExpanded && (
-                            <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
-                            >
-                                Overview
-                            </motion.span>
-                        )}
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                        >
+                            Overview
+                        </motion.span>
                     </Link>
                 </div>
 
@@ -362,15 +367,13 @@ export function Sidebar() {
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <Plus className="w-5 h-5" />
                         </div>
-                        {isExpanded && (
-                            <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
-                            >
-                                New Portfolio
-                            </motion.span>
-                        )}
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                        >
+                            New Portfolio
+                        </motion.span>
                     </Button>
 
                     <Button
@@ -383,15 +386,13 @@ export function Sidebar() {
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <Upload className="w-5 h-5" />
                         </div>
-                        {isExpanded && (
-                            <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
-                            >
-                                Import Portfolio
-                            </motion.span>
-                        )}
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                        >
+                            Import Portfolio
+                        </motion.span>
                     </Button>
                 </div>
             </motion.div>
