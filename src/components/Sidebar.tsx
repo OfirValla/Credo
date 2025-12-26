@@ -22,7 +22,6 @@ import {
 import { Link, useNavigate } from 'react-router';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { PortfolioCreationModal } from './PortfolioCreationModal';
-import { PortfolioType } from '@/types';
 
 export function Sidebar() {
     const { portfolios, currentPortfolioId, setCurrentPortfolioId, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
@@ -33,7 +32,7 @@ export function Sidebar() {
     const importInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
 
-    const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
+    const handleCreatePortfolio = (name: string, type: "mortgage" | "loan", color: string, icon: string) => {
         const newId = addPortfolio(name, color, icon, type);
         setCurrentPortfolioId(newId);
         setIsModalOpen(false);
@@ -50,7 +49,7 @@ export function Sidebar() {
                 const content = e.target?.result as string;
                 const data = JSON.parse(content);
 
-                let type: PortfolioType = PortfolioType.MORTGAGE;
+                let type: "mortgage" | "loan" = 'mortgage';
                 let name = `Imported Portfolio ${new Date().toLocaleDateString()}`;
                 let color = PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)];
                 let icon;
@@ -138,21 +137,25 @@ export function Sidebar() {
                 onMouseLeave={() => setIsExpanded(false)}
             >
                 {/* Title */}
-                <Link
-                    to="/"
+                <div
                     className={"group flex items-center rounded-lg cursor-pointer transition-colors relative h-16 p-4 flex items-center justify-center border-b border-border"}
+                    onClick={() => setCurrentPortfolioId('overview')}
                 >
                     <div className="min-w-[2rem] flex justify-center items-center">
                         <FolderOpen className="w-6 h-6" />
                     </div>
-                    <motion.span
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="font-semibold text-lg whitespace-nowrap overflow-hidden"
-                    >
-                        <span className='ml-3'>Portfolios</span>
-                    </motion.span>
-                </Link>
+                    {
+                        isExpanded && (
+                            <motion.span
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="ml-3 font-semibold text-lg whitespace-nowrap overflow-hidden"
+                            >
+                                Portfolios
+                            </motion.span>
+                        )
+                    }
+                </div>
 
                 {/* Overview */}
                 <div className="px-2 py-2 border-b border-border">
@@ -345,7 +348,6 @@ export function Sidebar() {
                     }
                 </div>
 
-                {/* Actions */}
                 <div className="p-2 border-t border-border space-y-1">
                     <input
                         type="file"
