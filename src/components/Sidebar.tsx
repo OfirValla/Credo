@@ -50,7 +50,7 @@ export function Sidebar() {
                 const content = e.target?.result as string;
                 const data = JSON.parse(content);
 
-                let type: "mortgage" | "loan" = 'mortgage';
+                let type: PortfolioType = PortfolioType.MORTGAGE;
                 let name = `Imported Portfolio ${new Date().toLocaleDateString()}`;
                 let color = PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)];
                 let icon;
