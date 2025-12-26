@@ -22,6 +22,7 @@ import {
 import { Link, useNavigate } from 'react-router';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { PortfolioCreationModal } from './PortfolioCreationModal';
+import { PortfolioType } from '@/types';
 
 export function Sidebar() {
     const { portfolios, currentPortfolioId, setCurrentPortfolioId, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
@@ -32,7 +33,7 @@ export function Sidebar() {
     const importInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
 
-    const handleCreatePortfolio = (name: string, type: "mortgage" | "loan", color: string, icon: string) => {
+    const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const newId = addPortfolio(name, color, icon, type);
         setCurrentPortfolioId(newId);
         setIsModalOpen(false);
