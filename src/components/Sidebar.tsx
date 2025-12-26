@@ -144,17 +144,13 @@ export function Sidebar() {
                     <div className="min-w-[2rem] flex justify-center items-center">
                         <FolderOpen className="w-6 h-6" />
                     </div>
-                    {
-                        isExpanded && (
-                            <motion.span
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="ml-3 font-semibold text-lg whitespace-nowrap overflow-hidden"
-                            >
-                                Portfolios
-                            </motion.span>
-                        )
-                    }
+                    <motion.span
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="font-semibold text-lg whitespace-nowrap overflow-hidden"
+                    >
+                        <span className='ml-3'>Portfolios</span>
+                    </motion.span>
                 </div>
 
                 {/* Overview */}
@@ -348,6 +344,7 @@ export function Sidebar() {
                     }
                 </div>
 
+                {/* Actions */}
                 <div className="p-2 border-t border-border space-y-1">
                     <input
                         type="file"
