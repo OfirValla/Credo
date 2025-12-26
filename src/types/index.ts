@@ -6,12 +6,12 @@ export interface Plan {
   takenDate: string; // DD/MM/YYYY format
   firstPaymentDate: string; // DD/MM/YYYY format
   lastPaymentDate: string; // DD/MM/YYYY format
-  gracePeriodType?: 'capitalized' | 'interestOnly'; // Optional, defaults to 'capitalized'
+  gracePeriodType?: GracePeriodType; // Optional, defaults to 'capitalized'
   enabled?: boolean; // Optional, defaults to true
   linkedToCPI?: boolean; // Optional, defaults to false
   remainingMonths?: number; // Calculated field
   balloonValue?: number; // Optional balloon amount to remain at end of term
-  type?: 'regular' | 'balloon'; // Optional type
+  type?: LoanType; // Optional type
 }
 
 export interface ExtraPayment {
@@ -19,7 +19,7 @@ export interface ExtraPayment {
   month: string; // MM/YYYY format
   planId: string;
   amount: number;
-  type: "reduceTerm" | "reducePayment";
+  type: ExtraPaymentType;
   enabled?: boolean; // Optional, defaults to true
 }
 
@@ -28,7 +28,7 @@ export interface GracePeriod {
   planId: string;
   startDate: string; // MM/YYYY format
   endDate: string; // MM/YYYY format
-  type: 'capitalized' | 'interestOnly';
+  type: GracePeriodType;
   enabled?: boolean; // Optional, defaults to true
 }
 
@@ -60,11 +60,31 @@ export interface AmortizationRow {
   linkage?: number;
 }
 
-export interface MortgagePortfolio {
+export interface Portfolio {
   id: string;
-  type: "mortgage" | "loan";
+  type: PortfolioType;
   name: string;
   createdAt: number;
   color?: string;
   icon?: string;
+}
+
+export enum PortfolioType {
+  MORTGAGE = 'mortgage',
+  LOAN = 'loan',
+}
+
+export enum LoanType {
+  REGULAR = 'regular',
+  BALLOON = 'balloon',
+}
+
+export enum GracePeriodType {
+  CAPITALIZED = 'capitalized',
+  INTEREST_ONLY = 'interestOnly',
+}
+
+export enum ExtraPaymentType {
+  REDUCE_TERM = 'reduceTerm',
+  REDUCE_PAYMENT = 'reducePayment',
 }

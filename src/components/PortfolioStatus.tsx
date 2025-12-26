@@ -8,7 +8,6 @@ import { usePlans } from '@/context/PlanProvider';
 
 export function PortfolioStatus() {
     const { plans, amortizationRows: rows, currency } = usePlans();
-    const enabledPlans = plans.filter(p => p.enabled !== false);
 
     const statusData = useMemo(() => {
         const now = new Date();

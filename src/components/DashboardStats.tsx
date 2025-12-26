@@ -5,7 +5,7 @@ import { useCPI } from '@/hooks/useCPI';
 import { getAggregateDashboardData } from '@/lib/dashboardUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/currency';
-import { color, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Coins, CreditCard, Building, Wallet } from 'lucide-react';
 

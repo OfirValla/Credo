@@ -1,30 +1,30 @@
 import { createContext, useContext, ReactNode, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { MortgagePortfolio } from '@/types';
+import { Portfolio, PortfolioType } from '@/types';
 
 interface PortfolioContextType {
-    portfolios: MortgagePortfolio[];
+    portfolios: Portfolio[];
     currentPortfolioId: string;
-    addPortfolio: (name: string, color?: string, icon?: string, type?: "mortgage" | "loan") => string;
+    addPortfolio: (name: string, color?: string, icon?: string, type?: PortfolioType) => string;
     removePortfolio: (id: string) => void;
-    updatePortfolio: (id: string, updates: Partial<MortgagePortfolio>) => void;
+    updatePortfolio: (id: string, updates: Partial<Portfolio>) => void;
     setCurrentPortfolioId: (id: string) => void;
 }
 
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
 
 export function PortfolioProvider({ children }: { children: ReactNode }) {
-    const [portfolios, setPortfolios] = useLocalStorage<MortgagePortfolio[]>('portfolios', []);
+    const [portfolios, setPortfolios] = useLocalStorage<Portfolio[]>('portfolios', []);
     const [currentPortfolioId, setCurrentPortfolioId] = useLocalStorage<string>('current_portfolio_id', '');
 
     if (!currentPortfolioId || (currentPortfolioId !== 'overview' && !portfolios.find(p => p.id === currentPortfolioId))) {
         setCurrentPortfolioId('overview');
     }
 
-    const addPortfolio = useCallback((name: string, color?: string, icon?: string, type?: "mortgage" | "loan") => {
-        const newPortfolio: MortgagePortfolio = {
+    const addPortfolio = useCallback((name: string, color?: string, icon?: string, type?: PortfolioType) => {
+        const newPortfolio: Portfolio = {
             id: `${Date.now()}`,
-            type: type || 'mortgage',
+            type: type || PortfolioType.MORTGAGE,
             name,
             createdAt: Date.now(),
             color: color || 'bg-blue-500',
@@ -58,7 +58,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         }
     }, [portfolios, currentPortfolioId, setPortfolios, setCurrentPortfolioId]);
 
-    const updatePortfolio = useCallback((id: string, updates: Partial<MortgagePortfolio>) => {
+    const updatePortfolio = useCallback((id: string, updates: Partial<Portfolio>) => {
         setPortfolios(portfolios.map(p => p.id === id ? { ...p, ...updates } : p));
     }, [portfolios, setPortfolios]);
 

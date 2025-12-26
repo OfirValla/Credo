@@ -6,16 +6,17 @@ import { Input } from '@/components/ui/input';
 import { SlidingSelect } from '@/components/ui/sliding-select';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { PortfolioType } from '@/types';
 
 interface PortfolioCreationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onCreate: (name: string, type: "mortgage" | "loan", color: string, icon: string) => void;
+    onCreate: (name: string, type: PortfolioType, color: string, icon: string) => void;
 }
 
 export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioCreationModalProps) {
     const [name, setName] = useState('');
-    const [type, setType] = useState<"mortgage" | "loan">('mortgage');
+    const [type, setType] = useState<PortfolioType>(PortfolioType.MORTGAGE);
     const [color, setColor] = useState(PORTFOLIO_COLORS[0]);
     const [icon, setIcon] = useState(PORTFOLIO_ICONS[0].name);
 
@@ -29,7 +30,7 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
 
     const resetForm = () => {
         setName('');
-        setType('mortgage');
+        setType(PortfolioType.MORTGAGE);
         setColor(PORTFOLIO_COLORS[0]);
         setIcon(PORTFOLIO_ICONS[0].name);
     };
@@ -80,10 +81,10 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
                                 <label className="text-sm font-medium">Type</label>
                                 <SlidingSelect
                                     value={type}
-                                    onValueChange={(v) => setType(v as "mortgage" | "loan")}
+                                    onValueChange={(v) => setType(v as PortfolioType)}
                                     options={[
-                                        { value: 'mortgage', label: 'Mortgage' },
-                                        { value: 'loan', label: 'Loan' }
+                                        { value: PortfolioType.MORTGAGE, label: 'Mortgage' },
+                                        { value: PortfolioType.LOAN, label: 'Loan' }
                                     ]}
                                     color="bg-primary"
                                     textColor="text-primary-foreground"

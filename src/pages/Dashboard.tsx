@@ -7,13 +7,14 @@ import { DashboardStats } from '@/components/DashboardStats';
 import { Button } from '@/components/ui/button';
 import { PortfolioCreationModal } from '@/components/PortfolioCreationModal';
 import { useNavigate } from 'react-router';
+import { PortfolioType } from '@/types';
 
 export function Dashboard() {
     const { portfolios, addPortfolio, setCurrentPortfolioId } = usePortfolios();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
-    const handleCreatePortfolio = (name: string, type: "mortgage" | "loan", color: string, icon: string) => {
+    const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const id = addPortfolio(name, color, icon, type);
         setCurrentPortfolioId(id);
         setIsModalOpen(false);

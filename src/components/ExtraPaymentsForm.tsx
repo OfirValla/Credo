@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, Calendar, DollarSign, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
-import { ExtraPayment } from '@/types';
+import { ExtraPayment, ExtraPaymentType } from '@/types';
 import { getCurrencySymbol, formatCurrency } from '@/lib/currency';
 import { getPlanDisplayName, parseDateToMonthIndex } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -23,7 +23,7 @@ export function ExtraPaymentsForm() {
   const [month, setMonth] = useState('');
   const [planId, setPlanId] = useState('');
   const [amount, setAmount] = useState('');
-  const [type, setType] = useState<'reduceTerm' | 'reducePayment'>('reduceTerm');
+  const [type, setType] = useState<ExtraPaymentType>(ExtraPaymentType.REDUCE_TERM);
 
   const currencySymbol = getCurrencySymbol(currency);
 
@@ -40,7 +40,7 @@ export function ExtraPaymentsForm() {
     setMonth('');
     setPlanId('');
     setAmount('');
-    setType('reduceTerm');
+    setType(ExtraPaymentType.REDUCE_TERM);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -74,7 +74,7 @@ export function ExtraPaymentsForm() {
     setMonth('');
     setPlanId('');
     setAmount('');
-    setType('reduceTerm');
+    setType(ExtraPaymentType.REDUCE_TERM);
   };
 
   const planOptions = plans.map(plan => ({
@@ -151,10 +151,10 @@ export function ExtraPaymentsForm() {
               <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Strategy</Label>
               <SlidingSelect
                 value={type}
-                onValueChange={(e) => setType(e as "reduceTerm" | "reducePayment")}
+                onValueChange={(e) => setType(e as ExtraPaymentType)}
                 options={[
-                  { value: 'reduceTerm', label: 'Reduce Term' },
-                  { value: 'reducePayment', label: 'Reduce Payment' },
+                  { value: ExtraPaymentType.REDUCE_TERM, label: 'Reduce Term' },
+                  { value: ExtraPaymentType.REDUCE_PAYMENT, label: 'Reduce Payment' },
                 ]}
               />
             </div>

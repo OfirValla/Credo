@@ -1,5 +1,5 @@
 
-import { MortgagePortfolio, Plan, ExtraPayment, RateChange, GracePeriod } from '@/types';
+import { Portfolio, Plan, ExtraPayment, RateChange, GracePeriod } from '@/types';
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
 import { CurrencyCode } from '@/lib/currency';
 
@@ -18,7 +18,7 @@ interface DashboardData {
 }
 
 export function getAggregateDashboardData(
-    portfolios: MortgagePortfolio[],
+    portfolios: Portfolio[],
     cpiData: any
 ): DashboardData {
     let totalBalance = 0;

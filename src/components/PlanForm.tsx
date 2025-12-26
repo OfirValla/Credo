@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
-import { Plan } from '@/types';
+import { LoanType, Plan } from '@/types';
 import { getCurrencySymbol } from '@/lib/currency';
 import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { SlidingSelect } from '@/components/ui/sliding-select';
 
 import { usePlans } from '@/context/PlanProvider';
 import { useCurrentPortfolio } from '@/context/PortfolioContext';
@@ -28,7 +29,7 @@ export function PlanForm() {
   const [lastPaymentDate, setLastPaymentDate] = useState('');
   const [linkedToCPI, setLinkedToCPI] = useState(false);
   const [balloonValue, setBalloonValue] = useState('');
-  const [loanType, setLoanType] = useState<'regular' | 'balloon'>('regular');
+  const [loanType, setLoanType] = useState<LoanType>(LoanType.REGULAR);
   const currentPortfolio = useCurrentPortfolio();
   const isLoanPortfolio = currentPortfolio?.type === 'loan';
 
@@ -44,7 +45,7 @@ export function PlanForm() {
     setLastPaymentDate(plan.lastPaymentDate);
     setLinkedToCPI(plan.linkedToCPI || false);
     setBalloonValue(plan.balloonValue?.toString() || '');
-    setLoanType(plan.type || 'regular');
+    setLoanType(plan.type || LoanType.REGULAR);
   };
 
   const handleCancelEdit = () => {
@@ -57,7 +58,7 @@ export function PlanForm() {
     setLastPaymentDate('');
     setLinkedToCPI(false);
     setBalloonValue('');
-    setLoanType('regular');
+    setLoanType(LoanType.REGULAR);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -103,7 +104,7 @@ export function PlanForm() {
     setLastPaymentDate('');
     setLinkedToCPI(false);
     setBalloonValue('');
-    setLoanType('regular');
+    setLoanType(LoanType.REGULAR);
   };
 
   return (
@@ -235,27 +236,19 @@ export function PlanForm() {
               <div className="pt-2 border-t border-border/50 space-y-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Loan Structure</Label>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant={loanType === 'regular' ? 'default' : 'outline'}
-                      className="flex-1"
-                      onClick={() => setLoanType('regular')}
-                    >
-                      Regular
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={loanType === 'balloon' ? 'default' : 'outline'}
-                      className="flex-1"
-                      onClick={() => setLoanType('balloon')}
-                    >
-                      Balloon
-                    </Button>
-                  </div>
+                  <SlidingSelect
+                    value={loanType}
+                    onValueChange={(e) => setLoanType(e as LoanType)}
+                    options={[
+                      { value: LoanType.REGULAR, label: 'Regular' },
+                      { value: LoanType.BALLOON, label: 'Balloon' },
+                    ]}
+                    color="bg-primary"
+                    textColor="text-primary-foreground"
+                  />
                 </div>
 
-                {loanType === 'balloon' && (
+                {loanType === LoanType.BALLOON && (
                   <div className="space-y-2">
                     <Label htmlFor="balloonValue" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Balloon Amount ({currencySymbol})</Label>
                     <div className="relative">

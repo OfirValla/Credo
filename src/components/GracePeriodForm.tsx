@@ -9,7 +9,7 @@ import { usePlans } from '@/context/PlanProvider';
 import { getPlanDisplayName } from '@/lib/planUtils';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { useState } from 'react';
-import { GracePeriod } from '@/types';
+import { GracePeriod, GracePeriodType } from '@/types';
 
 export function GracePeriodForm() {
     const { plans, currency, updatePlan, gracePeriods, addGracePeriod, deleteGracePeriod, updateGracePeriod } = usePlans();
@@ -17,7 +17,7 @@ export function GracePeriodForm() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<GracePeriod>>({});
     const [newGracePeriod, setNewGracePeriod] = useState<Partial<GracePeriod>>({
-        type: 'capitalized',
+        type: GracePeriodType.CAPITALIZED,
         startDate: '',
         endDate: ''
     });
@@ -38,13 +38,13 @@ export function GracePeriodForm() {
             planId,
             startDate: newGracePeriod.startDate!,
             endDate: newGracePeriod.endDate!,
-            type: newGracePeriod.type as 'capitalized' | 'interestOnly' || 'capitalized',
+            type: newGracePeriod.type as GracePeriodType || GracePeriodType.CAPITALIZED,
             enabled: true
         });
 
         setIsAdding(null);
         setNewGracePeriod({
-            type: 'capitalized',
+            type: GracePeriodType.CAPITALIZED,
             startDate: '',
             endDate: ''
         });
@@ -147,11 +147,11 @@ export function GracePeriodForm() {
                                                     <div className="space-y-2">
                                                         <div className="relative">
                                                             <SlidingSelect
-                                                                value={plan.gracePeriodType || 'capitalized'}
-                                                                onValueChange={(value: string) => updatePlan({ ...plan, gracePeriodType: value as 'capitalized' | 'interestOnly' })}
+                                                                value={plan.gracePeriodType || GracePeriodType.CAPITALIZED}
+                                                                onValueChange={(value: string) => updatePlan({ ...plan, gracePeriodType: value as GracePeriodType })}
                                                                 options={[
-                                                                    { value: 'capitalized', label: 'Capitalized (Add to Principal)' },
-                                                                    { value: 'interestOnly', label: 'Interest Only (Pay Monthly)' },
+                                                                    { value: GracePeriodType.CAPITALIZED, label: 'Capitalized (Add to Principal)' },
+                                                                    { value: GracePeriodType.INTEREST_ONLY, label: 'Interest Only (Pay Monthly)' },
                                                                 ]}
                                                                 color="bg-indigo-500"
                                                                 textColor="text-primary-foreground"
@@ -220,10 +220,10 @@ export function GracePeriodForm() {
                                                                         <div className="relative">
                                                                             <SlidingSelect
                                                                                 value={editForm.type!}
-                                                                                onValueChange={(value: string) => setEditForm({ ...editForm, type: value as "capitalized" | "interestOnly" })}
+                                                                                onValueChange={(value: string) => setEditForm({ ...editForm, type: value as GracePeriodType })}
                                                                                 options={[
-                                                                                    { value: 'capitalized', label: 'Capitalized' },
-                                                                                    { value: 'interestOnly', label: 'Interest Only' },
+                                                                                    { value: GracePeriodType.CAPITALIZED, label: 'Capitalized' },
+                                                                                    { value: GracePeriodType.INTEREST_ONLY, label: 'Interest Only' },
                                                                                 ]}
                                                                                 color="bg-indigo-500"
                                                                                 textColor="text-primary-foreground"
@@ -323,11 +323,11 @@ export function GracePeriodForm() {
                                                                 <Label className="text-xs">Type</Label>
                                                                 <div className="relative">
                                                                     <SlidingSelect
-                                                                        value={newGracePeriod.type || 'capitalized'}
-                                                                        onValueChange={(value: string) => setNewGracePeriod({ ...newGracePeriod, type: value as 'capitalized' | 'interestOnly' })}
+                                                                        value={newGracePeriod.type || GracePeriodType.CAPITALIZED}
+                                                                        onValueChange={(value: string) => setNewGracePeriod({ ...newGracePeriod, type: value as GracePeriodType })}
                                                                         options={[
-                                                                            { value: 'capitalized', label: 'Capitalized' },
-                                                                            { value: 'interestOnly', label: 'Interest Only' },
+                                                                            { value: GracePeriodType.CAPITALIZED, label: 'Capitalized' },
+                                                                            { value: GracePeriodType.INTEREST_ONLY, label: 'Interest Only' },
                                                                         ]}
                                                                         color="bg-indigo-500"
                                                                         textColor="text-primary-foreground"

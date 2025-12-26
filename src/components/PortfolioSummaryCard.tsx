@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { Building } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MortgagePortfolio, Plan, ExtraPayment, RateChange, GracePeriod } from '@/types';
+import { Portfolio, Plan, ExtraPayment, RateChange, GracePeriod } from '@/types';
 import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCPI } from '@/hooks/useCPI';
@@ -12,7 +12,7 @@ import { usePortfolios } from '@/context/PortfolioContext';
 import { Link } from 'react-router';
 
 interface PortfolioSummaryCardProps {
-    portfolio: MortgagePortfolio;
+    portfolio: Portfolio;
 }
 
 export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
