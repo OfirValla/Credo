@@ -34,6 +34,7 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
         if (!plans || plans.length === 0) {
             return {
                 balance: 0,
+                remainingBalance: 0,
                 monthlyPayment: 0,
                 planCount: 0
             };

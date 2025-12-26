@@ -51,8 +51,6 @@ export function DashboardStats() {
         return colors[colorName] || '#3b82f6';
     };
 
-    console.log(data)
-
     return (
         <div className="space-y-6 mb-8">
             {/* Summary Cards */}
