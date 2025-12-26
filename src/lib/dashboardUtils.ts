@@ -90,7 +90,11 @@ export function getAggregateDashboardData(
                     currentMonthlyPayment = currentMonthRows.reduce((sum, row) => sum + row.monthlyPayment, 0);
                     currentScheduleBalance = currentMonthRows.reduce((sum, row) => {
                         const paymentDay = parseInt(row.month.split('/')[0], 10);
-                        return now.getDate() < paymentDay ? sum + row.startingBalance : sum + row.endingBalance;
+                        const paymentMonth = parseInt(row.month.split('/')[1], 10);
+                        const paymentYear = parseInt(row.month.split('/')[2], 10);
+                        const paymentDate = new Date(paymentYear, paymentMonth - 1, paymentDay);
+
+                        return now < paymentDate ? sum + row.startingBalance : sum + row.endingBalance;
                     }, 0);
                 } else {
                     // If we are before the mortgage starts, it's the full amount.

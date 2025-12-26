@@ -52,6 +52,7 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
 
         // Calculate current monthly payment
         let monthlyPayment = 0;
+        let remainingBalance = totalBalance;
         if (amortizationSchedule.length > 0) {
             const now = new Date();
             const currentMonth = now.getMonth() + 1;
@@ -68,6 +69,14 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
 
             if (currentMonthRows.length > 0) {
                 monthlyPayment = currentMonthRows.reduce((sum, row) => sum + row.monthlyPayment, 0);
+                remainingBalance = currentMonthRows.reduce((sum, row) => {
+                    const paymentDay = parseInt(row.month.split('/')[0], 10);
+                    const paymentMonth = parseInt(row.month.split('/')[1], 10);
+                    const paymentYear = parseInt(row.month.split('/')[2], 10);
+                    const paymentDate = new Date(paymentYear, paymentMonth - 1, paymentDay);
+
+                    return now < paymentDate ? sum + row.startingBalance : sum + row.endingBalance;
+                }, 0);
             } else {
                 // Fallback to first month if current month not found (e.g. future start)
                 const firstMonth = amortizationSchedule[0].month;
@@ -79,6 +88,7 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
 
         return {
             balance: totalBalance,
+            remainingBalance: remainingBalance,
             monthlyPayment,
             planCount: plans.length
         };
@@ -124,6 +134,14 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
                                 <span className="text-sm">Monthly</span>
                             </div>
                             <span className="font-bold text-lg">{formatCurrency(summary.monthlyPayment, currency)}</span>
+                        </div>
+
+                        <div className="flex justify-between items-center p-3 bg-secondary/30 rounded-lg">
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <Icons.CreditCard className="w-4 h-4" />
+                                <span className="text-sm">Remaining Balance</span>
+                            </div>
+                            <span className="font-bold text-lg">{formatCurrency(summary.remainingBalance, currency)}</span>
                         </div>
 
                         <div className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
