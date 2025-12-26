@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { PortfolioCreationModal } from '@/components/PortfolioCreationModal';
 import { useNavigate } from 'react-router';
 import { PortfolioType } from '@/types';
+import { ModeToggle } from '@/components/ModeToggle';
 
 export function Dashboard() {
     const { portfolios, addPortfolio, setCurrentPortfolioId } = usePortfolios();
@@ -22,7 +23,7 @@ export function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-background text-foreground p-8">
+        <div className="min-h-screen bg-background text-foreground py-8 px-4">
             <PortfolioCreationModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -34,17 +35,22 @@ export function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-10"
             >
-                <div className="flex items-center gap-4 mb-2">
-                    <div className="p-3 bg-primary/10 rounded-xl backdrop-blur-sm border border-primary/20">
-                        <LayoutDashboard className="w-8 h-8 text-primary" />
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/10 rounded-xl backdrop-blur-sm border border-primary/20">
+                            <LayoutDashboard className="w-8 h-8 text-primary" />
+                        </div>
+                        <div>
+                            <h1 className="text-4xl font-bold tracking-tight text-gradient">
+                                Dashboard
+                            </h1>
+                            <p className="text-muted-foreground mt-1">
+                                Overview of all your portfolios
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-gradient">
-                            Dashboard
-                        </h1>
-                        <p className="text-muted-foreground mt-1">
-                            Overview of all your mortgage portfolios
-                        </p>
+                    <div className="flex justify-end gap-3 flex-wrap">
+                        <ModeToggle />
                     </div>
                 </div>
             </motion.div>
