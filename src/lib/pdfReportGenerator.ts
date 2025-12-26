@@ -1,11 +1,13 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Plan, AmortizationRow, ExtraPayment, RateChange, GracePeriod } from '@/types';
+import { Plan, AmortizationRow, ExtraPayment, RateChange, GracePeriod, PortfolioType } from '@/types';
 import { CurrencyCode, CURRENCIES } from '@/lib/currency';
 import { getPlanDurationInfo } from '@/lib/planUtils';
 import { loadHebrewFont } from '@/lib/fontLoader';
 
 interface ReportData {
+    portfolioName: string;
+    portfolioType: PortfolioType;
     plans: Plan[];
     extraPayments: ExtraPayment[];
     rateChanges: RateChange[];
@@ -61,7 +63,7 @@ export const generatePDFReport = async (data: ReportData) => {
     // --- Header ---
     doc.setFontSize(22);
     doc.setTextColor(40, 40, 40);
-    doc.text('Mortgage Manager Report', margin, 20);
+    doc.text(`${data.portfolioType === PortfolioType.MORTGAGE ? 'Mortgage' : 'Loan'} Report`, margin, 20);
 
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
@@ -85,6 +87,7 @@ export const generatePDFReport = async (data: ReportData) => {
     doc.setTextColor(60, 60, 60);
 
     const summaryData = [
+        ['Name', processText(data.portfolioName)],
         ['Total Balance', formatWithCommas(data.summary.totalBalance)],
         ['Monthly Payment', formatWithCommas(data.summary.monthlyPayment)],
         ['Total Interest', formatWithCommas(data.summary.totalInterest)],
@@ -288,5 +291,5 @@ export const generatePDFReport = async (data: ReportData) => {
     });
 
     // Save
-    doc.save('mortgage_manager_report.pdf');
+    doc.save(`${data.portfolioName} - ${data.portfolioType}.pdf`);
 };

@@ -68,6 +68,8 @@ export function PortfolioPage() {
         const payoffDate = amortizationSchedule.length > 0 ? amortizationSchedule[amortizationSchedule.length - 1].month : '-';
 
         await generatePDFReport({
+            portfolioName: currentPortfolio?.name,
+            portfolioType: currentPortfolio?.type,
             plans,
             extraPayments,
             rateChanges,
