@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePlans } from '@/context/PlanProvider';
-import { usePortfolios } from '@/context/PortfolioContext';
+import { usePortfolios } from '@/context/PortfoliosContext';
 
 export const DataImport: React.FC = () => {
     const { importData } = usePlans();

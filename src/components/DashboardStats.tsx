@@ -1,6 +1,6 @@
 
 import { useMemo } from 'react';
-import { usePortfolios } from '@/context/PortfolioContext';
+import { usePortfolios } from '@/context/PortfoliosContext';
 import { useCPI } from '@/hooks/useCPI';
 import { getAggregateDashboardData } from '@/lib/dashboardUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

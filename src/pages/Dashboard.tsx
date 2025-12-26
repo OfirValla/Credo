@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LayoutDashboard, Plus } from 'lucide-react';
-import { usePortfolios } from '@/context/PortfolioContext';
+import { usePortfolios } from '@/context/PortfoliosContext';
 import { PortfolioSummaryCard } from '@/components/PortfolioSummaryCard';
 import { DashboardStats } from '@/components/DashboardStats';
 import { Button } from '@/components/ui/button';

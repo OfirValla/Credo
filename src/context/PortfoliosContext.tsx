@@ -2,7 +2,7 @@ import { createContext, useContext, ReactNode, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Portfolio, PortfolioType } from '@/types';
 
-interface PortfolioContextType {
+interface PortfoliosContextType {
     portfolios: Portfolio[];
     currentPortfolioId: string;
     addPortfolio: (name: string, color?: string, icon?: string, type?: PortfolioType) => string;
@@ -11,15 +11,11 @@ interface PortfolioContextType {
     setCurrentPortfolioId: (id: string) => void;
 }
 
-const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
+const PortfoliosContext = createContext<PortfoliosContextType | undefined>(undefined);
 
-export function PortfolioProvider({ children }: { children: ReactNode }) {
+export function PortfoliosProvider({ children }: { children: ReactNode }) {
     const [portfolios, setPortfolios] = useLocalStorage<Portfolio[]>('portfolios', []);
     const [currentPortfolioId, setCurrentPortfolioId] = useLocalStorage<string>('current_portfolio_id', '');
-
-    if (!currentPortfolioId || (currentPortfolioId !== 'overview' && !portfolios.find(p => p.id === currentPortfolioId))) {
-        setCurrentPortfolioId('overview');
-    }
 
     const addPortfolio = useCallback((name: string, color?: string, icon?: string, type?: PortfolioType) => {
         const newPortfolio: Portfolio = {
@@ -41,21 +37,17 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         }
 
         const portfolioToDelete = portfolios.find(p => p.id === id);
+        if (!portfolioToDelete)
+            return;
 
         const newPortfolios = portfolios.filter(p => p.id !== id);
         setPortfolios(newPortfolios);
 
-        if (currentPortfolioId === id) {
-            setCurrentPortfolioId(newPortfolios[0].id);
-        }
-
-        if (portfolioToDelete?.type === 'mortgage') {
-            localStorage.removeItem(`mortgage-plans-${id}`);
-            localStorage.removeItem(`mortgage-extra-payments-${id}`);
-            localStorage.removeItem(`mortgage-rate-changes-${id}`);
-            localStorage.removeItem(`mortgage-grace-periods-${id}`);
-            localStorage.removeItem(`mortgage-currency-${id}`);
-        }
+        localStorage.removeItem(`${portfolioToDelete.type}-plans-${id}`);
+        localStorage.removeItem(`${portfolioToDelete.type}-extra-payments-${id}`);
+        localStorage.removeItem(`${portfolioToDelete.type}-rate-changes-${id}`);
+        localStorage.removeItem(`${portfolioToDelete.type}-grace-periods-${id}`);
+        localStorage.removeItem(`${portfolioToDelete.type}-currency-${id}`);
     }, [portfolios, currentPortfolioId, setPortfolios, setCurrentPortfolioId]);
 
     const updatePortfolio = useCallback((id: string, updates: Partial<Portfolio>) => {
@@ -72,24 +64,24 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <PortfolioContext.Provider value={value}>
+        <PortfoliosContext.Provider value={value}>
             {children}
-        </PortfolioContext.Provider>
+        </PortfoliosContext.Provider>
     );
 }
 
 export function usePortfolios() {
-    const context = useContext(PortfolioContext);
+    const context = useContext(PortfoliosContext);
     if (context === undefined) {
-        throw new Error('usePortfolios must be used within a PortfolioProvider');
+        throw new Error('usePortfolios must be used within a PortfoliosProvider');
     }
     return context;
 }
 
 export function useCurrentPortfolio() {
-    const context = useContext(PortfolioContext);
+    const context = useContext(PortfoliosContext);
     if (context === undefined) {
-        throw new Error('useCurrentPortfolio must be used within a PortfolioProvider');
+        throw new Error('useCurrentPortfolio must be used within a PortfoliosProvider');
     }
     const { currentPortfolioId, portfolios } = context;
     return portfolios.find(p => p.id === currentPortfolioId)!;

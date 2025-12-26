@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 
 import { ThemeProvider } from '@/context/ThemeProvider';
 import { PlanProvider } from '@/context/PlanProvider';
-import { PortfolioProvider } from '@/context/PortfolioContext';
+import { PortfoliosProvider } from '@/context/PortfoliosContext';
 
 import { Sidebar } from '@/components/Sidebar';
 
@@ -14,7 +14,7 @@ import { useParams, Navigate } from 'react-router';
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <PortfolioProvider>
+      <PortfoliosProvider>
         <BrowserRouter>
           <Sidebar />
           <div className="pl-16 transition-all duration-300">
@@ -24,7 +24,7 @@ function App() {
             </Routes>
           </div>
         </BrowserRouter>
-      </PortfolioProvider>
+      </PortfoliosProvider>
     </ThemeProvider>
   );
 }

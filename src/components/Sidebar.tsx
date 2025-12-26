@@ -4,7 +4,7 @@ import {
     Plus, Trash2, Edit2, Check, X, FolderOpen, Upload, LayoutDashboard,
     Home
 } from 'lucide-react';
-import { usePortfolios } from '@/context/PortfolioContext';
+import { usePortfolios } from '@/context/PortfoliosContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -138,9 +138,9 @@ export function Sidebar() {
                 onMouseLeave={() => setIsExpanded(false)}
             >
                 {/* Title */}
-                <div
+                <Link
+                    to="/"
                     className={"group flex items-center rounded-lg cursor-pointer transition-colors relative h-16 p-4 flex items-center justify-center border-b border-border"}
-                    onClick={() => setCurrentPortfolioId('overview')}
                 >
                     <div className="min-w-[2rem] flex justify-center items-center">
                         <FolderOpen className="w-6 h-6" />
@@ -152,7 +152,7 @@ export function Sidebar() {
                     >
                         <span className='ml-3'>Portfolios</span>
                     </motion.span>
-                </div>
+                </Link>
 
                 {/* Overview */}
                 <div className="px-2 py-2 border-b border-border">

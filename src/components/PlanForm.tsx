@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { SlidingSelect } from '@/components/ui/sliding-select';
 
 import { usePlans } from '@/context/PlanProvider';
-import { useCurrentPortfolio } from '@/context/PortfolioContext';
+import { useCurrentPortfolio } from '@/context/PortfoliosContext';
 
 export function PlanForm() {
   const { plans, currency, addPlan, updatePlan, deletePlan } = usePlans();

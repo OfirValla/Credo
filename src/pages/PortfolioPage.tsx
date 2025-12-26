@@ -11,7 +11,7 @@ import { PortfolioStatus } from '@/components/PortfolioStatus';
 import { PortfolioSummary } from '@/components/PortfolioSummary';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { ModeToggle } from '@/components/ModeToggle';
-import { useCurrentPortfolio } from "@/context/PortfolioContext";
+import { useCurrentPortfolio } from "@/context/PortfoliosContext";
 import { usePlans } from "@/context/PlanProvider";
 import { usePlanCalculations } from "@/hooks/usePlanCalculations";
 import { generatePDFReport } from "@/lib/pdfReportGenerator";

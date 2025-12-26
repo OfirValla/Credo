@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 
 import { Plan, ExtraPayment, RateChange } from '@/types';
 import { usePlans } from '@/context/PlanProvider';
-import { usePortfolios } from '@/context/PortfolioContext';
+import { usePortfolios } from '@/context/PortfoliosContext';
 
 export const DataExport: React.FC = () => {
   const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();

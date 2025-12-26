@@ -8,7 +8,7 @@ import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCPI } from '@/hooks/useCPI';
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
-import { usePortfolios } from '@/context/PortfolioContext';
+import { usePortfolios } from '@/context/PortfoliosContext';
 import { Link } from 'react-router';
 
 interface PortfolioSummaryCardProps {
