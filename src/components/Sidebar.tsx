@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     Plus, Trash2, Edit2, Check, X, FolderOpen, Upload, LayoutDashboard,
-    Home
+    Home,
+    Settings
 } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { cn } from '@/lib/utils';
@@ -23,11 +24,17 @@ import { Link, useNavigate } from 'react-router';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { PortfolioCreationModal } from './modals/PortfolioCreationModal';
 import { PortfolioType } from '@/types';
+import { SettingsModal } from './modals/SettingsModal';
+
+enum ModalType {
+    PORTFOLIO_CREATION,
+    SETTINGS
+}
 
 export function Sidebar() {
     const { portfolios, currentPortfolioId, setCurrentPortfolioId, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState<ModalType | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const importInputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +43,7 @@ export function Sidebar() {
     const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const newId = addPortfolio(name, color, icon, type);
         setCurrentPortfolioId(newId);
-        setIsModalOpen(false);
+        setModalType(null);
         navigate(`/${type}/${newId}`);
     };
 
@@ -124,9 +131,13 @@ export function Sidebar() {
     return (
         <>
             <PortfolioCreationModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={modalType === ModalType.PORTFOLIO_CREATION}
+                onClose={() => setModalType(null)}
                 onCreate={handleCreatePortfolio}
+            />
+            <SettingsModal
+                isOpen={modalType === ModalType.SETTINGS}
+                onClose={() => setModalType(null)}
             />
 
             <motion.div
@@ -363,7 +374,7 @@ export function Sidebar() {
                         className={cn(
                             "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
                         )}
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => setModalType(ModalType.PORTFOLIO_CREATION)}
                     >
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <Plus className="w-5 h-5" />
@@ -374,6 +385,25 @@ export function Sidebar() {
                             className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                         >
                             New Portfolio
+                        </motion.span>
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        className={cn(
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
+                        )}
+                        onClick={() => setModalType(ModalType.SETTINGS)}
+                    >
+                        <div className="min-w-[2rem] flex justify-center items-center">
+                            <Settings className="w-5 h-5" />
+                        </div>
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                        >
+                            Settings
                         </motion.span>
                     </Button>
 

@@ -10,7 +10,6 @@ import { AmortizationTable } from '@/components/AmortizationTable';
 import { PortfolioStatus } from '@/components/PortfolioStatus';
 import { PortfolioSummary } from '@/components/PortfolioSummary';
 import { CurrencySelector } from '@/components/CurrencySelector';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { useCurrentPortfolio } from "@/context/PortfoliosContext";
 import { usePlans } from "@/context/PlanProvider";
 import { usePlanCalculations } from "@/hooks/usePlanCalculations";
@@ -125,7 +124,6 @@ export function PortfolioPage() {
                                 <Icons.FileText className="h-[1.2rem] w-[1.2rem]" />
                             </Button>
                             <CurrencySelector />
-                            <ThemeToggle />
                         </div>
                     </div>
                 </motion.header>

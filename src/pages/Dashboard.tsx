@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { PortfolioCreationModal } from '@/components/modals/PortfolioCreationModal';
 import { useNavigate } from 'react-router';
 import { PortfolioType } from '@/types';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function Dashboard() {
     const { portfolios, addPortfolio, setCurrentPortfolioId } = usePortfolios();
@@ -48,9 +47,6 @@ export function Dashboard() {
                                 Overview of all your portfolios
                             </p>
                         </div>
-                    </div>
-                    <div className="flex justify-end gap-3 flex-wrap">
-                        <ThemeToggle />
                     </div>
                 </div>
             </motion.div>
