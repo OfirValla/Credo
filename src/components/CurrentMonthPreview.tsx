@@ -74,7 +74,6 @@ function compareMonths(month1: string, month2: string): number {
   const m1 = parseMonth(month1);
   const m2 = parseMonth(month2);
 
-  console.log(month1, m1, month2, m2);
   return m1 - m2;
 }
 
