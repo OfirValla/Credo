@@ -3,15 +3,17 @@ import { Calendar, DollarSign, TrendingUp, Sparkles, CalendarDays } from 'lucide
 import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { usePlans } from '@/context/PlanProvider';
+import { parseDateToMonthIndex, parseMonth } from '@/lib/planUtils';
 
 /**
  * Get current month in MM/YYYY format
  */
 function getCurrentMonth(): string {
   const now = new Date();
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
-  const year = now.getFullYear();
-  return `${month}/${year}`;
+  return now.toLocaleDateString('en-GB', {
+    month: '2-digit',
+    year: 'numeric',
+  });
 }
 
 /**
@@ -65,30 +67,14 @@ function getNextPaymentDate(paymentDay: number = 10): string {
 }
 
 /**
- * Parse MM/YYYY or DD/MM/YYYY date string and convert to month number
- */
-function parseMonth(dateStr: string): number {
-  if (!dateStr) return 0;
-  const parts = dateStr.split('/');
-  if (parts.length === 3) {
-    // DD/MM/YYYY
-    const [, month, year] = parts.map(Number);
-    return (year - 2000) * 12 + month - 1;
-  } else if (parts.length === 2) {
-    // MM/YYYY
-    const [month, year] = parts.map(Number);
-    return (year - 2000) * 12 + month - 1;
-  }
-  return 0;
-}
-
-/**
  * Compare two months (MM/YYYY format)
  * Returns: -1 if month1 < month2, 0 if equal, 1 if month1 > month2
  */
 function compareMonths(month1: string, month2: string): number {
   const m1 = parseMonth(month1);
   const m2 = parseMonth(month2);
+
+  console.log(month1, m1, month2, m2);
   return m1 - m2;
 }
 
@@ -129,8 +115,8 @@ export function CurrentMonthPreview() {
       const planRows = rows.filter((r) => r.planId === plan.id);
 
       // Check if plan has started
-      const planStartMonth = parseMonth(plan.firstPaymentDate);
-      const currentMonthNum = parseMonth(currentMonth);
+      const planStartMonth = parseDateToMonthIndex(plan.firstPaymentDate);
+      const currentMonthNum = parseDateToMonthIndex(currentMonth);
 
       if (planStartMonth > currentMonthNum) {
         // Plan hasn't started yet

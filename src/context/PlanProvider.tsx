@@ -4,7 +4,7 @@ import { CurrencyCode } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { usePlanCalculations } from '@/hooks/usePlanCalculations';
 
-import { parseMonth } from '@/lib/planUtils';
+import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { useParams } from 'react-router';
 
 interface PlanContextType {
@@ -134,11 +134,11 @@ export function PlanProvider({ children, storagePrefix = 'mortgage' }: { childre
 
     const calculatedPlans = useMemo(() => {
         const now = new Date();
-        const currentMonthIndex = (now.getFullYear() - 2000) * 12 + now.getMonth();
+        const currentMonthIndex = parseDateToMonthIndex(now.toLocaleDateString('en-GB'));
 
         return plans.map(plan => {
             const planRows = amortizationRows.filter(r => r.planId === plan.id);
-            const remainingMonths = planRows.filter(r => parseMonth(r.month) > currentMonthIndex).length;
+            const remainingMonths = planRows.filter(r => parseDateToMonthIndex(r.month) > currentMonthIndex).length;
             return { ...plan, remainingMonths };
         });
     }, [plans, amortizationRows]);

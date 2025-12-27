@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Activity, CreditCard } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { getPlanDisplayName, parseMonth } from '@/lib/planUtils';
+import { getPlanDisplayName, parseDateToMonthIndex } from '@/lib/planUtils';
 import { usePlans } from '@/context/PlanProvider';
 
 
@@ -11,7 +11,7 @@ export function PortfolioStatus() {
 
     const statusData = useMemo(() => {
         const now = new Date();
-        const currentMonthIndex = (now.getFullYear() - 2000) * 12 + now.getMonth();
+        const currentMonthIndex = parseDateToMonthIndex(now.toLocaleDateString('en-GB'));
 
         // Filter to only enabled plans (defaults to true if not set)
         const enabledPlans = plans.filter(plan => plan.enabled !== false);
@@ -19,7 +19,7 @@ export function PortfolioStatus() {
         return enabledPlans.map(plan => {
             const planRows = rows.filter(r => r.planId === plan.id);
 
-            const startMonthIndex = parseMonth(plan.takenDate);
+            const startMonthIndex = parseDateToMonthIndex(plan.takenDate);
 
             let currentBalance = plan.amount;
             let monthlyPayment = 0;
@@ -31,10 +31,10 @@ export function PortfolioStatus() {
                 currentBalance = plan.amount;
             } else {
                 // Find row for current month or closest past month
-                const relevantRows = planRows.filter(r => parseMonth(r.month) <= currentMonthIndex);
+                const relevantRows = planRows.filter(r => parseDateToMonthIndex(r.month) <= currentMonthIndex);
                 if (relevantRows.length > 0) {
                     // Sort by month descending
-                    relevantRows.sort((a, b) => parseMonth(b.month) - parseMonth(a.month));
+                    relevantRows.sort((a, b) => parseDateToMonthIndex(b.month) - parseDateToMonthIndex(a.month));
                     const latestRow = relevantRows[0];
 
                     currentBalance = latestRow.endingBalance;
