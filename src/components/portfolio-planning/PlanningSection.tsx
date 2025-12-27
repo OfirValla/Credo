@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Wallet, Percent, Hourglass } from 'lucide-react';
-import { PlanForm } from './forms/PlanForm';
-import { ExtraPaymentsForm } from './forms/ExtraPaymentsForm';
-import { RateChangeForm } from './forms/RateChangeForm';
-import { GracePeriodForm } from './forms/GracePeriodForm';
-import { SlidingSelect } from './ui/sliding-select';
+import { PlanForm } from './PlanForm';
+import { ExtraPaymentsForm } from './ExtraPaymentsForm';
+import { RateChangeForm } from './RateChangeForm';
+import { GracePeriodForm } from './GracePeriodForm';
+import { SlidingSelect } from '../ui/sliding-select';
 
 type TabId = 'plans' | 'extra' | 'rates' | 'grace'; //| 'compare';
 

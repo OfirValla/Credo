@@ -4,7 +4,7 @@ import * as Icons from 'lucide-react';
 import { useParams, Navigate } from 'react-router';
 import { DataExport } from '@/components/DataExport';
 import { DataImport } from '@/components/DataImport';
-import { PlanningSection } from '@/components/PlanningSection';
+import { PlanningSection } from '@/components/portfolio-planning/PlanningSection';
 import { CurrentMonthPreview } from '@/components/CurrentMonthPreview';
 import { AmortizationTable } from '@/components/AmortizationTable';
 import { PortfolioStatus } from '@/components/PortfolioStatus';
