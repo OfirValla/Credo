@@ -38,6 +38,11 @@ export function parseDateToMonthIndex(dateStr: string): number {
   return 0;
 }
 
+export function parseMonth(dateStr: string): number {
+  const value = parseDateToMonthIndex(dateStr);
+  return Number.isFinite(value) ? Math.floor(value) : 0;
+}
+
 /**
  * Get plan duration information
  */
@@ -73,15 +78,3 @@ export function getPlanDurationInfo(plan: Plan): { totalMonths: number, remainin
   return { totalMonths, remainingMonths: Math.floor(remainingMonths) };
 }
 
-export function parseMonth(dateStr: string): number {
-  if (!dateStr) return 0;
-  const parts = dateStr.split('/');
-  if (parts.length === 3) {
-    const [, month, year] = parts.map(Number);
-    return (year - 2000) * 12 + month - 1;
-  } else if (parts.length === 2) {
-    const [month, year] = parts.map(Number);
-    return (year - 2000) * 12 + month - 1;
-  }
-  return 0;
-}
