@@ -5,7 +5,7 @@ import { usePortfolios } from '@/context/PortfoliosContext';
 import { PortfolioSummaryCard } from '@/components/PortfolioSummaryCard';
 import { DashboardStats } from '@/components/DashboardStats';
 import { Button } from '@/components/ui/button';
-import { PortfolioCreationModal } from '@/components/PortfolioCreationModal';
+import { PortfolioCreationModal } from '@/components/modals/PortfolioCreationModal';
 import { useNavigate } from 'react-router';
 import { PortfolioType } from '@/types';
 import { ModeToggle } from '@/components/ModeToggle';

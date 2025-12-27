@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/popover";
 import { Link, useNavigate } from 'react-router';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
-import { PortfolioCreationModal } from './PortfolioCreationModal';
+import { PortfolioCreationModal } from './modals/PortfolioCreationModal';
 import { PortfolioType } from '@/types';
 
 export function Sidebar() {
