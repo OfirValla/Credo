@@ -393,25 +393,6 @@ export function Sidebar() {
                         className={cn(
                             "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
                         )}
-                        onClick={() => setModalType(ModalType.SETTINGS)}
-                    >
-                        <div className="min-w-[2rem] flex justify-center items-center">
-                            <Settings className="w-5 h-5" />
-                        </div>
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
-                        >
-                            Settings
-                        </motion.span>
-                    </Button>
-
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
-                        )}
                         onClick={() => importInputRef.current?.click()}
                     >
                         <div className="min-w-[2rem] flex justify-center items-center">
@@ -423,6 +404,27 @@ export function Sidebar() {
                             className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                         >
                             Import Portfolio
+                        </motion.span>
+                    </Button>
+                </div>
+
+                <div className="p-2 border-t border-border space-y-1">
+                    <Button
+                        variant="ghost"
+                        className={cn(
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
+                        )}
+                        onClick={() => setModalType(ModalType.SETTINGS)}
+                    >
+                        <div className="min-w-[2rem] flex justify-center items-center">
+                            <Settings className="w-5 h-5" />
+                        </div>
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                        >
+                            Settings
                         </motion.span>
                     </Button>
                 </div>
