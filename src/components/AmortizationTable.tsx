@@ -334,12 +334,9 @@ export function AmortizationTable() {
                       }
 
                       return (
-                        <motion.tr
+                        <TableRow
                           key={`${row.planId}-${row.month}-${index}`}
                           data-current={isCurrent}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.02 }} // Reduced delay for performance with many rows
                           className={cn(
                             "border-b border-border/50 transition-colors",
                             isCurrent
@@ -389,7 +386,7 @@ export function AmortizationTable() {
                           <TableCell className="text-right font-mono">
                             {formatCurrencyValue(row.endingBalance)}
                           </TableCell>
-                        </motion.tr>
+                        </TableRow>
                       );
                     })
                   )}
