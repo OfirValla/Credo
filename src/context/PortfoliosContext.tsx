@@ -7,6 +7,7 @@ interface PortfoliosContextType {
     currentPortfolioId: string;
     addPortfolio: (name: string, color?: string, icon?: string, type?: PortfolioType) => string;
     removePortfolio: (id: string) => void;
+    removeAllPortfolios: () => void;
     updatePortfolio: (id: string, updates: Partial<Portfolio>) => void;
     setCurrentPortfolioId: (id: string) => void;
 }
@@ -31,24 +32,32 @@ export function PortfoliosProvider({ children }: { children: ReactNode }) {
     }, [portfolios, setPortfolios]);
 
     const removePortfolio = useCallback((id: string) => {
-        if (portfolios.length <= 1) {
-            alert("Cannot delete the last portfolio.");
-            return;
-        }
+        setPortfolios(portfolios => {
+            const portfolioToDelete = portfolios.find(p => p.id === id);
+            if (!portfolioToDelete) return portfolios;
 
-        const portfolioToDelete = portfolios.find(p => p.id === id);
-        if (!portfolioToDelete)
-            return;
+            localStorage.removeItem(`${portfolioToDelete.type}-plans-${id}`);
+            localStorage.removeItem(`${portfolioToDelete.type}-extra-payments-${id}`);
+            localStorage.removeItem(`${portfolioToDelete.type}-rate-changes-${id}`);
+            localStorage.removeItem(`${portfolioToDelete.type}-grace-periods-${id}`);
+            localStorage.removeItem(`${portfolioToDelete.type}-currency-${id}`);
 
-        const newPortfolios = portfolios.filter(p => p.id !== id);
-        setPortfolios(newPortfolios);
+            return portfolios.filter(p => p.id !== id);
+        });
+    }, [setPortfolios]);
 
-        localStorage.removeItem(`${portfolioToDelete.type}-plans-${id}`);
-        localStorage.removeItem(`${portfolioToDelete.type}-extra-payments-${id}`);
-        localStorage.removeItem(`${portfolioToDelete.type}-rate-changes-${id}`);
-        localStorage.removeItem(`${portfolioToDelete.type}-grace-periods-${id}`);
-        localStorage.removeItem(`${portfolioToDelete.type}-currency-${id}`);
-    }, [portfolios, currentPortfolioId, setPortfolios, setCurrentPortfolioId]);
+    const removeAllPortfolios = useCallback(() => {
+        setPortfolios(portfolios => {
+            for (const p of portfolios) {
+                localStorage.removeItem(`${p.type}-plans-${p.id}`);
+                localStorage.removeItem(`${p.type}-extra-payments-${p.id}`);
+                localStorage.removeItem(`${p.type}-rate-changes-${p.id}`);
+                localStorage.removeItem(`${p.type}-grace-periods-${p.id}`);
+                localStorage.removeItem(`${p.type}-currency-${p.id}`);
+            }
+            return [];
+        });
+    }, [setPortfolios]);
 
     const updatePortfolio = useCallback(
         (id: string, updates: Omit<Partial<Portfolio>, 'id'>) => {
@@ -66,6 +75,7 @@ export function PortfoliosProvider({ children }: { children: ReactNode }) {
         currentPortfolioId,
         addPortfolio,
         removePortfolio,
+        removeAllPortfolios,
         updatePortfolio,
         setCurrentPortfolioId,
     };
