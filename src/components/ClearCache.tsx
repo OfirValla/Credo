@@ -64,7 +64,7 @@ export const ClearCache: React.FC = () => {
                     </div>
                 </MotionButton>
 
-                {/* Cancel button container for width animation */}
+                {/* Cancel button */}
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: areYouSure ? 'auto' : 0 }}
