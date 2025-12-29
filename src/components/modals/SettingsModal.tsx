@@ -1,6 +1,8 @@
 import { Modal } from '@/components/ui/modal';
 import { ThemeSelect } from '../ThemeSelect';
 import { ClearCache } from '../ClearCache';
+import { ExportAll } from '../ExportAll';
+import { ImportAll } from '../ImportAll';
 
 interface SettingsModalProps {
     isOpen: boolean;
