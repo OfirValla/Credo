@@ -55,7 +55,7 @@ export const ExportAll: React.FC = () => {
     <Button
       variant="outline"
       onClick={exportData}
-      className="bg-background/50 backdrop-blur-sm border-primary/20 hover:bg-primary/10 gap-2 w-full"
+      className="gap-2 w-full"
     >
       <Download className="h-4 w-4" />
       Export all portfolios

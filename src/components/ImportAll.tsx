@@ -63,7 +63,7 @@ export const ImportAll: React.FC = () => {
         variant="outline"
         onClick={handleButtonClick}
         title="Import Data"
-        className="bg-background/50 backdrop-blur-sm border-primary/20 hover:bg-primary/10 gap-2 w-full"
+        className="gap-2 w-full"
       >
         <Upload className="h-4 w-4" />
         Import all portfolios
