@@ -1,3 +1,5 @@
+import { CurrencyCode } from "@/lib/currency";
+
 export interface Plan {
   id: string;
   name?: string; // Optional custom name for the plan
@@ -87,4 +89,13 @@ export enum GracePeriodType {
 export enum ExtraPaymentType {
   REDUCE_TERM = 'reduceTerm',
   REDUCE_PAYMENT = 'reducePayment',
+}
+
+export interface ExportPortfolio {
+  portfolio: Portfolio;
+  currency: CurrencyCode;
+  plans: Plan[];
+  extraPayments: ExtraPayment[];
+  rateChanges: RateChange[];
+  gracePeriods: GracePeriod[];
 }

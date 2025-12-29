@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 
 import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfoliosContext';
+import { ExportPortfolio } from '@/types';
 
 export const PortfolioExport: React.FC = () => {
   const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
@@ -12,7 +13,7 @@ export const PortfolioExport: React.FC = () => {
   const exportData = () => {
     const currentPortfolio = portfolios.find(p => p.id === currentPortfolioId);
     if (!currentPortfolio) return;
-    const data = {
+    const data: ExportPortfolio = {
       portfolio: currentPortfolio,
       currency: currency,
       plans: plans,

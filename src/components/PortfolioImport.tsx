@@ -3,7 +3,7 @@ import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfoliosContext';
-import { ExtraPayment, GracePeriod, Plan, RateChange } from '@/types';
+import { ExportPortfolio, ExtraPayment, GracePeriod, Plan, RateChange } from '@/types';
 
 export const PortfolioImport: React.FC = () => {
     const { importData } = usePlans();
@@ -18,7 +18,7 @@ export const PortfolioImport: React.FC = () => {
         reader.onload = (e) => {
             try {
                 const content = e.target?.result as string;
-                const data = JSON.parse(content);
+                const data: ExportPortfolio = JSON.parse(content);
 
                 // Basic validation
                 if (!data.plans || !Array.isArray(data.plans))
