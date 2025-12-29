@@ -15,17 +15,13 @@ import { usePlans } from "@/context/PlanProvider";
 import { usePlanCalculations } from "@/hooks/usePlanCalculations";
 import { generatePDFReport } from "@/lib/pdfReportGenerator";
 import { Button } from '@/components/ui/button';
+import { PortfolioType } from '@/types';
 
 export function PortfolioPage() {
-    const { type } = useParams<{ type: string }>();
-    const currentPortfolio = useCurrentPortfolio();
+    const { type, portfolioId } = useParams<{ type: string, portfolioId: string }>();
+    const currentPortfolio = useCurrentPortfolio(portfolioId);
     const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
     const amortizationSchedule = usePlanCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
-
-    // Validate type parameter
-    if (type !== 'mortgage' && type !== 'loan') {
-        return <Navigate to="/" replace />;
-    }
 
     const isLoan = type === 'loan';
     const pageTitle = isLoan ? 'Loan' : 'Mortgage';
@@ -67,8 +63,8 @@ export function PortfolioPage() {
         const payoffDate = amortizationSchedule.length > 0 ? amortizationSchedule[amortizationSchedule.length - 1].month : '-';
 
         await generatePDFReport({
-            portfolioName: currentPortfolio?.name,
-            portfolioType: currentPortfolio?.type,
+            portfolioName: currentPortfolio?.name ?? '',
+            portfolioType: currentPortfolio?.type ?? PortfolioType.MORTGAGE,
             plans,
             extraPayments,
             rateChanges,
@@ -83,6 +79,9 @@ export function PortfolioPage() {
             }
         });
     };
+
+    if (!currentPortfolio)
+        return <Navigate to="/" replace />;
 
     return (
         <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 overflow-x-hidden">

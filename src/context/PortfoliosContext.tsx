@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useCallback } from 'react';
+import { createContext, useContext, ReactNode, useCallback, useState } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Portfolio, PortfolioType } from '@/types';
 
@@ -17,7 +17,7 @@ const PortfoliosContext = createContext<PortfoliosContextType | undefined>(undef
 
 export function PortfoliosProvider({ children }: { children: ReactNode }) {
     const [portfolios, setPortfolios] = useLocalStorage<Portfolio[]>('portfolios', []);
-    const [currentPortfolioId, setCurrentPortfolioId] = useLocalStorage<string>('current_portfolio_id', '');
+    const [currentPortfolioId, setCurrentPortfolioId] = useState<string>('overview');
 
     const addPortfolio = useCallback(
         (name: string, color?: string, icon?: string, type?: PortfolioType) => {
@@ -116,11 +116,16 @@ export function usePortfolios() {
     return context;
 }
 
-export function useCurrentPortfolio() {
+export function useCurrentPortfolio(portfolioId: string | undefined) {
     const context = useContext(PortfoliosContext);
     if (context === undefined) {
         throw new Error('useCurrentPortfolio must be used within a PortfoliosProvider');
     }
-    const { currentPortfolioId, portfolios } = context;
-    return portfolios.find(p => p.id === currentPortfolioId)!;
+    const { setCurrentPortfolioId, portfolios } = context;
+
+    if (!portfolioId)
+        return null;
+
+    setCurrentPortfolioId(portfolioId);
+    return portfolios.find(p => p.id === portfolioId)!;
 }

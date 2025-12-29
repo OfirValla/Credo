@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 
-import { ThemeProvider } from '@/context/ThemeProvider';
+import { Theme, ThemeProvider } from '@/context/ThemeProvider';
 import { PlanProvider } from '@/context/PlanProvider';
 import { PortfoliosProvider } from '@/context/PortfoliosContext';
 
@@ -13,7 +13,7 @@ import { useParams, Navigate } from 'react-router';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme={Theme.LIGHT} storageKey="vite-ui-theme">
       <PortfoliosProvider>
         <BrowserRouter>
           <Sidebar />
@@ -32,12 +32,11 @@ function App() {
 function PortfolioPageWrapper() {
   const { type, portfolioId } = useParams<{ type: string; portfolioId: string }>();
 
-  if (type !== 'mortgage' && type !== 'loan') {
+  if (type !== 'mortgage' && type !== 'loan')
     return <Navigate to="/" replace />;
-  }
 
   return (
-    <PlanProvider key={`${type}-${portfolioId}`} storagePrefix={type}>
+    <PlanProvider key={`${type}-${portfolioId}`}>
       <PortfolioPage />
     </PlanProvider>
   );
