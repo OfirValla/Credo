@@ -16,6 +16,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     <label className="text-sm font-medium">Theme</label>
                     <ThemeSelect />
                 </div>
+                <div className="space-y-2 border-t border-border pt-6">
+                    <ExportAll />
+                </div>
 
                 <div className="space-y-2 border-t border-border pt-6">
                     <ClearCache />
