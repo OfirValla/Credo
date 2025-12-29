@@ -2,8 +2,8 @@ import type { ElementType } from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { useParams, Navigate } from 'react-router';
-import { DataExport } from '@/components/DataExport';
-import { DataImport } from '@/components/DataImport';
+import { PortfolioExport } from '@/components/PortfolioExport';
+import { PortfolioImport } from '@/components/PortfolioImport';
 import { PlanningSection } from '@/components/portfolio-planning/PlanningSection';
 import { CurrentMonthPreview } from '@/components/CurrentMonthPreview';
 import { AmortizationTable } from '@/components/AmortizationTable';
@@ -113,8 +113,8 @@ export function PortfolioPage() {
                             </div>
                         </div>
                         <div className="flex justify-end gap-3 flex-wrap">
-                            <DataImport />
-                            <DataExport />
+                            <PortfolioImport />
+                            <PortfolioExport />
                             <Button
                                 variant="outline"
                                 size="icon"

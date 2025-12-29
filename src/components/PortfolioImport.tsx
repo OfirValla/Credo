@@ -5,7 +5,7 @@ import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExtraPayment, GracePeriod, Plan, RateChange } from '@/types';
 
-export const DataImport: React.FC = () => {
+export const PortfolioImport: React.FC = () => {
     const { importData } = usePlans();
     const { updatePortfolio, currentPortfolioId } = usePortfolios();
     const fileInputRef = useRef<HTMLInputElement>(null);
