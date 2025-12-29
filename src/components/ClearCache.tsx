@@ -22,7 +22,7 @@ export const ClearCache: React.FC = () => {
         <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 text-sm text-destructive">
                 <AlertTriangle className="h-4 w-4" />
-                This action cannot be undone. Are you sure?
+                This action cannot be undone.
             </div>
 
             <div className="flex gap-2">
