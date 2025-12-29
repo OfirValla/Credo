@@ -18,6 +18,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
                 <div className="space-y-2 border-t border-border pt-6">
                     <ExportAll />
+                    <ImportAll />
                 </div>
 
                 <div className="space-y-2 border-t border-border pt-6">

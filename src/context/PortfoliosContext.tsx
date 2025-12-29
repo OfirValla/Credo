@@ -6,6 +6,7 @@ interface PortfoliosContextType {
     portfolios: Portfolio[];
     currentPortfolioId: string;
     addPortfolio: (name: string, color?: string, icon?: string, type?: PortfolioType) => string;
+    addMultiplePortfolios: (items: Portfolio[]) => string[];
     removePortfolio: (id: string) => void;
     removeAllPortfolios: () => void;
     updatePortfolio: (id: string, updates: Partial<Portfolio>) => void;
@@ -18,18 +19,37 @@ export function PortfoliosProvider({ children }: { children: ReactNode }) {
     const [portfolios, setPortfolios] = useLocalStorage<Portfolio[]>('portfolios', []);
     const [currentPortfolioId, setCurrentPortfolioId] = useLocalStorage<string>('current_portfolio_id', '');
 
-    const addPortfolio = useCallback((name: string, color?: string, icon?: string, type?: PortfolioType) => {
-        const newPortfolio: Portfolio = {
-            id: `${Date.now()}`,
-            type: type || PortfolioType.MORTGAGE,
-            name,
+    const addPortfolio = useCallback(
+        (name: string, color?: string, icon?: string, type?: PortfolioType) => {
+            const newPortfolio: Portfolio = {
+                id: `${Date.now()}`,
+                type: type ?? PortfolioType.MORTGAGE,
+                name,
+                createdAt: Date.now(),
+                color: color ?? 'bg-blue-500',
+                icon,
+            };
+
+            setPortfolios(prev => [...prev, newPortfolio]);
+            return newPortfolio.id;
+        },
+        [setPortfolios]
+    );
+
+    const addMultiplePortfolios = useCallback((items: Portfolio[]) => {
+        const newPortfolios = items.map(p => ({
+            id: p.id,
+            type: p.type ?? PortfolioType.MORTGAGE,
+            name: p.name,
             createdAt: Date.now(),
-            color: color || 'bg-blue-500',
-            icon: icon
-        };
-        setPortfolios([...portfolios, newPortfolio]);
-        return newPortfolio.id;
-    }, [portfolios, setPortfolios]);
+            color: p.color ?? 'bg-blue-500',
+            icon: p.icon,
+        }));
+
+        setPortfolios(prev => [...prev, ...newPortfolios]);
+
+        return newPortfolios.map(p => p.id);
+    }, []);
 
     const removePortfolio = useCallback((id: string) => {
         setPortfolios(portfolios => {
@@ -74,6 +94,7 @@ export function PortfoliosProvider({ children }: { children: ReactNode }) {
         portfolios,
         currentPortfolioId,
         addPortfolio,
+        addMultiplePortfolios,
         removePortfolio,
         removeAllPortfolios,
         updatePortfolio,
