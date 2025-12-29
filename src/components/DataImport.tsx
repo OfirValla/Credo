@@ -3,6 +3,7 @@ import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfoliosContext';
+import { ExtraPayment, GracePeriod, Plan, RateChange } from '@/types';
 
 export const DataImport: React.FC = () => {
     const { importData } = usePlans();
@@ -20,36 +21,16 @@ export const DataImport: React.FC = () => {
                 const data = JSON.parse(content);
 
                 // Basic validation
-                if (!data.Plans || !Array.isArray(data.Plans)) {
-                    throw new Error('Invalid format: Missing Plans');
-                }
+                if (!data.plans || !Array.isArray(data.plans))
+                    throw new Error('Invalid format: Missing "plans" array');
 
                 // Transform data to match internal state structure if needed
-                const plans = data.Plans.map((p: any) => ({
-                    ...p,
-                    amount: p.amount,
-                    interestRate: p.interestRate,
-                    takenDate: p.takenDate,
-                    firstPaymentDate: p.firstPaymentDate,
-                    lastPaymentDate: p.lastPaymentDate,
-                }));
+                const plans = data.plans.map((p: any) => p as Plan);
+                const extraPayments = (data.extraPayments || []).map((ep: any) => ep as ExtraPayment);
+                const rateChanges = (data.rateChanges || []).map((rc: any) => rc as RateChange);
+                const gracePeriods = (data.gracePeriods || []).map((gp: any) => gp as GracePeriod);
 
-                const extraPayments = (data.extraPayments || []).map((ep: any) => ({
-                    ...ep,
-                    month: ep.month,
-                }));
-
-                const rateChanges = (data.rateChanges || []).map((rc: any) => ({
-                    ...rc,
-                    month: rc.month,
-                }));
-
-                const gracePeriods = (data.gracePeriods || []).map((gp: any) => ({
-                    ...gp,
-                    month: gp.month, // Ensure month property is preserved if it exists
-                }));
-
-                const currency = data.currency || 'USD';
+                const currency = data.currency || 'ILS';
 
                 importData({
                     plans,
@@ -59,14 +40,8 @@ export const DataImport: React.FC = () => {
                     currency,
                 });
 
-                if (data.portfolio) {
-                    updatePortfolio(currentPortfolioId, {
-                        type: data.portfolio.type,
-                        name: data.portfolio.name,
-                        color: data.portfolio.color,
-                        icon: data.portfolio.icon
-                    });
-                }
+                if (data.portfolio)
+                    updatePortfolio(currentPortfolioId, data.portfolio);
 
                 alert('Data imported successfully!');
             } catch (error) {

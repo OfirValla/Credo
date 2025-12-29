@@ -50,9 +50,16 @@ export function PortfoliosProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(`${portfolioToDelete.type}-currency-${id}`);
     }, [portfolios, currentPortfolioId, setPortfolios, setCurrentPortfolioId]);
 
-    const updatePortfolio = useCallback((id: string, updates: Partial<Portfolio>) => {
-        setPortfolios(portfolios.map(p => p.id === id ? { ...p, ...updates } : p));
-    }, [portfolios, setPortfolios]);
+    const updatePortfolio = useCallback(
+        (id: string, updates: Omit<Partial<Portfolio>, 'id'>) => {
+            setPortfolios((portfolios: Portfolio[]) =>
+                portfolios.map(p =>
+                    p.id === id ? { ...p, ...updates, id: p.id } : p
+                )
+            );
+        },
+        [setPortfolios]
+    );
 
     const value = {
         portfolios,
