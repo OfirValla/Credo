@@ -38,15 +38,14 @@ interface PlanContextType {
 
 export const PlanContext = createContext<PlanContextType | undefined>(undefined);
 
-export function PlanProvider({ children, storagePrefix = 'mortgage' }: { children: ReactNode; storagePrefix?: string }) {
+export function PlanProvider({ children }: { children: ReactNode; storagePrefix?: string }) {
     const { portfolioId } = useParams();
-    const suffix = `-${portfolioId}`;
 
-    const [plans, setPlans] = useLocalStorage<Plan[]>(`${storagePrefix}-plans${suffix}`, []);
-    const [extraPayments, setExtraPayments] = useLocalStorage<ExtraPayment[]>(`${storagePrefix}-extra-payments${suffix}`, []);
-    const [rateChanges, setRateChanges] = useLocalStorage<RateChange[]>(`${storagePrefix}-rate-changes${suffix}`, []);
-    const [gracePeriods, setGracePeriods] = useLocalStorage<GracePeriod[]>(`${storagePrefix}-grace-periods${suffix}`, []);
-    const [currency, setCurrency] = useLocalStorage<CurrencyCode>(`${storagePrefix}-currency${suffix}`, 'ILS');
+    const [plans, setPlans] = useLocalStorage<Plan[]>(`${portfolioId}-plans`, []);
+    const [extraPayments, setExtraPayments] = useLocalStorage<ExtraPayment[]>(`${portfolioId}-extra-payments`, []);
+    const [rateChanges, setRateChanges] = useLocalStorage<RateChange[]>(`${portfolioId}-rate-changes`, []);
+    const [gracePeriods, setGracePeriods] = useLocalStorage<GracePeriod[]>(`${portfolioId}-grace-periods`, []);
+    const [currency, setCurrency] = useLocalStorage<CurrencyCode>(`${portfolioId}-currency`, 'ILS');
 
     const amortizationRows = usePlanCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 

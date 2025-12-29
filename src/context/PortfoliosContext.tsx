@@ -56,11 +56,11 @@ export function PortfoliosProvider({ children }: { children: ReactNode }) {
             const portfolioToDelete = portfolios.find(p => p.id === id);
             if (!portfolioToDelete) return portfolios;
 
-            localStorage.removeItem(`${portfolioToDelete.type}-plans-${id}`);
-            localStorage.removeItem(`${portfolioToDelete.type}-extra-payments-${id}`);
-            localStorage.removeItem(`${portfolioToDelete.type}-rate-changes-${id}`);
-            localStorage.removeItem(`${portfolioToDelete.type}-grace-periods-${id}`);
-            localStorage.removeItem(`${portfolioToDelete.type}-currency-${id}`);
+            localStorage.removeItem(`${id}-plans`);
+            localStorage.removeItem(`${id}-extra-payments`);
+            localStorage.removeItem(`${id}-rate-changes`);
+            localStorage.removeItem(`${id}-grace-periods`);
+            localStorage.removeItem(`${id}-currency`);
 
             return portfolios.filter(p => p.id !== id);
         });
@@ -69,11 +69,11 @@ export function PortfoliosProvider({ children }: { children: ReactNode }) {
     const removeAllPortfolios = useCallback(() => {
         setPortfolios(portfolios => {
             for (const p of portfolios) {
-                localStorage.removeItem(`${p.type}-plans-${p.id}`);
-                localStorage.removeItem(`${p.type}-extra-payments-${p.id}`);
-                localStorage.removeItem(`${p.type}-rate-changes-${p.id}`);
-                localStorage.removeItem(`${p.type}-grace-periods-${p.id}`);
-                localStorage.removeItem(`${p.type}-currency-${p.id}`);
+                localStorage.removeItem(`${p.id}-plans`);
+                localStorage.removeItem(`${p.id}-extra-payments`);
+                localStorage.removeItem(`${p.id}-rate-changes`);
+                localStorage.removeItem(`${p.id}-grace-periods`);
+                localStorage.removeItem(`${p.id}-currency`);
             }
             return [];
         });

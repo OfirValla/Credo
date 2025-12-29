@@ -76,11 +76,11 @@ export function Sidebar() {
                 const newId = addPortfolio(name, color, icon, type);
 
                 // Manually seed local storage for the new portfolio
-                if (data.Plans) localStorage.setItem(`mortgage-plans-${newId}`, JSON.stringify(data.Plans));
-                if (data.extraPayments) localStorage.setItem(`mortgage-extra-payments-${newId}`, JSON.stringify(data.extraPayments));
-                if (data.rateChanges) localStorage.setItem(`mortgage-rate-changes-${newId}`, JSON.stringify(data.rateChanges));
-                if (data.gracePeriods) localStorage.setItem(`mortgage-grace-periods-${newId}`, JSON.stringify(data.gracePeriods));
-                if (data.currency) localStorage.setItem(`mortgage-currency-${newId}`, JSON.stringify(data.currency));
+                if (data.plans) localStorage.setItem(`${newId}-plans`, JSON.stringify(data.plans));
+                if (data.extraPayments) localStorage.setItem(`${newId}-extra-payments`, JSON.stringify(data.extraPayments));
+                if (data.rateChanges) localStorage.setItem(`${newId}-rate-changes`, JSON.stringify(data.rateChanges));
+                if (data.gracePeriods) localStorage.setItem(`${newId}-grace-periods`, JSON.stringify(data.gracePeriods));
+                if (data.currency) localStorage.setItem(`${newId}-currency`, JSON.stringify(data.currency));
 
                 setCurrentPortfolioId(newId);
 

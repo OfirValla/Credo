@@ -27,14 +27,12 @@ export function getAggregateDashboardData(
 
     portfolios.forEach(portfolio => {
         // Read directly from localStorage to avoid loading all contexts
-        const suffix = portfolio.id && portfolio.id !== 'default' ? `-${portfolio.id}` : '';
-
         try {
-            const plansStr = localStorage.getItem(`${portfolio.type}-plans${suffix}`);
-            const extraPaymentsStr = localStorage.getItem(`${portfolio.type}-extra-payments${suffix}`);
-            const rateChangesStr = localStorage.getItem(`${portfolio.type}-rate-changes${suffix}`);
-            const gracePeriodsStr = localStorage.getItem(`${portfolio.type}-grace-periods${suffix}`);
-            const currencyStr = localStorage.getItem(`${portfolio.type}-currency${suffix}`);
+            const plansStr = localStorage.getItem(`${portfolio.id}-plans`);
+            const extraPaymentsStr = localStorage.getItem(`${portfolio.id}-extra-payments`);
+            const rateChangesStr = localStorage.getItem(`${portfolio.id}-rate-changes`);
+            const gracePeriodsStr = localStorage.getItem(`${portfolio.id}-grace-periods`);
+            const currencyStr = localStorage.getItem(`${portfolio.id}-currency`);
 
             const plans: Plan[] = plansStr ? JSON.parse(plansStr) : [];
             const extraPayments: ExtraPayment[] = extraPaymentsStr ? JSON.parse(extraPaymentsStr) : [];

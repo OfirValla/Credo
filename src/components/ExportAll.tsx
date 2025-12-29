@@ -12,13 +12,13 @@ export const ExportAll: React.FC = () => {
   const exportData = () => {
     const data: ExportPortfolio[] = [];
     portfolios.forEach(portfolio => {
-      const currencyItem = localStorage.getItem(`${portfolio.type}-currency-${portfolio.id}`);
+      const currencyItem = localStorage.getItem(`${portfolio.id}-currency`);
       const currency: CurrencyCode = currencyItem ? JSON.parse(currencyItem) : 'ILS';
 
-      const plans = JSON.parse(localStorage.getItem(`${portfolio.type}-plans-${portfolio.id}`) ?? '[]');
-      const extraPayments = JSON.parse(localStorage.getItem(`${portfolio.type}-extra-payments-${portfolio.id}`) ?? '[]');
-      const rateChanges = JSON.parse(localStorage.getItem(`${portfolio.type}-rate-changes-${portfolio.id}`) ?? '[]');
-      const gracePeriods = JSON.parse(localStorage.getItem(`${portfolio.type}-grace-periods-${portfolio.id}`) ?? '[]');
+      const plans = JSON.parse(localStorage.getItem(`${portfolio.id}-plans`) ?? '[]');
+      const extraPayments = JSON.parse(localStorage.getItem(`${portfolio.id}-extra-payments`) ?? '[]');
+      const rateChanges = JSON.parse(localStorage.getItem(`${portfolio.id}-rate-changes`) ?? '[]');
+      const gracePeriods = JSON.parse(localStorage.getItem(`${portfolio.id}-grace-periods`) ?? '[]');
 
       data.push({
         portfolio: portfolio,

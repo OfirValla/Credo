@@ -22,14 +22,13 @@ export const ImportAll: React.FC = () => {
         const ids = addMultiplePortfolios(data.map(p => p.portfolio));
 
         data.forEach((portfolio, idx) => {
-          const { portfolio: p } = portfolio;
           const id = ids[idx];
 
-          localStorage.setItem(`${p.type}-plans-${id}`, JSON.stringify(portfolio.plans));
-          localStorage.setItem(`${p.type}-extra-payments-${id}`, JSON.stringify(portfolio.extraPayments));
-          localStorage.setItem(`${p.type}-rate-changes-${id}`, JSON.stringify(portfolio.rateChanges));
-          localStorage.setItem(`${p.type}-grace-periods-${id}`, JSON.stringify(portfolio.gracePeriods));
-          localStorage.setItem(`${p.type}-currency-${id}`, JSON.stringify(portfolio.currency));
+          localStorage.setItem(`${id}-plans`, JSON.stringify(portfolio.plans));
+          localStorage.setItem(`${id}-extra-payments`, JSON.stringify(portfolio.extraPayments));
+          localStorage.setItem(`${id}-rate-changes`, JSON.stringify(portfolio.rateChanges));
+          localStorage.setItem(`${id}-grace-periods`, JSON.stringify(portfolio.gracePeriods));
+          localStorage.setItem(`${id}-currency`, JSON.stringify(portfolio.currency));
         });
 
         alert('Data imported successfully!');

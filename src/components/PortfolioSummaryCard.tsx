@@ -21,14 +21,11 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
 
     // Load portfolio specific data
     // Note: We are reading directly from local storage to avoid loading all contexts at once
-    // This mimics how the PlanProvider loads data but for a specific portfolio ID
-    const suffix = portfolio.id && portfolio.id !== 'default' ? `-${portfolio.id}` : '';
-
-    const [plans] = useLocalStorage<Plan[]>(`${portfolio.type}-plans${suffix}`, []);
-    const [extraPayments] = useLocalStorage<ExtraPayment[]>(`${portfolio.type}-extra-payments${suffix}`, []);
-    const [rateChanges] = useLocalStorage<RateChange[]>(`${portfolio.type}-rate-changes${suffix}`, []);
-    const [gracePeriods] = useLocalStorage<GracePeriod[]>(`${portfolio.type}-grace-periods${suffix}`, []);
-    const [currency] = useLocalStorage<CurrencyCode>(`${portfolio.type}-currency${suffix}`, 'ILS');
+    const [plans] = useLocalStorage<Plan[]>(`${portfolio.id}-plans`, []);
+    const [extraPayments] = useLocalStorage<ExtraPayment[]>(`${portfolio.id}-extra-payments`, []);
+    const [rateChanges] = useLocalStorage<RateChange[]>(`${portfolio.id}-rate-changes`, []);
+    const [gracePeriods] = useLocalStorage<GracePeriod[]>(`${portfolio.id}-grace-periods`, []);
+    const [currency] = useLocalStorage<CurrencyCode>(`${portfolio.id}-currency`, 'ILS');
 
     const summary = useMemo(() => {
         if (!plans || plans.length === 0) {
