@@ -2,7 +2,6 @@ import React from 'react';
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-import { Plan, ExtraPayment, RateChange } from '@/types';
 import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfoliosContext';
 
@@ -11,42 +10,15 @@ export const DataExport: React.FC = () => {
   const { portfolios, currentPortfolioId } = usePortfolios();
 
   const exportData = () => {
-    // Format dates to ISO string for consistency
-    const formattedPlans = plans.map((plan: Plan) => ({
-      ...plan,
-      takenDate: plan.takenDate,
-      firstPaymentDate: plan.firstPaymentDate,
-      lastPaymentDate: plan.lastPaymentDate,
-    }));
-
-    const formattedExtraPayments = extraPayments.map((payment: ExtraPayment) => ({
-      ...payment,
-      date: payment.month,
-    }));
-
-    const formattedRateChanges = rateChanges.map((change: RateChange) => ({
-      ...change,
-      date: change.month,
-    }));
-
-    const formattedGracePeriods = gracePeriods.map((gp) => ({
-      ...gp,
-    }));
-
     const currentPortfolio = portfolios.find(p => p.id === currentPortfolioId);
-
+    if (!currentPortfolio) return;
     const data = {
-      Plans: formattedPlans,
-      extraPayments: formattedExtraPayments,
-      rateChanges: formattedRateChanges,
-      gracePeriods: formattedGracePeriods,
+      portfolio: currentPortfolio,
       currency: currency,
-      portfolio: {
-        name: currentPortfolio?.name,
-        type: currentPortfolio?.type,
-        color: currentPortfolio?.color,
-        icon: currentPortfolio?.icon,
-      }
+      plans: plans,
+      extraPayments: extraPayments,
+      rateChanges: rateChanges,
+      gracePeriods: gracePeriods
     };
 
     const jsonString = JSON.stringify(data, null, 2);
@@ -59,7 +31,7 @@ export const DataExport: React.FC = () => {
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `mortgage_data_${year}-${month}-${day}.json`;
+    a.download = `${currentPortfolio.type}_data_${year}-${month}-${day}.json`;
     document.body.appendChild(a);
     a.click();
 
