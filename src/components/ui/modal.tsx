@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { Button } from './button';
+import { useScrollLock } from '@/hooks/useScrollLock';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ export interface ModalProps {
 }
 
 const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
+  useScrollLock(isOpen);
 
   const handleClose = () => {
     onClose();

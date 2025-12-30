@@ -18,7 +18,7 @@ export function LanguageSelect({ className }: LanguageSelectProps) {
         SUPPORTED_LANGUAGES[0];
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="outline"
