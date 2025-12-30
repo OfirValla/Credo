@@ -1,15 +1,13 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes, useParams, Navigate } from "react-router";
 
 import { Theme, ThemeProvider } from '@/context/ThemeProvider';
 import { PlanProvider } from '@/context/PlanProvider';
 import { PortfoliosProvider } from '@/context/PortfoliosContext';
 
-import { Sidebar } from '@/components/Sidebar';
-
 import { Dashboard } from '@/pages/Dashboard';
 import { PortfolioPage } from '@/pages/PortfolioPage';
-import { useParams, Navigate } from 'react-router';
 
+import { Sidebar } from '@/components/Sidebar';
 
 function App() {
   return (
