@@ -23,7 +23,8 @@ const DEFAULT_LANGUAGE: SupportedLanguageCode = 'en';
 
 export const I18N_NAMESPACES = [
     'dashboard',
-    'portfolio-page'
+    'portfolio-page',
+    'settings'
 ] as const;
 
 export type I18nNamespace = (typeof I18N_NAMESPACES)[number];

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Modal } from '@/components/ui/modal';
 import { ThemeSelect } from '../ThemeSelect';
 import { LanguageSelect } from '../LanguageSelect';
@@ -11,16 +13,22 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+    const { t } = useTranslation('settings');
 
     return (
-        <Modal title="Settings" isOpen={isOpen} onClose={onClose}>
+        <Modal title={t('title')} isOpen={isOpen} onClose={onClose}>
             <div className="space-y-6">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Theme</label>
+                    <label className="text-sm font-medium">
+                        {t('theme.label')}
+                    </label>
                     <ThemeSelect />
                 </div>
+
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Language</label>
+                    <label className="text-sm font-medium">
+                        {t('language.label')}
+                    </label>
                     <LanguageSelect className="w-full" />
                 </div>
 

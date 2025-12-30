@@ -1,19 +1,24 @@
 import React from 'react';
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 
 export const ExportAll: React.FC = () => {
+  const { t } = useTranslation('settings'); // settings.json namespace
   const { portfolios } = usePortfolios();
 
   const exportData = () => {
     const data: ExportPortfolio[] = [];
-    portfolios.forEach(portfolio => {
+
+    portfolios.forEach((portfolio) => {
       const currencyItem = localStorage.getItem(`${portfolio.id}-currency`);
-      const currency: CurrencyCode = currencyItem ? JSON.parse(currencyItem) : 'ILS';
+      const currency: CurrencyCode = currencyItem
+        ? JSON.parse(currencyItem)
+        : 'ILS';
 
       const plans = JSON.parse(localStorage.getItem(`${portfolio.id}-plans`) ?? '[]');
       const extraPayments = JSON.parse(localStorage.getItem(`${portfolio.id}-extra-payments`) ?? '[]');
@@ -21,12 +26,12 @@ export const ExportAll: React.FC = () => {
       const gracePeriods = JSON.parse(localStorage.getItem(`${portfolio.id}-grace-periods`) ?? '[]');
 
       data.push({
-        portfolio: portfolio,
-        currency: currency,
-        plans: plans,
-        extraPayments: extraPayments,
-        rateChanges: rateChanges,
-        gracePeriods: gracePeriods
+        portfolio,
+        currency,
+        plans,
+        extraPayments,
+        rateChanges,
+        gracePeriods,
       });
     });
 
@@ -34,13 +39,14 @@ export const ExportAll: React.FC = () => {
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
 
-    const day = String(new Date().getDate()).padStart(2, '0');          // 01–31
-    const month = String(new Date().getMonth() + 1).padStart(2, '0');   // 01–12
-    const year = new Date().getFullYear();                              // e.g. 2025
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `all_data_${year}-${month}-${day}.json`;
+    a.download = `all_data_${year}-${month}-${day}.json`; // filename can stay English
     document.body.appendChild(a);
     a.click();
 
@@ -58,7 +64,7 @@ export const ExportAll: React.FC = () => {
       className="gap-2 w-full"
     >
       <Download className="h-4 w-4" />
-      Export all portfolios
+      {t('exportAll')}
     </Button>
   );
 };

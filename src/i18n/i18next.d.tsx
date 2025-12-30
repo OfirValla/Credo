@@ -1,11 +1,17 @@
 import 'react-i18next';
-import common from '../../public/locales/en/common.json';
+
+// Import English JSON for type safety
+import dashboard from '../../public/locales/en/dashboard.json';
+import portfolioPage from '../../public/locales/en/portfolio-page.json';
+import settings from '../../public/locales/en/settings.json';
 
 declare module 'react-i18next' {
     interface CustomTypeOptions {
-        defaultNS: 'common';
+        defaultNS: 'dashboard';
         resources: {
-            common: typeof common;
+            dashboard: typeof dashboard;
+            'portfolio-page': typeof portfolioPage;
+            settings: typeof settings;
         };
     }
 }

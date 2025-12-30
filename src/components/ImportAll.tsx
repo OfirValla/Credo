@@ -1,11 +1,13 @@
 import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
 
 export const ImportAll: React.FC = () => {
+  const { t } = useTranslation('settings'); // settings namespace
   const { addMultiplePortfolios } = usePortfolios();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -19,7 +21,7 @@ export const ImportAll: React.FC = () => {
         const content = e.target?.result as string;
         const data: ExportPortfolio[] = JSON.parse(content);
 
-        const ids = addMultiplePortfolios(data.map(p => p.portfolio));
+        const ids = addMultiplePortfolios(data.map((p) => p.portfolio));
 
         data.forEach((portfolio, idx) => {
           const id = ids[idx];
@@ -31,10 +33,10 @@ export const ImportAll: React.FC = () => {
           localStorage.setItem(`${id}-currency`, JSON.stringify(portfolio.currency));
         });
 
-        alert('Data imported successfully!');
+        alert(t('import.success'));
       } catch (error) {
         console.error('Import error:', error);
-        alert('Failed to import data. Please check the file format.');
+        alert(t('import.error'));
       } finally {
         // Reset input
         if (fileInputRef.current) {
@@ -61,11 +63,11 @@ export const ImportAll: React.FC = () => {
       <Button
         variant="outline"
         onClick={handleButtonClick}
-        title="Import Data"
+        title={t('import.buttonTitle')}
         className="gap-2 w-full"
       >
         <Upload className="h-4 w-4" />
-        Import all portfolios
+        {t('import.all')}
       </Button>
     </>
   );

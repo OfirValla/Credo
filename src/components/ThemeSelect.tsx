@@ -1,7 +1,9 @@
 import { SlidingSelect } from "./ui/sliding-select";
 import { Theme, useTheme } from "@/context/ThemeProvider";
+import { useTranslation } from "react-i18next";
 
 export function ThemeSelect() {
+    const { t } = useTranslation("settings"); // Use "settings" namespace
     const { theme, setTheme } = useTheme();
 
     return (
@@ -9,9 +11,9 @@ export function ThemeSelect() {
             value={theme}
             onValueChange={(v) => setTheme(v as Theme)}
             options={[
-                { value: Theme.SYSTEM, label: 'System' },
-                { value: Theme.LIGHT, label: 'Light' },
-                { value: Theme.DARK, label: 'Dark' },
+                { value: Theme.SYSTEM, label: t("theme.options.system") },
+                { value: Theme.LIGHT, label: t("theme.options.light") },
+                { value: Theme.DARK, label: t("theme.options.dark") },
             ]}
             color="bg-primary"
             textColor="text-primary-foreground"

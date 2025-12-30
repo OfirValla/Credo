@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const MotionButton = motion(Button);
 
 export const ClearCache: React.FC = () => {
+    const { t } = useTranslation('settings'); // settings namespace
     const { removeAllPortfolios } = usePortfolios();
     const navigate = useNavigate();
     const [areYouSure, setAreYouSure] = useState(false);
@@ -22,7 +24,7 @@ export const ClearCache: React.FC = () => {
         <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 text-sm text-destructive">
                 <AlertTriangle className="h-4 w-4" />
-                This action cannot be undone.
+                {t('clear-cache.warning')}
             </div>
 
             <div className="flex gap-2">
@@ -46,7 +48,7 @@ export const ClearCache: React.FC = () => {
                                     transition={{ duration: 0.3 }}
                                 >
                                     <Trash2 className="h-4 w-4" />
-                                    <span>Clear cache (Deletes all portfolios)</span>
+                                    <span>{t('clear-cache.button')}</span>
                                 </motion.div>
                             ) : (
                                 <motion.div
@@ -57,7 +59,7 @@ export const ClearCache: React.FC = () => {
                                     className="flex justify-center items-center"
                                     transition={{ duration: 0.3 }}
                                 >
-                                    <span>Yes, delete everything</span>
+                                    <span>{t('clear-cache.confirm')}</span>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -83,7 +85,7 @@ export const ClearCache: React.FC = () => {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.2 }}
                             >
-                                Cancel
+                                {t('clear-cache.cancel')}
                             </MotionButton>
                         )}
                     </AnimatePresence>
