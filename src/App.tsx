@@ -15,7 +15,7 @@ function App() {
       <PortfoliosProvider>
         <BrowserRouter>
           <Sidebar />
-          <div className="pl-16 transition-all duration-300">
+          <div className="ps-16 transition-all duration-300">
             <Routes>
               <Route index element={<Dashboard />} />
               <Route path=":type/:portfolioId" element={<PortfolioPageWrapper />} />
