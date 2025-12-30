@@ -7,7 +7,7 @@ import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
 
 export const ImportAll: React.FC = () => {
-  const { t } = useTranslation('settings'); // settings namespace
+  const { t } = useTranslation('common'); // settings namespace
   const { addMultiplePortfolios } = usePortfolios();
   const fileInputRef = useRef<HTMLInputElement>(null);
 

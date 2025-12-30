@@ -13,10 +13,10 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-    const { t } = useTranslation('settings');
+    const { t } = useTranslation('common');
 
     return (
-        <Modal title={t('title')} isOpen={isOpen} onClose={onClose}>
+        <Modal title={t('settings.title')} isOpen={isOpen} onClose={onClose}>
             <div className="space-y-6">
                 <div className="space-y-2">
                     <label className="text-sm font-medium">

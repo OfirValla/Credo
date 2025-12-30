@@ -1,5 +1,5 @@
 {
-    "title": "Settings",
+    "settings.title": "Settings",
     "theme": {
         "label": "Theme",
         "options": {

@@ -8,7 +8,7 @@ import { ExportPortfolio } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 
 export const ExportAll: React.FC = () => {
-  const { t } = useTranslation('settings'); // settings.json namespace
+  const { t } = useTranslation('common'); // settings.json namespace
   const { portfolios } = usePortfolios();
 
   const exportData = () => {
