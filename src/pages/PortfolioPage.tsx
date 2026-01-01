@@ -1,4 +1,4 @@
-import { useEffect, type ElementType } from 'react';
+import { type ElementType } from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { useParams, Navigate } from 'react-router';
@@ -13,7 +13,6 @@ import { PortfolioSummary } from '@/components/PortfolioSummary';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { usePortfolios } from "@/context/PortfoliosContext";
 import { usePlans } from "@/context/PlanProvider";
-import { usePlanCalculations } from "@/hooks/usePlanCalculations";
 import { generatePDFReport } from "@/lib/pdfReportGenerator";
 import { Button } from '@/components/ui/button';
 import { PortfolioType } from '@/types';
@@ -21,21 +20,13 @@ import { PortfolioType } from '@/types';
 export function PortfolioPage() {
     const { t } = useTranslation('portfolio-page');
     const { type, portfolioId } = useParams<{ type: string, portfolioId: string }>();
-    const { portfolios, setCurrentPortfolioId } = usePortfolios();
+    const { portfolios } = usePortfolios();
 
     // Find portfolio directly from portfolios list using URL param
     // This works even on refresh because portfolios are loaded from localStorage
     const currentPortfolio = portfolios.find(p => p.id === portfolioId);
 
-    // Sync the context state with the URL
-    useEffect(() => {
-        if (portfolioId && currentPortfolio) {
-            setCurrentPortfolioId(portfolioId);
-        }
-    }, [portfolioId, setCurrentPortfolioId, currentPortfolio]);
-
-    const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
-    const amortizationSchedule = usePlanCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
+    const { plans, extraPayments, rateChanges, gracePeriods, currency, amortizationRows: amortizationSchedule } = usePlans();
 
     const isLoan = type === 'loan';
     const pageTitle = isLoan ? t('header.title.loan') : t('header.title.mortgage');

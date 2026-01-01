@@ -8,10 +8,13 @@ import { ExportPortfolio, ExtraPayment, GracePeriod, Plan, RateChange } from '@/
 import { useTranslation } from 'react-i18next';
 
 
+import { useParams } from 'react-router';
+
 export const PortfolioImport: React.FC = () => {
     const { t } = useTranslation(['portfolio-page', 'common']);
     const { importData } = usePlans();
-    const { updatePortfolio, currentPortfolioId } = usePortfolios();
+    const { updatePortfolio } = usePortfolios();
+    const { portfolioId } = useParams<{ portfolioId: string }>();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,8 +47,8 @@ export const PortfolioImport: React.FC = () => {
                     currency,
                 });
 
-                if (data.portfolio)
-                    updatePortfolio(currentPortfolioId, data.portfolio);
+                if (data.portfolio && portfolioId)
+                    updatePortfolio(portfolioId, data.portfolio);
 
                 toast.success(t('import.success', { ns: 'common' }));
             } catch (error) {

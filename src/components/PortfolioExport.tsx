@@ -7,13 +7,16 @@ import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
 import { useTranslation } from 'react-i18next';
 
+import { useParams } from 'react-router';
+
 export const PortfolioExport: React.FC = () => {
   const { t } = useTranslation('portfolio-page');
   const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
-  const { portfolios, currentPortfolioId } = usePortfolios();
+  const { portfolios } = usePortfolios();
+  const { portfolioId } = useParams<{ portfolioId: string }>();
 
   const exportData = () => {
-    const currentPortfolio = portfolios.find(p => p.id === currentPortfolioId);
+    const currentPortfolio = portfolios.find(p => p.id === portfolioId);
     if (!currentPortfolio) return;
     const data: ExportPortfolio = {
       portfolio: currentPortfolio,

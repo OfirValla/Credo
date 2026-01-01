@@ -1,23 +1,20 @@
-import { createContext, useContext, ReactNode, useCallback, useState } from 'react';
+import { createContext, useContext, ReactNode, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Portfolio, PortfolioType } from '@/types';
 
 interface PortfoliosContextType {
     portfolios: Portfolio[];
-    currentPortfolioId: string;
     addPortfolio: (name: string, color?: string, icon?: string, type?: PortfolioType) => string;
     addMultiplePortfolios: (items: Portfolio[]) => string[];
     removePortfolio: (id: string) => void;
     removeAllPortfolios: () => void;
     updatePortfolio: (id: string, updates: Partial<Portfolio>) => void;
-    setCurrentPortfolioId: (id: string) => void;
 }
 
 const PortfoliosContext = createContext<PortfoliosContextType | undefined>(undefined);
 
 export function PortfoliosProvider({ children }: { children: ReactNode }) {
     const [portfolios, setPortfolios] = useLocalStorage<Portfolio[]>('portfolios', []);
-    const [currentPortfolioId, setCurrentPortfolioId] = useState<string>('overview');
 
     const addPortfolio = useCallback(
         (name: string, color?: string, icon?: string, type?: PortfolioType) => {
@@ -92,13 +89,11 @@ export function PortfoliosProvider({ children }: { children: ReactNode }) {
 
     const value = {
         portfolios,
-        currentPortfolioId,
         addPortfolio,
         addMultiplePortfolios,
         removePortfolio,
         removeAllPortfolios,
         updatePortfolio,
-        setCurrentPortfolioId,
     };
 
     return (
@@ -114,14 +109,4 @@ export function usePortfolios() {
         throw new Error('usePortfolios must be used within a PortfoliosProvider');
     }
     return context;
-}
-
-export function useCurrentPortfolio() {
-    const context = useContext(PortfoliosContext);
-    if (context === undefined) {
-        throw new Error('useCurrentPortfolio must be used within a PortfoliosProvider');
-    }
-    const { currentPortfolioId, portfolios } = context;
-
-    return portfolios.find(p => p.id === currentPortfolioId)!;
 }

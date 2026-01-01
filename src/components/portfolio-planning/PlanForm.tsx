@@ -15,7 +15,8 @@ import { SlidingSelect } from '@/components/ui/sliding-select';
 import { useTranslation } from 'react-i18next';
 
 import { usePlans } from '@/context/PlanProvider';
-import { useCurrentPortfolio } from '@/context/PortfoliosContext';
+import { useParams } from 'react-router';
+import { usePortfolios } from '@/context/PortfoliosContext';
 
 export function PlanForm() {
   const { t } = useTranslation('portfolio-page');
@@ -33,7 +34,10 @@ export function PlanForm() {
   const [linkedToCPI, setLinkedToCPI] = useState(false);
   const [balloonValue, setBalloonValue] = useState('');
   const [loanType, setLoanType] = useState<LoanType>(LoanType.REGULAR);
-  const currentPortfolio = useCurrentPortfolio();
+
+  const { portfolioId } = useParams<{ portfolioId: string }>();
+  const { portfolios } = usePortfolios();
+  const currentPortfolio = portfolios.find(p => p.id === portfolioId);
   const isLoanPortfolio = currentPortfolio?.type === 'loan';
 
   const currencySymbol = getCurrencySymbol(currency);

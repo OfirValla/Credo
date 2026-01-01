@@ -20,7 +20,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { PortfolioCreationModal } from './modals/PortfolioCreationModal';
 import { PortfolioType } from '@/types';
@@ -34,18 +34,23 @@ enum ModalType {
 }
 
 export function Sidebar() {
-    const { portfolios, currentPortfolioId, setCurrentPortfolioId, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
+    const { portfolios, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
     const [modalType, setModalType] = useState<ModalType | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const importInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation('common');
+
+    // Derive current portfolio ID from the URL path
+    const pathParts = location.pathname.split('/');
+    // Format: /:type/:portfolioId
+    const activePortfolioId = pathParts.length >= 3 ? pathParts[2] : 'overview';
 
     const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const newId = addPortfolio(name, color, icon, type);
-        setCurrentPortfolioId(newId);
         setModalType(null);
         navigate(`/${type}/${newId}`);
     };
@@ -85,7 +90,7 @@ export function Sidebar() {
                 if (data.gracePeriods) localStorage.setItem(`${newId}-grace-periods`, JSON.stringify(data.gracePeriods));
                 if (data.currency) localStorage.setItem(`${newId}-currency`, JSON.stringify(data.currency));
 
-                setCurrentPortfolioId(newId);
+                navigate(`/${type}/${newId}`);
 
                 // Clear input
                 if (importInputRef.current) importInputRef.current.value = '';
@@ -154,7 +159,7 @@ export function Sidebar() {
                 {/* Title */}
                 <div
                     className={"group flex items-center rounded-lg cursor-pointer transition-colors relative h-16 p-4 flex items-center justify-center border-b border-border"}
-                    onClick={() => setCurrentPortfolioId('overview')}
+                    onClick={() => navigate('/')}
                 >
                     <div className="min-w-[2rem] flex justify-center items-center">
                         <FolderOpen className="w-6 h-6" />
@@ -178,11 +183,10 @@ export function Sidebar() {
                         to="/"
                         className={cn(
                             "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
-                            currentPortfolioId === 'overview'
+                            activePortfolioId === 'overview'
                                 ? "bg-primary/10 text-primary"
                                 : "hover:bg-muted text-muted-foreground hover:text-foreground"
                         )}
-                        onClick={() => setCurrentPortfolioId('overview')}
                     >
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <LayoutDashboard className="w-5 h-5" />
@@ -209,13 +213,12 @@ export function Sidebar() {
                                     key={portfolio.id}
                                     className={cn(
                                         "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
-                                        currentPortfolioId === portfolio.id
+                                        activePortfolioId === portfolio.id
                                             ? "bg-primary/10"
                                             : "hover:bg-muted text-muted-foreground hover:text-foreground"
                                     )}
                                     onClick={() => {
                                         if (!editingId) {
-                                            setCurrentPortfolioId(portfolio.id);
                                             navigate(`/${portfolio.type}/${portfolio.id}`);
                                         }
                                     }}
@@ -336,10 +339,9 @@ export function Sidebar() {
                                                                     className="h-6 w-6 text-destructive hover:text-destructive"
                                                                     onClick={() => {
                                                                         if (confirm(t('sidebar.deleteConfirm', { name: portfolio.name }))) {
-                                                                            const isCurrent = currentPortfolioId === portfolio.id;
+                                                                            const isCurrent = activePortfolioId === portfolio.id;
                                                                             removePortfolio(portfolio.id);
                                                                             if (isCurrent) {
-                                                                                setCurrentPortfolioId('overview');
                                                                                 navigate('/');
                                                                             }
                                                                         }

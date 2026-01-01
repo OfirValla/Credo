@@ -13,13 +13,12 @@ import { useTranslation } from 'react-i18next';
 
 export function Dashboard() {
     const { t } = useTranslation('dashboard');
-    const { portfolios, addPortfolio, setCurrentPortfolioId } = usePortfolios();
+    const { portfolios, addPortfolio } = usePortfolios();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const id = addPortfolio(name, color, icon, type);
-        setCurrentPortfolioId(id);
         setIsModalOpen(false);
         navigate(`/${type}/${id}`);
     };
