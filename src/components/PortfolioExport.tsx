@@ -49,7 +49,7 @@ export const PortfolioExport: React.FC = () => {
     <Button
       variant="outline"
       onClick={exportData}
-      className="bg-background/50 backdrop-blur-sm border-primary/20 hover:bg-primary/10 gap-2"
+      className="gap-2"
     >
       <Download className="h-4 w-4" />
       {t('exportButton')}

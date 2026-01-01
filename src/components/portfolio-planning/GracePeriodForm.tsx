@@ -10,8 +10,10 @@ import { getPlanDisplayName } from '@/lib/planUtils';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { useState } from 'react';
 import { GracePeriod, GracePeriodType } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 export function GracePeriodForm() {
+    const { t } = useTranslation('portfolio-page');
     const { plans, currency, updatePlan, gracePeriods, addGracePeriod, deleteGracePeriod, updateGracePeriod } = usePlans();
     const [isAdding, setIsAdding] = useState<string | null>(null); // planId if adding
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -88,10 +90,10 @@ export function GracePeriodForm() {
                     </div>
                     <div>
                         <CardTitle className="text-lg font-semibold">
-                            Grace Periods
+                            {t('planning.grace.title')}
                         </CardTitle>
                         <CardDescription>
-                            Manage interest settings before first payment
+                            {t('planning.grace.description')}
                         </CardDescription>
                     </div>
                 </div>
@@ -105,7 +107,7 @@ export function GracePeriodForm() {
                                 animate={{ opacity: 1 }}
                                 className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg"
                             >
-                                No active mortgage plans
+                                {t('planning.grace.empty')}
                             </motion.div>
                         ) : (
                             activePlans.map((plan) => {
@@ -128,7 +130,7 @@ export function GracePeriodForm() {
                                                 </div>
                                                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
                                                     <CalendarClock className="w-3 h-3" />
-                                                    <span>{months} months grace</span>
+                                                    <span>{months} {t('planning.grace.monthsGrace')}</span>
                                                 </div>
                                             </div>
 
@@ -137,10 +139,10 @@ export function GracePeriodForm() {
                                                     <div className="flex items-center justify-between">
                                                         <Label htmlFor={`grace-type-${plan.id}`} className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
                                                             <Hourglass className="w-3 h-3" />
-                                                            Initial Grace Period
+                                                            {t('planning.grace.initial.title')}
                                                         </Label>
                                                         <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium dark:bg-indigo-900/50 dark:text-indigo-300">
-                                                            Default
+                                                            {t('planning.grace.initial.default')}
                                                         </span>
                                                     </div>
 
@@ -150,8 +152,8 @@ export function GracePeriodForm() {
                                                                 value={plan.gracePeriodType || GracePeriodType.CAPITALIZED}
                                                                 onValueChange={(value: string) => updatePlan({ ...plan, gracePeriodType: value as GracePeriodType })}
                                                                 options={[
-                                                                    { value: GracePeriodType.CAPITALIZED, label: 'Capitalized (Add to Principal)' },
-                                                                    { value: GracePeriodType.INTEREST_ONLY, label: 'Interest Only (Pay Monthly)' },
+                                                                    { value: GracePeriodType.CAPITALIZED, label: t('planning.grace.initial.capitalized') },
+                                                                    { value: GracePeriodType.INTEREST_ONLY, label: t('planning.grace.initial.interestOnly') },
                                                                 ]}
                                                                 color="bg-indigo-500"
                                                                 textColor="text-primary-foreground"
@@ -160,14 +162,14 @@ export function GracePeriodForm() {
                                                         <p className="text-[10px] text-muted-foreground pl-1 flex items-center gap-1.5">
                                                             <span className="mt-0.5 block w-1 h-1 rounded-full bg-indigo-400 shrink-0" />
                                                             {plan.gracePeriodType === 'interestOnly'
-                                                                ? 'You pay the accrued interest each month. Principal remains same.'
-                                                                : 'Interest is added to your loan balance. No monthly payments.'}
+                                                                ? t('planning.grace.initial.descInterestOnly')
+                                                                : t('planning.grace.initial.descCapitalized')}
                                                         </p>
                                                     </div>
                                                 </div>
                                             ) : (
                                                 <div className="p-3 rounded-md border border-dashed border-muted-foreground/20 bg-muted/30 text-xs text-muted-foreground italic text-center">
-                                                    No initial grace period (First payment is immediately after taken date)
+                                                    {t('planning.grace.initial.none')}
                                                 </div>
                                             )}
 
@@ -175,7 +177,7 @@ export function GracePeriodForm() {
                                             <div className="space-y-3 pt-2 border-t border-border/50">
                                                 <div className="flex items-center justify-between">
                                                     <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                                                        Additional Grace Periods
+                                                        {t('planning.grace.additional.title')}
                                                     </Label>
                                                     <Button
                                                         variant="ghost"
@@ -184,7 +186,7 @@ export function GracePeriodForm() {
                                                         onClick={() => setIsAdding(isAdding === plan.id ? null : plan.id)}
                                                     >
                                                         <Plus className="w-3 h-3 mr-1" />
-                                                        Add Period
+                                                        {t('planning.grace.additional.add')}
                                                     </Button>
                                                 </div>
 
@@ -195,7 +197,7 @@ export function GracePeriodForm() {
                                                                 <div className="flex-1 p-2 bg-background rounded-md shadow-sm border border-indigo-100 dark:border-indigo-900/50">
                                                                     <div className="grid grid-cols-2 gap-3 mb-3">
                                                                         <div className="space-y-1.5">
-                                                                            <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Start Date</Label>
+                                                                            <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{t('planning.grace.additional.startDate')}</Label>
                                                                             <DateInput
                                                                                 value={editForm.startDate || ''}
                                                                                 onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
@@ -205,7 +207,7 @@ export function GracePeriodForm() {
                                                                             />
                                                                         </div>
                                                                         <div className="space-y-1.5">
-                                                                            <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">End Date</Label>
+                                                                            <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{t('planning.grace.additional.endDate')}</Label>
                                                                             <DateInput
                                                                                 value={editForm.endDate || ''}
                                                                                 onChange={(e) => setEditForm({ ...editForm, endDate: e.target.value })}
@@ -216,7 +218,7 @@ export function GracePeriodForm() {
                                                                         </div>
                                                                     </div>
                                                                     <div className="space-y-1.5 mb-3">
-                                                                        <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Type</Label>
+                                                                        <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{t('planning.grace.additional.type')}</Label>
                                                                         <div className="relative">
                                                                             <SlidingSelect
                                                                                 value={editForm.type!}
@@ -237,14 +239,14 @@ export function GracePeriodForm() {
                                                                             className="h-7 text-xs hover:bg-destructive/10 hover:text-destructive"
                                                                             onClick={handleEditCancel}
                                                                         >
-                                                                            Cancel
+                                                                            {t('planning.grace.additional.cancel')}
                                                                         </Button>
                                                                         <Button
                                                                             size="sm"
                                                                             className="h-7 text-xs bg-indigo-600 hover:bg-indigo-700 text-white"
                                                                             onClick={handleEditSave}
                                                                         >
-                                                                            Save Changes
+                                                                            {t('planning.grace.additional.save')}
                                                                         </Button>
                                                                     </div>
                                                                 </div>
@@ -253,7 +255,7 @@ export function GracePeriodForm() {
                                                                     <div className="flex flex-col">
                                                                         <span className="font-medium flex items-center gap-2">
                                                                             {gp.startDate} - {gp.endDate}
-                                                                            {gp.enabled === false && <span className="text-[10px] uppercase bg-muted px-1 rounded">Disabled</span>}
+                                                                            {gp.enabled === false && <span className="text-[10px] uppercase bg-muted px-1 rounded">{t('planning.plans.list.disabled')}</span>}
                                                                         </span>
                                                                         <span className="text-xs text-muted-foreground">
                                                                             {gp.type === 'interestOnly' ? 'Interest Only' : 'Capitalized'}
@@ -265,7 +267,7 @@ export function GracePeriodForm() {
                                                                             size="icon"
                                                                             className={`h-6 w-6 ${gp.enabled !== false ? 'text-secondary hover:text-secondary hover:bg-secondary/10' : 'text-muted-foreground hover:text-muted-foreground hover:bg-muted/10'}`}
                                                                             onClick={() => handleToggle(gp)}
-                                                                            title={gp.enabled !== false ? "Disable" : "Enable"}
+                                                                            title={gp.enabled !== false ? t('planning.extra.list.disable') : t('planning.extra.list.enable')}
                                                                         >
                                                                             {gp.enabled !== false ? (
                                                                                 <ToggleRight className="w-4 h-4" />
@@ -299,7 +301,7 @@ export function GracePeriodForm() {
                                                         <div className="p-3 bg-muted/30 rounded border border-border/50 space-y-3 animate-in fade-in slide-in-from-top-2">
                                                             <div className="grid grid-cols-2 gap-2">
                                                                 <div className="space-y-1">
-                                                                    <Label className="text-xs">Start (MM/YYYY)</Label>
+                                                                    <Label className="text-xs">{t('planning.grace.additional.startDate')} (MM/YYYY)</Label>
                                                                     <DateInput
                                                                         value={newGracePeriod.startDate || ''}
                                                                         onChange={(e) => setNewGracePeriod({ ...newGracePeriod, startDate: e.target.value })}
@@ -309,7 +311,7 @@ export function GracePeriodForm() {
                                                                     />
                                                                 </div>
                                                                 <div className="space-y-1">
-                                                                    <Label className="text-xs">End (MM/YYYY)</Label>
+                                                                    <Label className="text-xs">{t('planning.grace.additional.endDate')} (MM/YYYY)</Label>
                                                                     <DateInput
                                                                         value={newGracePeriod.endDate || ''}
                                                                         onChange={(e) => setNewGracePeriod({ ...newGracePeriod, endDate: e.target.value })}
@@ -320,7 +322,7 @@ export function GracePeriodForm() {
                                                                 </div>
                                                             </div>
                                                             <div className="space-y-1">
-                                                                <Label className="text-xs">Type</Label>
+                                                                <Label className="text-xs">{t('planning.grace.additional.type')}</Label>
                                                                 <div className="relative">
                                                                     <SlidingSelect
                                                                         value={newGracePeriod.type || GracePeriodType.CAPITALIZED}
@@ -341,7 +343,7 @@ export function GracePeriodForm() {
                                                                     className="h-7 text-xs"
                                                                     onClick={() => setIsAdding(null)}
                                                                 >
-                                                                    Cancel
+                                                                    {t('planning.grace.additional.cancelAdd')}
                                                                 </Button>
                                                                 <Button
                                                                     size="sm"
@@ -349,7 +351,7 @@ export function GracePeriodForm() {
                                                                     onClick={() => handleAddGracePeriod(plan.id)}
                                                                     disabled={!newGracePeriod.startDate || !newGracePeriod.endDate}
                                                                 >
-                                                                    Add
+                                                                    {t('planning.grace.additional.add')}
                                                                 </Button>
                                                             </div>
                                                         </div>

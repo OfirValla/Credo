@@ -2,6 +2,7 @@ import type { ElementType } from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { useParams, Navigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { PortfolioExport } from '@/components/PortfolioExport';
 import { PortfolioImport } from '@/components/PortfolioImport';
 import { PlanningSection } from '@/components/portfolio-planning/PlanningSection';
@@ -18,16 +19,17 @@ import { Button } from '@/components/ui/button';
 import { PortfolioType } from '@/types';
 
 export function PortfolioPage() {
+    const { t } = useTranslation('portfolio-page');
     const { type, portfolioId } = useParams<{ type: string, portfolioId: string }>();
     const currentPortfolio = useCurrentPortfolio();
     const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
     const amortizationSchedule = usePlanCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 
     const isLoan = type === 'loan';
-    const pageTitle = isLoan ? 'Loan' : 'Mortgage';
+    const pageTitle = isLoan ? t('header.title.loan') : t('header.title.mortgage');
     const pageDescription = isLoan
-        ? 'Manage and track your loans efficiently'
-        : 'Smart analytics for your property investments';
+        ? t('header.description.loan')
+        : t('header.description.mortgage');
 
     const DefaultIcon = isLoan ? Icons.Banknote : Icons.LayoutDashboard;
     const Icon = (currentPortfolio?.icon ? Icons[currentPortfolio.icon as keyof typeof Icons] : DefaultIcon) as ElementType;
@@ -118,7 +120,7 @@ export function PortfolioPage() {
                                 variant="outline"
                                 size="icon"
                                 onClick={handleDownloadPDF}
-                                title="Download PDF Report"
+                                title={t('header.downloadPdf')}
                             >
                                 <Icons.FileText className="h-[1.2rem] w-[1.2rem]" />
                             </Button>

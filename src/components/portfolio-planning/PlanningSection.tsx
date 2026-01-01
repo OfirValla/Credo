@@ -7,9 +7,12 @@ import { RateChangeForm } from './RateChangeForm';
 import { GracePeriodForm } from './GracePeriodForm';
 import { SlidingSelect } from '../ui/sliding-select';
 
+import { useTranslation } from 'react-i18next';
+
 type TabId = 'plans' | 'extra' | 'rates' | 'grace'; //| 'compare';
 
 export function PlanningSection() {
+    const { t } = useTranslation('portfolio-page');
     const [activeTab, setActiveTab] = useState<TabId>('plans');
 
     return (
@@ -19,10 +22,10 @@ export function PlanningSection() {
                 value={activeTab}
                 onValueChange={(value) => setActiveTab(value as TabId)}
                 options={[
-                    { value: 'plans', label: 'Plans', icon: Home },
-                    { value: 'extra', label: 'Extra', icon: Wallet },
-                    { value: 'rates', label: 'Rates', icon: Percent },
-                    { value: 'grace', label: 'Grace', icon: Hourglass },
+                    { value: 'plans', label: t('planning.tabs.plans'), icon: Home },
+                    { value: 'extra', label: t('planning.tabs.extra'), icon: Wallet },
+                    { value: 'rates', label: t('planning.tabs.rates'), icon: Percent },
+                    { value: 'grace', label: t('planning.tabs.grace'), icon: Hourglass },
                     //{ value: 'compare', label: 'Compare', icon: GitCompare },
                 ]}
                 color="bg-indigo-500"

@@ -12,11 +12,13 @@ import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { SlidingSelect } from '@/components/ui/sliding-select';
+import { useTranslation } from 'react-i18next';
 
 import { usePlans } from '@/context/PlanProvider';
 import { useCurrentPortfolio } from '@/context/PortfoliosContext';
 
 export function PlanForm() {
+  const { t } = useTranslation('portfolio-page');
   const { plans, currency, addPlan, updatePlan, deletePlan } = usePlans();
   const onAddPlan = addPlan;
   const onUpdatePlan = updatePlan;
@@ -71,7 +73,7 @@ export function PlanForm() {
 
     const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
     if (!dateRegex.test(takenDate) || !dateRegex.test(firstPaymentDate) || !dateRegex.test(lastPaymentDate)) {
-      toast.error('Dates must be in DD/MM/YYYY format (e.g., 01/01/2024)');
+      toast.error(t('planning.plans.errors.date'));
       return;
     }
 
@@ -117,10 +119,10 @@ export function PlanForm() {
           </div>
           <div>
             <CardTitle className="text-lg font-semibold">
-              {editingId ? 'Edit Plan' : 'Plans'}
+              {editingId ? t('planning.plans.editTitle') : t('planning.plans.title')}
             </CardTitle>
             <CardDescription>
-              Manage your property financing details
+              {t('planning.plans.description')}
             </CardDescription>
           </div>
         </div>
@@ -129,19 +131,19 @@ export function PlanForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="planName" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Plan Name</Label>
+              <Label htmlFor="planName" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.name')}</Label>
               <Input
                 id="planName"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Primary Home"
+                placeholder={t('planning.plans.form.namePlaceholder')}
                 className="bg-background/50 border-border/50 focus:ring-primary/20"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount ({currencySymbol})</Label>
+                <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.amount')} ({currencySymbol})</Label>
                 <div className="relative">
                   <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -150,14 +152,14 @@ export function PlanForm() {
                     step="0.01"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    placeholder="300000"
+                    placeholder={t('planning.plans.form.amountPlaceholder')}
                     className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                     required
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="interestRate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Rate (%)</Label>
+                <Label htmlFor="interestRate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.rate')}</Label>
                 <div className="relative">
                   <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -176,7 +178,7 @@ export function PlanForm() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="takenDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Taken Date</Label>
+                <Label htmlFor="takenDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.takenDate')}</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <DateInput
@@ -191,7 +193,7 @@ export function PlanForm() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="firstPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">First Payment</Label>
+                <Label htmlFor="firstPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.firstPayment')}</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <DateInput
@@ -206,7 +208,7 @@ export function PlanForm() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Last Payment</Label>
+                <Label htmlFor="lastPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.lastPayment')}</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <DateInput
@@ -222,27 +224,27 @@ export function PlanForm() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 pt-2">
+            <div className="flex items-center space-x-2 pt-2 gap-3">
               <Switch
                 id="linkedToCPI"
                 checked={linkedToCPI}
                 onCheckedChange={setLinkedToCPI}
               />
               <Label htmlFor="linkedToCPI" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground">
-                Link to CPI (Consumer Price Index)
+                {t('planning.plans.form.linkCPI')}
               </Label>
             </div>
 
             {isLoanPortfolio && (
               <div className="pt-2 border-t border-border/50 space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Loan Structure</Label>
+                  <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.structure')}</Label>
                   <SlidingSelect
                     value={loanType}
                     onValueChange={(e) => setLoanType(e as LoanType)}
                     options={[
-                      { value: LoanType.REGULAR, label: 'Regular' },
-                      { value: LoanType.BALLOON, label: 'Balloon' },
+                      { value: LoanType.REGULAR, label: t('planning.plans.form.structures.regular') },
+                      { value: LoanType.BALLOON, label: t('planning.plans.form.structures.balloon') },
                     ]}
                     color="bg-primary"
                     textColor="text-primary-foreground"
@@ -251,7 +253,7 @@ export function PlanForm() {
 
                 {loanType === LoanType.BALLOON && (
                   <div className="space-y-2">
-                    <Label htmlFor="balloonValue" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Balloon Amount ({currencySymbol})</Label>
+                    <Label htmlFor="balloonValue" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.balloonAmount')} ({currencySymbol})</Label>
                     <div className="relative">
                       <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -275,12 +277,12 @@ export function PlanForm() {
               {editingId ? (
                 <>
                   <Pencil className="w-4 h-4 mr-2" />
-                  Update Plan
+                  {t('planning.plans.form.update')}
                 </>
               ) : (
                 <>
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Plan
+                  {t('planning.plans.form.add')}
                 </>
               )}
             </Button>
@@ -292,7 +294,7 @@ export function PlanForm() {
           </div>
         </form>
 
-        <h3 className="text-sm font-medium text-muted-foreground">Current Plans</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">{t('planning.plans.list.title')}</h3>
         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
           <AnimatePresence mode="popLayout">
             {plans.length === 0 ? (
@@ -301,7 +303,7 @@ export function PlanForm() {
                 animate={{ opacity: 1 }}
                 className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg"
               >
-                No plans added yet
+                {t('planning.plans.list.empty')}
               </motion.div>
             ) : (
               plans.map((plan) => (
@@ -324,7 +326,7 @@ export function PlanForm() {
                         {getPlanDisplayName(plan, currency)}
                       </div>
                       {plan.enabled === false && (
-                        <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">Disabled</span>
+                        <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">{t('planning.plans.list.disabled')}</span>
                       )}
                     </div>
                     <div className="text-xs text-muted-foreground flex items-center gap-2">
@@ -336,9 +338,9 @@ export function PlanForm() {
                       {(() => {
                         const { totalMonths } = getPlanDurationInfo(plan);
                         return <>
-                          <span>{`${totalMonths} months total`}</span>
+                          <span>{`${totalMonths} ${t('planning.plans.list.totalMonths')}`}</span>
                           <span>•</span>
-                          <span>{`${plan.remainingMonths ?? 0} months remaining`}</span>
+                          <span>{`${plan.remainingMonths ?? 0} ${t('planning.plans.list.remainingMonths')}`}</span>
                         </>;
                       })()}
                     </div>
@@ -350,7 +352,7 @@ export function PlanForm() {
                       size="icon"
                       className={`h-8 w-8 ${plan.enabled !== false ? 'text-secondary hover:text-secondary hover:bg-secondary/10' : 'text-muted-foreground hover:text-muted-foreground hover:bg-muted/10'}`}
                       onClick={() => onUpdatePlan({ ...plan, enabled: !plan.enabled })}
-                      title={plan.enabled !== false ? 'Enable plan' : 'Disable plan'}
+                      title={plan.enabled !== false ? t('planning.plans.list.enable') : t('planning.plans.list.disable')}
                     >
                       {plan.enabled ? (
                         <ToggleRight className="h-5 w-5" />

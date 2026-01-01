@@ -58,5 +58,135 @@
         "interest": "ריבית",
         "nextPayment": "תשלום הבא",
         "remainingBalance": "יתרה נותרת"
+    },
+    "header": {
+        "title": {
+            "loan": "הלוואה",
+            "mortgage": "משכנתא"
+        },
+        "description": {
+            "loan": "ניהול ומעקב יעיל אחר ההלוואות שלך",
+            "mortgage": "ניתוח חכם להשקעות הנדל\"ן שלך"
+        },
+        "downloadPdf": "הורד דוח PDF"
+    },
+    "planning": {
+        "tabs": {
+            "plans": "תוכניות",
+            "extra": "תשלומים נוספים",
+            "rates": "שינויי ריבית",
+            "grace": "גרייס"
+        },
+        "plans": {
+            "title": "תוכניות",
+            "editTitle": "עריכת תוכנית",
+            "description": "ניהול פרטי מימון הנכס",
+            "form": {
+                "name": "שם התוכנית",
+                "namePlaceholder": "לדוגמה: דירה ראשונה",
+                "amount": "סכום",
+                "amountPlaceholder": "300,000",
+                "rate": "ריבית (%)",
+                "takenDate": "תאריך לקיחה",
+                "firstPayment": "תשלום ראשון",
+                "lastPayment": "תשלום אחרון",
+                "linkCPI": "הצמדה למדד",
+                "structure": "מבנה ההלוואה",
+                "structures": {
+                    "regular": "רגיל",
+                    "balloon": "בלון / גרייס"
+                },
+                "balloonAmount": "סכום בלון",
+                "update": "עדכן תוכנית",
+                "add": "הוסף תוכנית",
+                "cancel": "ביטול"
+            },
+            "list": {
+                "title": "תוכניות קיימות",
+                "empty": "ללא תוכניות",
+                "disabled": "מושבת",
+                "totalMonths": "סה״כ חודשים",
+                "remainingMonths": "חודשים נותרו",
+                "enable": "הפעל תוכנית",
+                "disable": "השבת תוכנית"
+            },
+            "errors": {
+                "date": "תאריכים חייבים להיות בפורמט DD/MM/YYYY"
+            }
+        },
+        "extra": {
+            "title": "תשלומים נוספים",
+            "editTitle": "עריכת תשלום נוסף",
+            "description": "ביצוע תשלומים חד פעמיים להקטנת הקרן",
+            "form": {
+                "targetPlan": "תוכנית יעד",
+                "selectPlan": "בחר תוכנית...",
+                "month": "חודש",
+                "amount": "סכום",
+                "strategy": "אסטרטגיה",
+                "strategies": {
+                    "reduceTerm": "קיצור תקופה",
+                    "reducePayment": "הקטנת תשלום"
+                },
+                "update": "עדכן תשלום",
+                "add": "הוסף תשלום"
+            },
+            "list": {
+                "title": "תשלומים מתוזמנים",
+                "empty": "אין תשלומים נוספים מתוזמנים",
+                "term": "תקופה",
+                "payment": "תשלום",
+                "enable": "לחץ להפעלה",
+                "disable": "לחץ להשבתה"
+            },
+            "errors": {
+                "month": "חודש חייב להיות בפורמט MM/YYYY"
+            }
+        },
+        "rates": {
+            "title": "שינויי ריבית",
+            "editTitle": "עריכת שינוי ריבית",
+            "description": "תזמון שינויי ריבית עתידיים",
+            "form": {
+                "targetPlan": "תוכנית יעד",
+                "effectiveMonth": "חודש משפיע",
+                "newRate": "ריבית חדשה (%)",
+                "update": "עדכן שינוי ריבית",
+                "add": "הוסף שינוי ריבית"
+            },
+            "list": {
+                "title": "שינויים מתוזמנים",
+                "empty": "אין שינויי ריבית מתוזמנים"
+            },
+            "errors": {
+                "month": "חודש חייב להיות בפורמט MM/YYYY",
+                "rate": "ריבית שנתית חייבת להיות מספר בין 0 ל-100"
+            }
+        },
+        "grace": {
+            "title": "תקופות גרייס",
+            "description": "ניהול הגדרות ריבית לפני תשלום ראשון",
+            "empty": "אין תוכניות משכנתא פעילות",
+            "monthsGrace": "חודשי גרייס",
+            "initial": {
+                "title": "גרייס התחלתי",
+                "default": "ברירת מחדל",
+                "capitalized": "דחוי (הוספה לקרן)",
+                "interestOnly": "חלקי (תשלום ריבית חודשי)",
+                "descCapitalized": "הריבית מתווספת ליתרת ההלוואה. אין תשלומים חודשיים.",
+                "descInterestOnly": "תשלום הריבית שנצברה מדי חודש. הקרן נשארת זהה.",
+                "none": "ללא גרייס התחלתי (תשלום ראשון מייד לאחר תאריך הלקיחה)"
+            },
+            "additional": {
+                "title": "תקופות גרייס נוספות",
+                "add": "הוסף תקופה",
+                "startDate": "תאריך התחלה",
+                "endDate": "תאריך סיום",
+                "type": "סוג",
+                "save": "שמור שינויים",
+                "cancel": "ביטול",
+                "cancelAdd": "ביטול"
+            }
+        }
     }
 }

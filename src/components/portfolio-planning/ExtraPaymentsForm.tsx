@@ -12,10 +12,12 @@ import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { SlidingSelect } from '@/components/ui/sliding-select';
+import { useTranslation } from 'react-i18next';
 
 import { usePlans } from '@/context/PlanProvider';
 
 export function ExtraPaymentsForm() {
+  const { t } = useTranslation('portfolio-page');
   const { plans, currency, extraPayments, addExtraPayment, updateExtraPayment, deleteExtraPayment } = usePlans();
   const onAddExtraPayment = addExtraPayment;
   const onUpdateExtraPayment = updateExtraPayment;
@@ -53,7 +55,7 @@ export function ExtraPaymentsForm() {
 
     const dateRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
     if (!dateRegex.test(month)) {
-      toast.error('Month must be in MM/YYYY format (e.g., 01/2024)');
+      toast.error(t('planning.extra.errors.month'));
       return;
     }
 
@@ -92,10 +94,10 @@ export function ExtraPaymentsForm() {
           </div>
           <div>
             <CardTitle className="text-lg font-semibold">
-              {editingId ? 'Edit Extra Payment' : 'Extra Payments'}
+              {editingId ? t('planning.extra.editTitle') : t('planning.extra.title')}
             </CardTitle>
             <CardDescription>
-              Make one-time payments to reduce your principal
+              {t('planning.extra.description')}
             </CardDescription>
           </div>
         </div>
@@ -104,19 +106,19 @@ export function ExtraPaymentsForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="plan" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Target Plan</Label>
+              <Label htmlFor="plan" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.extra.form.targetPlan')}</Label>
               <Select
                 value={planId}
                 onValueChange={setPlanId}
                 options={planOptions}
-                placeholder="Select a plan..."
+                placeholder={t('planning.extra.form.selectPlan')}
                 className="w-full"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="month" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Month</Label>
+                <Label htmlFor="month" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.extra.form.month')}</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <DateInput
@@ -131,7 +133,7 @@ export function ExtraPaymentsForm() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount ({currencySymbol})</Label>
+                <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.extra.form.amount')} ({currencySymbol})</Label>
                 <div className="relative">
                   <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -149,13 +151,13 @@ export function ExtraPaymentsForm() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Strategy</Label>
+              <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.extra.form.strategy')}</Label>
               <SlidingSelect
                 value={type}
                 onValueChange={(e) => setType(e as ExtraPaymentType)}
                 options={[
-                  { value: ExtraPaymentType.REDUCE_TERM, label: 'Reduce Term' },
-                  { value: ExtraPaymentType.REDUCE_PAYMENT, label: 'Reduce Payment' },
+                  { value: ExtraPaymentType.REDUCE_TERM, label: t('planning.extra.form.strategies.reduceTerm') },
+                  { value: ExtraPaymentType.REDUCE_PAYMENT, label: t('planning.extra.form.strategies.reducePayment') },
                 ]}
               />
             </div>
@@ -169,12 +171,12 @@ export function ExtraPaymentsForm() {
                 {editingId ? (
                   <>
                     <Pencil className="w-4 h-4 mr-2" />
-                    Update Payment
+                    {t('planning.extra.form.update')}
                   </>
                 ) : (
                   <>
                     <Plus className="w-4 h-4 mr-2" />
-                    Add Payment
+                    {t('planning.extra.form.add')}
                   </>
                 )}
               </Button>
@@ -188,7 +190,7 @@ export function ExtraPaymentsForm() {
         </form>
 
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-muted-foreground">Scheduled Payments</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">{t('planning.extra.list.title')}</h3>
           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
             <AnimatePresence mode="popLayout">
               {extraPayments.length === 0 ? (
@@ -197,7 +199,7 @@ export function ExtraPaymentsForm() {
                   animate={{ opacity: 1 }}
                   className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg"
                 >
-                  No extra payments scheduled
+                  {t('planning.extra.list.empty')}
                 </motion.div>
               ) : (
                 extraPayments.sort((a, b) => parseDateToMonthIndex(a.month) - parseDateToMonthIndex(b.month)).map((payment) => {
@@ -227,11 +229,11 @@ export function ExtraPaymentsForm() {
                               <span>{payment.month}</span>
                             </span>
                             {payment.enabled === false && (
-                              <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">Disabled</span>
+                              <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">{t('planning.plans.list.disabled')}</span>
                             )}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {plan ? getPlanDisplayName(plan, currency) : 'Unknown Plan'} • {payment.type === 'reduceTerm' ? 'Term' : 'Payment'}
+                            {plan ? getPlanDisplayName(plan, currency) : 'Unknown Plan'} • {payment.type === 'reduceTerm' ? t('planning.extra.list.term') : t('planning.extra.list.payment')}
                           </div>
                         </div>
                       </div>
@@ -250,7 +252,7 @@ export function ExtraPaymentsForm() {
                               enabled: payment.enabled === false ? true : false,
                             });
                           }}
-                          title={payment.enabled === false ? "Click to enable" : "Click to disable"}
+                          title={payment.enabled === false ? t('planning.extra.list.enable') : t('planning.extra.list.disable')}
                         >
                           {payment.enabled !== false ? (
                             <ToggleRight className="h-5 w-5" />

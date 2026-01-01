@@ -10,10 +10,12 @@ import { Input } from '@/components/ui/input';
 import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
+import { useTranslation } from 'react-i18next';
 
 import { usePlans } from '@/context/PlanProvider';
 
 export function RateChangeForm() {
+  const { t } = useTranslation('portfolio-page');
   const { plans, currency, rateChanges, addRateChange, updateRateChange, deleteRateChange } = usePlans();
   const onAddRateChange = addRateChange;
   const onUpdateRateChange = updateRateChange;
@@ -47,14 +49,14 @@ export function RateChangeForm() {
     // Validate date format (MM/YYYY)
     const dateRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
     if (!dateRegex.test(month)) {
-      toast.error('Month must be in MM/YYYY format (e.g., 01/2024)');
+      toast.error(t('planning.rates.errors.month'));
       return;
     }
 
     // Validate rate
     const rate = parseFloat(newAnnualRate);
     if (isNaN(rate) || rate < 0 || rate > 100) {
-      toast.error('Annual rate must be a number between 0 and 100');
+      toast.error(t('planning.rates.errors.rate'));
       return;
     }
 
@@ -92,10 +94,10 @@ export function RateChangeForm() {
           </div>
           <div>
             <CardTitle className="text-lg font-semibold">
-              {editingId ? 'Edit Rate Change' : 'Interest Rate Changes'}
+              {editingId ? t('planning.rates.editTitle') : t('planning.rates.title')}
             </CardTitle>
             <CardDescription>
-              Schedule future interest rate adjustments
+              {t('planning.rates.description')}
             </CardDescription>
           </div>
         </div>
@@ -104,19 +106,19 @@ export function RateChangeForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="rate-plan" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Target Plan</Label>
+              <Label htmlFor="rate-plan" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.rates.form.targetPlan')}</Label>
               <Select
                 value={planId}
                 onValueChange={setPlanId}
                 options={planOptions}
-                placeholder="Select a plan..."
+                placeholder={t('planning.extra.form.selectPlan')}
                 className="w-full"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="rate-month" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Effective Month</Label>
+                <Label htmlFor="rate-month" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.rates.form.effectiveMonth')}</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <DateInput
@@ -131,7 +133,7 @@ export function RateChangeForm() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="new-rate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">New Rate (%)</Label>
+                <Label htmlFor="new-rate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.rates.form.newRate')}</Label>
                 <div className="relative">
                   <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -160,12 +162,12 @@ export function RateChangeForm() {
               {editingId ? (
                 <>
                   <Pencil className="w-4 h-4 mr-2" />
-                  Update Rate Change
+                  {t('planning.rates.form.update')}
                 </>
               ) : (
                 <>
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Rate Change
+                  {t('planning.rates.form.add')}
                 </>
               )}
             </Button>
@@ -178,7 +180,7 @@ export function RateChangeForm() {
         </form>
 
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-muted-foreground">Scheduled Changes</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">{t('planning.rates.list.title')}</h3>
           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
             <AnimatePresence mode="popLayout">
               {rateChanges.length === 0 ? (
@@ -187,7 +189,7 @@ export function RateChangeForm() {
                   animate={{ opacity: 1 }}
                   className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg"
                 >
-                  No rate changes scheduled
+                  {t('planning.rates.list.empty')}
                 </motion.div>
               ) : (
                 rateChanges.sort((a, b) => parseDateToMonthIndex(a.month) - parseDateToMonthIndex(b.month)).map((rateChange) => {
@@ -214,7 +216,7 @@ export function RateChangeForm() {
                             <span>{rateChange.month}</span>
                           </span>
                           {rateChange.enabled === false && (
-                            <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">Disabled</span>
+                            <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded no-underline">{t('planning.plans.list.disabled')}</span>
                           )}
                         </div>
                         <div className="text-xs text-muted-foreground">
@@ -236,7 +238,7 @@ export function RateChangeForm() {
                               enabled: rateChange.enabled === false ? true : false,
                             });
                           }}
-                          title={rateChange.enabled === false ? "Click to enable" : "Click to disable"}
+                          title={rateChange.enabled === false ? t('planning.extra.list.enable') : t('planning.extra.list.disable')}
                         >
                           {rateChange.enabled !== false ? (
                             <ToggleRight className="h-5 w-5" />

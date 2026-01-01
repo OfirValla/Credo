@@ -58,5 +58,135 @@
         "interest": "Interest",
         "nextPayment": "Next Payment",
         "remainingBalance": "Remaining Balance"
+    },
+    "header": {
+        "title": {
+            "loan": "Loan",
+            "mortgage": "Mortgage"
+        },
+        "description": {
+            "loan": "Manage and track your loans efficiently",
+            "mortgage": "Smart analytics for your property investments"
+        },
+        "downloadPdf": "Download PDF Report"
+    },
+    "planning": {
+        "tabs": {
+            "plans": "Plans",
+            "extra": "Extra",
+            "rates": "Rates",
+            "grace": "Grace"
+        },
+        "plans": {
+            "title": "Plans",
+            "editTitle": "Edit Plan",
+            "description": "Manage your property financing details",
+            "form": {
+                "name": "Plan Name",
+                "namePlaceholder": "e.g., Primary Home",
+                "amount": "Amount",
+                "amountPlaceholder": "300,000",
+                "rate": "Rate (%)",
+                "takenDate": "Taken Date",
+                "firstPayment": "First Payment",
+                "lastPayment": "Last Payment",
+                "linkCPI": "Link to CPI (Consumer Price Index)",
+                "structure": "Loan Structure",
+                "structures": {
+                    "regular": "Regular",
+                    "balloon": "Balloon"
+                },
+                "balloonAmount": "Balloon Amount",
+                "update": "Update Plan",
+                "add": "Add Plan",
+                "cancel": "Cancel"
+            },
+            "list": {
+                "title": "Current Plans",
+                "empty": "No plans added yet",
+                "disabled": "Disabled",
+                "totalMonths": "months total",
+                "remainingMonths": "months remaining",
+                "enable": "Enable plan",
+                "disable": "Disable plan"
+            },
+            "errors": {
+                "date": "Dates must be in DD/MM/YYYY format (e.g., 01/01/2024)"
+            }
+        },
+        "extra": {
+            "title": "Extra Payments",
+            "editTitle": "Edit Extra Payment",
+            "description": "Make one-time payments to reduce your principal",
+            "form": {
+                "targetPlan": "Target Plan",
+                "selectPlan": "Select a plan...",
+                "month": "Month",
+                "amount": "Amount",
+                "strategy": "Strategy",
+                "strategies": {
+                    "reduceTerm": "Reduce Term",
+                    "reducePayment": "Reduce Payment"
+                },
+                "update": "Update Payment",
+                "add": "Add Payment"
+            },
+            "list": {
+                "title": "Scheduled Payments",
+                "empty": "No extra payments scheduled",
+                "term": "Term",
+                "payment": "Payment",
+                "enable": "Click to enable",
+                "disable": "Click to disable"
+            },
+            "errors": {
+                "month": "Month must be in MM/YYYY format (e.g., 01/2024)"
+            }
+        },
+        "rates": {
+            "title": "Interest Rate Changes",
+            "editTitle": "Edit Rate Change",
+            "description": "Schedule future interest rate adjustments",
+            "form": {
+                "targetPlan": "Target Plan",
+                "effectiveMonth": "Effective Month",
+                "newRate": "New Rate (%)",
+                "update": "Update Rate Change",
+                "add": "Add Rate Change"
+            },
+            "list": {
+                "title": "Scheduled Changes",
+                "empty": "No rate changes scheduled"
+            },
+            "errors": {
+                "month": "Month must be in MM/YYYY format (e.g., 01/2024)",
+                "rate": "Annual rate must be a number between 0 and 100"
+            }
+        },
+        "grace": {
+            "title": "Grace Periods",
+            "description": "Manage interest settings before first payment",
+            "empty": "No active mortgage plans",
+            "monthsGrace": "months grace",
+            "initial": {
+                "title": "Initial Grace Period",
+                "default": "Default",
+                "capitalized": "Capitalized (Add to Principal)",
+                "interestOnly": "Interest Only (Pay Monthly)",
+                "descCapitalized": "Interest is added to your loan balance. No monthly payments.",
+                "descInterestOnly": "You pay the accrued interest each month. Principal remains same.",
+                "none": "No initial grace period (First payment is immediately after taken date)"
+            },
+            "additional": {
+                "title": "Additional Grace Periods",
+                "add": "Add Period",
+                "startDate": "Start Date",
+                "endDate": "End Date",
+                "type": "Type",
+                "save": "Save Changes",
+                "cancel": "Cancel",
+                "cancelAdd": "Cancel"
+            }
+        }
     }
 }
