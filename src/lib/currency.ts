@@ -2,22 +2,21 @@ export type CurrencyCode = 'ILS' | 'USD' | 'EUR' | 'GBP' | 'JPY' | 'CAD' | 'AUD'
 
 export interface Currency {
   code: CurrencyCode;
-  name: string;
   symbol: string;
 }
 
 export const CURRENCIES: Currency[] = [
-  { code: 'ILS', name: 'Israeli Shekel', symbol: '₪' },
-  { code: 'USD', name: 'US Dollar', symbol: '$' },
-  { code: 'EUR', name: 'Euro', symbol: '€' },
-  { code: 'GBP', name: 'British Pound', symbol: '£' },
-  { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
-  { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
-  { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
-  { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
-  { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
-  { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
-  { code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
+  { code: 'ILS', symbol: '₪' },
+  { code: 'USD', symbol: '$' },
+  { code: 'EUR', symbol: '€' },
+  { code: 'GBP', symbol: '£' },
+  { code: 'JPY', symbol: '¥' },
+  { code: 'CAD', symbol: 'C$' },
+  { code: 'AUD', symbol: 'A$' },
+  { code: 'CHF', symbol: 'CHF' },
+  { code: 'CNY', symbol: '¥' },
+  { code: 'INR', symbol: '₹' },
+  { code: 'BRL', symbol: 'R$' },
 ];
 
 export function formatCurrency(value: number, currency: CurrencyCode = 'USD'): string {
@@ -37,7 +36,7 @@ export function formatCurrency(value: number, currency: CurrencyCode = 'USD'): s
   };
 
   const locale = localeMap[currency] || 'en-US';
-  
+
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,

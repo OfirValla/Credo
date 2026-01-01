@@ -9,7 +9,7 @@ export function CurrencySelector() {
   const { currency, setCurrency } = usePlans();
   const currencyOptions = CURRENCIES.map((curr) => ({
     value: curr.code,
-    label: `${curr.symbol} ${curr.code} - ${curr.name}`,
+    label: `${curr.symbol} ${curr.code} - ${t(`currencies.${curr.code}`)}`,
   }));
 
   return (
