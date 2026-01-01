@@ -8,7 +8,6 @@ import { CurrencyCode, formatCurrency } from '@/lib/currency';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useCPI } from '@/hooks/useCPI';
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
-import { usePortfolios } from '@/context/PortfoliosContext';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +16,6 @@ interface PortfolioSummaryCardProps {
 }
 
 export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
-    const { setCurrentPortfolioId } = usePortfolios();
     const { t } = useTranslation('dashboard');
     const cpiData = useCPI();
 
@@ -112,7 +110,6 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
                         <CardTitle className="text-xl">{portfolio.name}</CardTitle>
                         <Link
                             to={`/${portfolio.type}/${portfolio.id}`}
-                            onClick={() => setCurrentPortfolioId(portfolio.id)}
                         >
                             <Icons.ArrowRight className="w-4 h-4" />
                         </Link>

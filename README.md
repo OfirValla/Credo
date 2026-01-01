@@ -1,21 +1,38 @@
-# Mortgage Manager
+# Credo
 
-A comprehensive React + TypeScript application for managing multiple mortgage plans and extra payments with detailed amortization calculations.
+A comprehensive financial management application for planning, tracking, and optimizing mortgage and loan portfolios.
 
 ## Features
 
-- **Multiple Mortgage Plans**: Add and manage multiple mortgage plans simultaneously
-- **Extra Payments**: Schedule extra payments with options to reduce term or reduce monthly payment
-- **Dynamic Amortization Tables**: Automatically calculates full amortization schedules
-- **Summary Analytics**: Compare totals with and without extra payments, showing savings
-- **Modern UI**: Built with shadcn/ui components for a beautiful, responsive interface
+### 📊 Portfolio Management
+- **Multiple Portfolios**: Create and manage distinct mortgage or loan portfolios side-by-side.
+- **Smart Dashboard**: Get a high-level overview of total balance, monthly commitments, and active plans.
+- **Customization**: Assign unique colors and icons to each portfolio for easy identification.
+
+### 🧮 Advanced Planning & Calculations
+- **Detailed Amortization**: View complete month-by-month amortization schedules.
+- **Extra Payments**: Model one-time or recurring extra payments to see impact on term or monthly payments.
+- **Rate Changes**: Schedule future interest rate changes to forecast payment fluctuations.
+- **Grace Periods**: Handle partial or full grace periods (interest-only or deferred payments).
+- **CPI Linkage**: Robust support for inflation-linked loans with CPI adjustments.
+
+### 🌍 Global Settings
+- **Multi-Currency**: Support for ILS, USD, EUR, and GBP.
+- **Internationalization**: Fully localized interface in English and Hebrew.
+- **Theme Support**: Seamless Light and Dark mode switching.
+
+### 💾 Data Control
+- **Local Privacy**: All data is stored locally in your browser – no external servers.
+- **Import/Export**: Easily backup or share your portfolios via JSON import/export.
+- **Clear Cache**: Quick options to reset data when needed.
 
 ## Tech Stack
 
-- **React 18** with TypeScript
-- **Vite** for fast development and building
-- **shadcn/ui** for UI components
-- **Tailwind CSS** for styling
+- **React 18** + **TypeScript**
+- **Vite**
+- **Tailwind CSS** + **Shadcn/UI**
+- **Recharts** for visualization
+- **i18next** for localization
 
 ## Getting Started
 
@@ -37,58 +54,19 @@ npm run dev
 npm run build
 ```
 
-### Preview
-
-```bash
-npm run preview
-```
-
-## Usage
-
-1. **Add Mortgage Plans**: Enter the initial amount, annual rate (%), term in months, and start date (MM/YYYY format)
-2. **Add Extra Payments**: Schedule extra payments for specific months, choosing to either reduce the term or reduce future monthly payments
-3. **View Amortization Table**: See the complete month-by-month breakdown of all plans
-4. **Review Summary**: Compare total payments, interest, and savings with/without extra payments
-
-## Project Structure
-
-```
-mortgage-manager/
-├── src/
-│   ├── components/
-│   │   ├── ui/          # shadcn/ui components
-│   │   ├── MortgageForm.tsx
-│   │   ├── ExtraPaymentsForm.tsx
-│   │   ├── AmortizationTable.tsx
-│   │   └── MortgageSummary.tsx
-│   ├── hooks/
-│   │   └── useMortgage.ts    # Amortization calculation logic
-│   ├── types/
-│   │   └── index.ts          # TypeScript type definitions
-│   ├── lib/
-│   │   └── utils.ts          # Utility functions
-│   ├── App.tsx
-│   ├── main.tsx
-│   └── index.css
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── tailwind.config.js
-```
-
 ## Calculation Details
 
-The application uses the standard PMT (Payment) formula for mortgage calculations:
+The application uses standard financial formulas extended for Israeli mortgage specifics (CPI linkage, Grace periods):
 
+### PMT Formula
 ```
 PMT = P * [r(1+r)^n] / [(1+r)^n - 1]
 ```
-
 Where:
 - P = Principal amount
-- r = Monthly interest rate (annual rate / 100 / 12)
+- r = Monthly interest rate
 - n = Number of payments
 
-Extra payments can be applied in two ways:
-- **Reduce Term**: Extra payment reduces principal, shortening the loan term
-- **Reduce Payment**: Extra payment reduces principal and recalculates the monthly payment for the remaining term
+### Extra Payments Strategies
+- **Reduce Term**: Extra payment reduces principal, shortening the loan term.
+- **Reduce Payment**: Extra payment reduces principal and recalculates the monthly payment for the remaining term.
