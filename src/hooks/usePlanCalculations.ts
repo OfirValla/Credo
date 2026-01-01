@@ -3,6 +3,7 @@ import { Plan, ExtraPayment, AmortizationRow, RateChange, GracePeriod } from '@/
 import { CurrencyCode } from '@/lib/currency';
 import { useCPI } from '@/hooks/useCPI';
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
+import { useTranslation } from 'react-i18next';
 
 export function usePlanCalculations(
   plans: Plan[],
@@ -12,6 +13,7 @@ export function usePlanCalculations(
   currency: CurrencyCode = 'USD'
 ): AmortizationRow[] {
   const cpiData = useCPI();
+  const { t } = useTranslation('portfolio-page');
 
   return useMemo(() => {
     return calculateAmortizationSchedule(
@@ -20,7 +22,8 @@ export function usePlanCalculations(
       rateChanges,
       gracePeriods,
       currency,
-      cpiData
+      cpiData,
+      t
     );
-  }, [plans, extraPayments, rateChanges, gracePeriods, currency, cpiData]);
+  }, [plans, extraPayments, rateChanges, gracePeriods, currency, cpiData, t]);
 }

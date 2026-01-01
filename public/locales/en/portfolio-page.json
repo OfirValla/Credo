@@ -201,5 +201,15 @@
         "CNY": "Chinese Yuan",
         "INR": "Indian Rupee",
         "BRL": "Brazilian Real"
+    },
+    "tags": {
+        "grace": {
+            "interestOnly": "Grace: Interest Only",
+            "capitalized": "Grace: Capitalized",
+            "taken": "Taken (Interest Accrual)"
+        },
+        "extra": "Extra: {{amount}}",
+        "rate": "Rate: {{rate}}%",
+        "cpi": "CPI: {{amount}}"
     }
 }

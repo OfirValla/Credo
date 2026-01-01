@@ -1,6 +1,7 @@
 import { Plan, ExtraPayment, AmortizationRow, RateChange, RowTag, GracePeriod } from '@/types';
 import { parseDateToMonthIndex } from '@/lib/planUtils';
 import { formatCurrency, CurrencyCode } from '@/lib/currency';
+import { TFunction } from 'i18next';
 
 // --- Types ---
 
@@ -21,6 +22,7 @@ export interface CalculationContext {
     gracePeriods: GracePeriod[];
     cpiData: any; // Type based on your CPI service
     currency: CurrencyCode;
+    t?: TFunction;
 }
 
 // --- Helper Functions ---
@@ -249,21 +251,34 @@ function generateRowTags(
     linkageAmount: number,
     activeGracePeriod: GracePeriod | undefined,
     isGracePeriod: boolean,
-    currency: CurrencyCode
+    currency: CurrencyCode,
+    t?: TFunction
 ): RowTag[] {
     const tags: RowTag[] = [];
+
+    // Fallback if t is not provided (should not happen if hooked up correctly)
+    const _t = t || ((key: string, options?: any) => {
+        // Very basic fallback
+        if (key === 'tags.grace.interestOnly') return 'Grace: Interest Only';
+        if (key === 'tags.grace.capitalized') return 'Grace: Capitalized';
+        if (key === 'tags.grace.taken') return 'Taken (Interest Accrual)';
+        if (key === 'tags.extra') return `Extra: ${options?.amount}`;
+        if (key === 'tags.rate') return `Rate: ${options?.rate}%`;
+        if (key === 'tags.cpi') return `CPI: ${options?.amount}`;
+        return key;
+    });
 
     if (isGracePeriod) {
         if (activeGracePeriod) {
             tags.push({
                 type: 'grace-period',
-                label: activeGracePeriod.type === 'interestOnly' ? 'Grace: Interest Only' : 'Grace: Capitalized',
+                label: activeGracePeriod.type === 'interestOnly' ? _t('tags.grace.interestOnly') : _t('tags.grace.capitalized'),
                 color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
             });
         } else {
             tags.push({
                 type: 'grace-period',
-                label: state.plan.gracePeriodType === 'interestOnly' ? 'Interest Only' : 'Taken (Interest Accrual)',
+                label: state.plan.gracePeriodType === 'interestOnly' ? _t('tags.grace.interestOnly') : _t('tags.grace.taken'),
                 color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
             });
         }
@@ -272,14 +287,14 @@ function generateRowTags(
     if (extraPayment > 0) {
         tags.push({
             type: 'extra-payment',
-            label: `Extra: ${formatCurrency(extraPayment, currency)}`,
+            label: _t('tags.extra', { amount: formatCurrency(extraPayment, currency) }),
         });
     }
 
     if (rateChange) {
         tags.push({
             type: 'rate-change',
-            label: `Rate: ${rateChange.newAnnualRate}%`,
+            label: _t('tags.rate', { rate: rateChange.newAnnualRate }),
             color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
         });
     }
@@ -287,7 +302,7 @@ function generateRowTags(
     if (linkageAmount !== 0) {
         tags.push({
             type: 'rate-change',
-            label: `CPI: ${linkageAmount > 0 ? '+' : ''}${formatCurrency(linkageAmount, currency)}`,
+            label: _t('tags.cpi', { amount: `${linkageAmount > 0 ? '+' : ''}${formatCurrency(linkageAmount, currency)}` }),
             color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
         });
     }
@@ -423,7 +438,8 @@ function processPlanMonth(
         cpiAdj.linkageDiff,
         activeGracePeriod,
         isGracePeriod,
-        ctx.currency
+        ctx.currency,
+        ctx.t
     );
 
     return {
@@ -447,7 +463,8 @@ export function calculateAmortizationSchedule(
     rateChanges: RateChange[],
     gracePeriods: GracePeriod[],
     currency: CurrencyCode,
-    cpiData: any
+    cpiData: any,
+    t?: TFunction
 ): AmortizationRow[] {
     // 0. Filter Enabled
     const enabledPlans = plans.filter(p => p.enabled);
@@ -464,7 +481,8 @@ export function calculateAmortizationSchedule(
         rateChanges: enabledRates,
         gracePeriods: enabledGrace,
         cpiData,
-        currency
+        currency,
+        t
     };
 
     // 1. Initialize
