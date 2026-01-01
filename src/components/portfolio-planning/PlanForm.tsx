@@ -115,7 +115,7 @@ export function PlanForm() {
             <Home className="w-6 h-6 text-white" />
           </div>
           <div>
-            <CardTitle className="text-xl font-bold">
+            <CardTitle className="text-lg font-semibold">
               {editingId ? 'Edit Plan' : 'Plans'}
             </CardTitle>
             <CardDescription>

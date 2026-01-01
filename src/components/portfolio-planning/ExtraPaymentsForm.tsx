@@ -90,7 +90,7 @@ export function ExtraPaymentsForm() {
             <Wallet className="w-6 h-6 text-white" />
           </div>
           <div>
-            <CardTitle className="text-xl font-bold">
+            <CardTitle className="text-lg font-semibold">
               {editingId ? 'Edit Extra Payment' : 'Extra Payments'}
             </CardTitle>
             <CardDescription>

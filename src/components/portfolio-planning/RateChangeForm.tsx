@@ -90,7 +90,7 @@ export function RateChangeForm() {
             <TrendingUp className="w-6 h-6 text-white" />
           </div>
           <div>
-            <CardTitle className="text-xl font-bold">
+            <CardTitle className="text-lg font-semibold">
               {editingId ? 'Edit Rate Change' : 'Interest Rate Changes'}
             </CardTitle>
             <CardDescription>
