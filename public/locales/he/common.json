@@ -11,6 +11,12 @@
     "language": {
         "label": "שפה"
     },
+    "mortgage": "משכנתא",
+    "loan": "הלוואה",
+    "cancel": "ביטול",
+    "create": "צור",
+    "save": "שמור",
+    "update": "עדכן",
     "exportAll": "ייצוא כל התיקים",
     "import": {
         "all": "ייבוא כל התיקים",

@@ -21,10 +21,13 @@ import {
 import { cn } from '@/lib/utils';
 import { usePlans } from '@/context/PlanProvider';
 import { SlidingSelect } from './ui/sliding-select';
+import { useTranslation } from 'react-i18next';
+
 
 type ViewMode = 'monthly' | 'yearly';
 
 export function AmortizationTable() {
+  const { t } = useTranslation('portfolio-page');
   const { plans: allPlans, amortizationRows: rows, currency } = usePlans();
   const plans = allPlans.filter(p => p.enabled !== false);
 
@@ -59,13 +62,13 @@ export function AmortizationTable() {
 
     // Define headers
     const headers = [
-      viewMode === 'monthly' ? 'Month' : 'Year',
-      'Plan',
-      'Starting Balance',
-      'Payment',
-      'Principal',
-      'Interest',
-      'Ending Balance',
+      viewMode === 'monthly' ? t('table.headers.month') : t('table.headers.year'),
+      t('table.headers.plan'),
+      t('table.headers.startingBalance'),
+      t('table.headers.payment'),
+      t('table.headers.principal'),
+      t('table.headers.interest'),
+      t('table.headers.endingBalance'),
       'Tags'
     ];
 
@@ -170,11 +173,11 @@ export function AmortizationTable() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-semibold">
             <Table2 className="w-5 h-5 text-primary" />
-            Amortization Table
+            {t('table.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-8 text-center text-muted-foreground">
-          Add a mortgage plan to see the amortization table.
+          {t('table.empty')}
         </CardContent>
       </Card>
     );
@@ -207,8 +210,8 @@ export function AmortizationTable() {
                 <Table2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <CardTitle className="text-lg font-semibold">Amortization Table</CardTitle>
-                <CardDescription>Detailed payment schedule</CardDescription>
+                <CardTitle className="text-lg font-semibold">{t('table.title')}</CardTitle>
+                <CardDescription>{t('table.description')}</CardDescription>
               </div>
             </div>
 
@@ -218,8 +221,8 @@ export function AmortizationTable() {
                 value={viewMode}
                 onValueChange={(e) => setViewMode(e as ViewMode)}
                 options={[
-                  { value: 'monthly', label: 'Monthly' },
-                  { value: 'yearly', label: 'Yearly' },
+                  { value: 'monthly', label: t('table.monthly') },
+                  { value: 'yearly', label: t('table.yearly') },
                 ]}
                 color="bg-primary"
                 textColor="text-primary-foreground"
@@ -233,7 +236,7 @@ export function AmortizationTable() {
                 disabled={displayedRows.length === 0}
               >
                 <Download className="mr-2 h-4 w-4" />
-                Export CSV
+                {t('table.exportCSV')}
               </Button>
 
               {/* Plan Filter */}
@@ -241,7 +244,7 @@ export function AmortizationTable() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="sm" className="h-9 border-dashed">
                     <Filter className="mr-2 h-4 w-4" />
-                    Filter Plans
+                    {t('table.filter')}
                     {selectedPlanIds.length > 0 && (
                       <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary">
                         {selectedPlanIds.length}
@@ -274,7 +277,7 @@ export function AmortizationTable() {
                     ))}
                     {plans.length === 0 && (
                       <div className="p-2 text-sm text-muted-foreground text-center">
-                        No plans available
+                        {t('table.noPlans')}
                       </div>
                     )}
                   </div>
@@ -286,7 +289,7 @@ export function AmortizationTable() {
                 size="icon"
                 className="h-9 w-9"
                 onClick={() => setIsZoomed(!isZoomed)}
-                title={isZoomed ? "Zoom Out" : "Zoom In"}
+                title={isZoomed ? t('table.zoomOut') : t('table.zoomIn')}
               >
                 {isZoomed ? (
                   <Minimize2 className="h-4 w-4" />
@@ -301,20 +304,20 @@ export function AmortizationTable() {
               <table className="w-full caption-bottom text-sm table-fixed">
                 <TableHeader className="sticky top-0 bg-background z-20 shadow-sm" ref={tableHeaderRef}>
                   <TableRow className="border-border/50 hover:bg-transparent">
-                    <TableHead className="w-[100px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{viewMode === 'monthly' ? 'Month' : 'Year'}</TableHead>
-                    <TableHead className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">Plan</TableHead>
-                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">Starting Balance</TableHead>
-                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">Payment</TableHead>
-                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">Principal</TableHead>
-                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">Interest</TableHead>
-                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">Ending Balance</TableHead>
+                    <TableHead className="w-[100px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{viewMode === 'monthly' ? t('table.headers.month') : t('table.headers.year')}</TableHead>
+                    <TableHead className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.plan')}</TableHead>
+                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.startingBalance')}</TableHead>
+                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.payment')}</TableHead>
+                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.principal')}</TableHead>
+                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.interest')}</TableHead>
+                    <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.endingBalance')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {displayedRows.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
-                        No data to display.
+                        {t('table.noData')}
                       </TableCell>
                     </TableRow>
                   ) : (

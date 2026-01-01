@@ -1,0 +1,31 @@
+{
+    "title": "Dashboard",
+    "subtitle": "Overview of all your portfolios",
+    "createPortfolio": "Create New Portfolio",
+    "create-modal": {
+        "title": "Create New Portfolio",
+        "nameLabel": "Portfolio Name",
+        "namePlaceholder": "My awesome portfolio...",
+        "typeLabel": "Type"
+    },
+    "stats": {
+        "totalBalance": "Total Balance",
+        "totalBalanceDesc": "Outstanding principal across all portfolios",
+        "monthlyPayment": "Monthly Payment",
+        "monthlyPaymentDesc": "Combined monthly liability",
+        "activePortfolios": "Active Portfolios",
+        "activePortfoliosDesc": "Total managed portfolios",
+        "avgPayment": "Avg. Payment",
+        "avgPaymentDesc": "Per portfolio"
+    },
+    "charts": {
+        "balanceDistribution": "Balance Distribution",
+        "monthlyPayments": "Monthly Payments"
+    },
+    "card": {
+        "balance": "Balance",
+        "monthly": "Monthly",
+        "remainingBalance": "Remaining Balance",
+        "activePlans": "{{count}} active plans"
+    }
+}

@@ -8,6 +8,8 @@ import { Modal } from '@/components/ui/modal';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { PortfolioType } from '@/types';
+import { useTranslation } from 'react-i18next';
+
 
 interface PortfolioCreationModalProps {
     isOpen: boolean;
@@ -16,6 +18,7 @@ interface PortfolioCreationModalProps {
 }
 
 export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioCreationModalProps) {
+    const { t } = useTranslation(['dashboard', 'common']);
     const [name, setName] = useState('');
     const [type, setType] = useState<PortfolioType>(PortfolioType.MORTGAGE);
     const [color, setColor] = useState(PORTFOLIO_COLORS[0]);
@@ -42,12 +45,12 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
     };
 
     return (
-        <Modal title="Create New Portfolio" isOpen={isOpen} onClose={handleClose}>
+        <Modal title={t('create-modal.title')} isOpen={isOpen} onClose={handleClose}>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Portfolio Name</label>
+                    <label className="text-sm font-medium">{t('create-modal.nameLabel')}</label>
                     <Input
-                        placeholder="My awesome portfolio..."
+                        placeholder={t('create-modal.namePlaceholder')}
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         autoFocus
@@ -55,13 +58,13 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Type</label>
+                    <label className="text-sm font-medium">{t('create-modal.typeLabel')}</label>
                     <SlidingSelect
                         value={type}
                         onValueChange={(v) => setType(v as PortfolioType)}
                         options={[
-                            { value: PortfolioType.MORTGAGE, label: 'Mortgage' },
-                            { value: PortfolioType.LOAN, label: 'Loan' }
+                            { value: PortfolioType.MORTGAGE, label: t('mortgage', { ns: 'common' }) },
+                            { value: PortfolioType.LOAN, label: t('loan', { ns: 'common' }) }
                         ]}
                         color="bg-primary"
                         textColor="text-primary-foreground"
@@ -69,7 +72,7 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Color</label>
+                    <label className="text-sm font-medium">{t('sidebar.color', { ns: 'common' })}</label>
                     <div className="grid grid-cols-9 gap-2">
                         {PORTFOLIO_COLORS.map((c) => (
                             <div
@@ -86,7 +89,7 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Icon</label>
+                    <label className="text-sm font-medium">{t('sidebar.icon', { ns: 'common' })}</label>
                     <div className="grid grid-cols-8 gap-2">
                         {PORTFOLIO_ICONS.map(({ name: iconName, icon: Icon }) => (
                             <div
@@ -105,10 +108,10 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
 
                 <div className="flex justify-end gap-2 pt-2">
                     <Button type="button" variant="outline" onClick={handleClose}>
-                        Cancel
+                        {t('cancel', { ns: 'common' })}
                     </Button>
                     <Button type="submit" disabled={!name.trim()}>
-                        Create Portfolio
+                        {t('createPortfolio')}
                     </Button>
                 </div>
             </form>

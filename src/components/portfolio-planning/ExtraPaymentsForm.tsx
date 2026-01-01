@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, Calendar, DollarSign, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { ExtraPayment, ExtraPaymentType } from '@/types';
@@ -52,7 +53,7 @@ export function ExtraPaymentsForm() {
 
     const dateRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
     if (!dateRegex.test(month)) {
-      alert('Month must be in MM/YYYY format (e.g., 01/2024)');
+      toast.error('Month must be in MM/YYYY format (e.g., 01/2024)');
       return;
     }
 

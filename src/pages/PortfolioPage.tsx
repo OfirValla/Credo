@@ -19,7 +19,7 @@ import { PortfolioType } from '@/types';
 
 export function PortfolioPage() {
     const { type, portfolioId } = useParams<{ type: string, portfolioId: string }>();
-    const currentPortfolio = useCurrentPortfolio(portfolioId);
+    const currentPortfolio = useCurrentPortfolio();
     const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
     const amortizationSchedule = usePlanCalculations(plans, extraPayments, rateChanges, gracePeriods, currency);
 

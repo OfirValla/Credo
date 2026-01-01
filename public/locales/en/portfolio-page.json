@@ -1,3 +1,62 @@
 {
-    "currency": "Currency"
+    "currency": "Currency",
+    "exportButton": "Export",
+    "importButton": "Import",
+    "table": {
+        "title": "Amortization Table",
+        "description": "Detailed payment schedule",
+        "empty": "Add a mortgage plan to see the amortization table.",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "exportCSV": "Export CSV",
+        "filter": "Filter Plans",
+        "noPlans": "No plans available",
+        "zoomOut": "Zoom Out",
+        "zoomIn": "Zoom In",
+        "headers": {
+            "month": "Month",
+            "year": "Year",
+            "plan": "Plan",
+            "startingBalance": "Starting Balance",
+            "payment": "Payment",
+            "principal": "Principal",
+            "interest": "Interest",
+            "endingBalance": "Ending Balance"
+        },
+        "noData": "No data to display."
+    },
+    "status": {
+        "title": "Portfolio Status",
+        "description": "Current standing of active plans",
+        "empty": "Add a plan to see the summary.",
+        "paid": "Paid",
+        "balance": "Balance",
+        "rate": "Rate",
+        "remaining": "Remaining",
+        "months": "months",
+        "costPerUnit": "Cost / Unit"
+    },
+    "summary": {
+        "title": "Portfolio Summary",
+        "description": "Complete lifecycle overview",
+        "empty": "Add a plan to see the summary.",
+        "principal": "Principal",
+        "interest": "Interest",
+        "totalPrincipal": "Total Principal",
+        "totalInterest": "Total Interest",
+        "totalPayments": "Total Payments",
+        "duration": "Duration",
+        "monthUnit": "mo",
+        "activePlans": "Active Plans",
+        "extraPayments": "Extra Payments"
+    },
+    "preview": {
+        "title": "Current Month Preview",
+        "empty": "Add a mortgage plan to see the current month preview.",
+        "totalPayment": "Total Payment",
+        "principal": "Principal",
+        "interest": "Interest",
+        "nextPayment": "Next Payment",
+        "remainingBalance": "Remaining Balance"
+    }
 }

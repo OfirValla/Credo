@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { LoanType, Plan } from '@/types';
@@ -70,7 +71,7 @@ export function PlanForm() {
 
     const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
     if (!dateRegex.test(takenDate) || !dateRegex.test(firstPaymentDate) || !dateRegex.test(lastPaymentDate)) {
-      alert('Dates must be in DD/MM/YYYY format (e.g., 01/01/2024)');
+      toast.error('Dates must be in DD/MM/YYYY format (e.g., 01/01/2024)');
       return;
     }
 

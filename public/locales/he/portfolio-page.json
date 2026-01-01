@@ -1,3 +1,62 @@
 {
-    "currency": "מטבע"
+    "currency": "מטבע",
+    "exportButton": "ייצוא",
+    "importButton": "ייבוא",
+    "table": {
+        "title": "לוח סילוקין",
+        "description": "לוח תשלומים מפורט",
+        "empty": "הוסף תוכנית משכנתא כדי לראות את לוח הסילוקין.",
+        "monthly": "חודשי",
+        "yearly": "שנתי",
+        "exportCSV": "ייצוא CSV",
+        "filter": "סינון תוכניות",
+        "noPlans": "אין תוכניות זמינות",
+        "zoomOut": "הקטן תצוגה",
+        "zoomIn": "הגדל תצוגה",
+        "headers": {
+            "month": "חודש",
+            "year": "שנה",
+            "plan": "תוכנית",
+            "startingBalance": "יתרת פתיחה",
+            "payment": "תשלום",
+            "principal": "קרן",
+            "interest": "ריבית",
+            "endingBalance": "יתרת סגירה"
+        },
+        "noData": "אין נתונים להצגה."
+    },
+    "status": {
+        "title": "סטטוס תיק",
+        "description": "מצב נוכחי של תוכניות פעילות",
+        "empty": "הוסף תוכנית כדי לראות את הסיכום.",
+        "paid": "שולם",
+        "balance": "יתרה",
+        "rate": "ריבית",
+        "remaining": "נותרו",
+        "months": "חודשים",
+        "costPerUnit": "עלות / יחידה"
+    },
+    "summary": {
+        "title": "סיכום תיק",
+        "description": "סקירה מלאה של מחזור החיים",
+        "empty": "הוסף תוכנית כדי לראות את הסיכום.",
+        "principal": "קרן",
+        "interest": "ריבית",
+        "totalPrincipal": "סך הקרן",
+        "totalInterest": "סך הריבית",
+        "totalPayments": "סך התשלומים",
+        "duration": "משך זמן",
+        "monthUnit": "חודשים",
+        "activePlans": "תוכניות פעילות",
+        "extraPayments": "תשלומים נוספים"
+    },
+    "preview": {
+        "title": "תצוגה מקדימה לחודש הנוכחי",
+        "empty": "הוסף תוכנית משכנתא לתצוגה מקדימה.",
+        "totalPayment": "סך תשלום",
+        "principal": "קרן",
+        "interest": "ריבית",
+        "nextPayment": "תשלום הבא",
+        "remainingBalance": "יתרה נותרת"
+    }
 }

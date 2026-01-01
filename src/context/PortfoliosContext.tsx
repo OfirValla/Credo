@@ -116,16 +116,12 @@ export function usePortfolios() {
     return context;
 }
 
-export function useCurrentPortfolio(portfolioId: string | undefined) {
+export function useCurrentPortfolio() {
     const context = useContext(PortfoliosContext);
     if (context === undefined) {
         throw new Error('useCurrentPortfolio must be used within a PortfoliosProvider');
     }
-    const { setCurrentPortfolioId, portfolios } = context;
+    const { currentPortfolioId, portfolios } = context;
 
-    if (!portfolioId)
-        return null;
-
-    setCurrentPortfolioId(portfolioId);
-    return portfolios.find(p => p.id === portfolioId)!;
+    return portfolios.find(p => p.id === currentPortfolioId)!;
 }

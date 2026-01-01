@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { toast } from 'react-toastify';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -33,10 +34,10 @@ export const ImportAll: React.FC = () => {
           localStorage.setItem(`${id}-currency`, JSON.stringify(portfolio.currency));
         });
 
-        alert(t('import.success'));
+        toast.success(t('import.success'));
       } catch (error) {
         console.error('Import error:', error);
-        alert(t('import.error'));
+        toast.error(t('import.error'));
       } finally {
         // Reset input
         if (fileInputRef.current) {

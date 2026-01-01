@@ -26,6 +26,7 @@ import { PortfolioCreationModal } from './modals/PortfolioCreationModal';
 import { PortfolioType } from '@/types';
 import { SettingsModal } from './modals/SettingsModal';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 enum ModalType {
     PORTFOLIO_CREATION,
@@ -91,7 +92,7 @@ export function Sidebar() {
 
             } catch (error) {
                 console.error("Failed to import portfolio", error);
-                alert(t('import.error'));
+                toast.error(t('import.error'));
             }
         };
         reader.readAsText(file);
@@ -334,7 +335,7 @@ export function Sidebar() {
                                                                     variant="ghost"
                                                                     className="h-6 w-6 text-destructive hover:text-destructive"
                                                                     onClick={() => {
-                                                                        if (confirm(`Delete portfolio "${portfolio.name}"?`)) {
+                                                                        if (confirm(t('sidebar.deleteConfirm', { name: portfolio.name }))) {
                                                                             const isCurrent = currentPortfolioId === portfolio.id;
                                                                             removePortfolio(portfolio.id);
                                                                             if (isCurrent) {

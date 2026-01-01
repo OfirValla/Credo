@@ -11,6 +11,12 @@
     "language": {
         "label": "Language"
     },
+    "cancel": "Cancel",
+    "create": "Create",
+    "save": "Save",
+    "update": "Update",
+    "mortgage": "Mortgage",
+    "loan": "Loan",
     "exportAll": "Export all portfolios",
     "import": {
         "all": "Import all portfolios",

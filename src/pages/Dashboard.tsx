@@ -9,7 +9,10 @@ import { PortfolioCreationModal } from '@/components/modals/PortfolioCreationMod
 import { useNavigate } from 'react-router';
 import { PortfolioType } from '@/types';
 
+import { useTranslation } from 'react-i18next';
+
 export function Dashboard() {
+    const { t } = useTranslation('dashboard');
     const { portfolios, addPortfolio, setCurrentPortfolioId } = usePortfolios();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
@@ -41,10 +44,10 @@ export function Dashboard() {
                         </div>
                         <div>
                             <h1 className="text-4xl font-bold tracking-tight text-gradient">
-                                Dashboard
+                                {t('title')}
                             </h1>
                             <p className="text-muted-foreground mt-1">
-                                Overview of all your portfolios
+                                {t('subtitle')}
                             </p>
                         </div>
                     </div>
@@ -78,7 +81,7 @@ export function Dashboard() {
                         <div className="p-4 rounded-full bg-secondary">
                             <Plus className="w-6 h-6" />
                         </div>
-                        <span className="text-lg font-medium">Create New Portfolio</span>
+                        <span className="text-lg font-medium">{t('createPortfolio')}</span>
                     </Button>
                 </motion.div>
             </div>

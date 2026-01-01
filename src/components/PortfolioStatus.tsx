@@ -6,7 +6,11 @@ import { getPlanDisplayName, parseDateToMonthIndex } from '@/lib/planUtils';
 import { usePlans } from '@/context/PlanProvider';
 
 
+import { useTranslation } from 'react-i18next';
+
+
 export function PortfolioStatus() {
+    const { t } = useTranslation('portfolio-page');
     const { plans, amortizationRows: rows, currency } = usePlans();
 
     const statusData = useMemo(() => {
@@ -95,12 +99,12 @@ export function PortfolioStatus() {
                         <Activity className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div>
-                        <CardTitle className="text-lg font-semibold">Portfolio Status</CardTitle>
-                        <CardDescription>Current standing of active plans</CardDescription>
+                        <CardTitle className="text-lg font-semibold">{t('status.title')}</CardTitle>
+                        <CardDescription>{t('status.description')}</CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent className="p-8 text-center text-muted-foreground">
-                    Add a plan to see the summary.
+                    {t('status.empty')}
                 </CardContent>
             </Card>
         )
@@ -113,8 +117,8 @@ export function PortfolioStatus() {
                     <Activity className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                    <CardTitle className="text-lg font-semibold">Portfolio Status</CardTitle>
-                    <CardDescription>Current standing of active plans</CardDescription>
+                    <CardTitle className="text-lg font-semibold">{t('status.title')}</CardTitle>
+                    <CardDescription>{t('status.description')}</CardDescription>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6 pt-0">
@@ -127,7 +131,7 @@ export function PortfolioStatus() {
                                     <span className="font-medium">{getPlanDisplayName(plan, currency)}</span>
                                 </div>
                                 <span className="text-sm font-medium text-muted-foreground">
-                                    {plan.progress.toFixed(1)}% Paid
+                                    {plan.progress.toFixed(1)}% {t('status.paid')}
                                 </span>
                             </div>
 
@@ -140,10 +144,10 @@ export function PortfolioStatus() {
                             </div>
 
                             <div className="grid grid-cols-3 sm:grid-cols-2 gap-4 text-sm">
-                                <PlanInfo title="Balance" data={formatCurrency(plan.currentBalance, currency)} />
-                                <PlanInfo title="Rate" data={`${plan.currentRate.toFixed(2)}% `} />
-                                <PlanInfo title="Remaining" data={`${plan.remainingMonths} months`} />
-                                <PlanInfo title="Cost / Unit" data={formatCurrency(plan.costPerUnit, currency)} />
+                                <PlanInfo title={t('status.balance')} data={formatCurrency(plan.currentBalance, currency)} />
+                                <PlanInfo title={t('status.rate')} data={`${plan.currentRate.toFixed(2)}% `} />
+                                <PlanInfo title={t('status.remaining')} data={`${plan.remainingMonths} ${t('status.months')}`} />
+                                <PlanInfo title={t('status.costPerUnit')} data={formatCurrency(plan.costPerUnit, currency)} />
                             </div>
                         </div>
                     ))

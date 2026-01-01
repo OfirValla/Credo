@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 export const PortfolioExport: React.FC = () => {
+  const { t } = useTranslation('portfolio-page');
   const { plans, extraPayments, rateChanges, gracePeriods, currency } = usePlans();
   const { portfolios, currentPortfolioId } = usePortfolios();
 
@@ -50,7 +52,7 @@ export const PortfolioExport: React.FC = () => {
       className="bg-background/50 backdrop-blur-sm border-primary/20 hover:bg-primary/10 gap-2"
     >
       <Download className="h-4 w-4" />
-      Export
+      {t('exportButton')}
     </Button>
   );
 };

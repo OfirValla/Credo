@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Calendar, Percent, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { RateChange } from '@/types';
@@ -46,14 +47,14 @@ export function RateChangeForm() {
     // Validate date format (MM/YYYY)
     const dateRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
     if (!dateRegex.test(month)) {
-      alert('Month must be in MM/YYYY format (e.g., 01/2024)');
+      toast.error('Month must be in MM/YYYY format (e.g., 01/2024)');
       return;
     }
 
     // Validate rate
     const rate = parseFloat(newAnnualRate);
     if (isNaN(rate) || rate < 0 || rate > 100) {
-      alert('Annual rate must be a number between 0 and 100');
+      toast.error('Annual rate must be a number between 0 and 100');
       return;
     }
 

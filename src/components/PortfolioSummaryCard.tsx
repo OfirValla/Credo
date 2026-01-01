@@ -10,6 +10,7 @@ import { useCPI } from '@/hooks/useCPI';
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 interface PortfolioSummaryCardProps {
     portfolio: Portfolio;
@@ -17,6 +18,7 @@ interface PortfolioSummaryCardProps {
 
 export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
     const { setCurrentPortfolioId } = usePortfolios();
+    const { t } = useTranslation('dashboard');
     const cpiData = useCPI();
 
     // Load portfolio specific data
@@ -121,7 +123,7 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
                         <div className="flex justify-between items-center p-3 bg-secondary/30 rounded-lg">
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <Icons.DollarSign className="w-4 h-4" />
-                                <span className="text-sm">Balance</span>
+                                <span className="text-sm">{t('card.balance')}</span>
                             </div>
                             <span className="font-bold text-lg">{formatCurrency(summary.balance, currency)}</span>
                         </div>
@@ -129,7 +131,7 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
                         <div className="flex justify-between items-center p-3 bg-secondary/30 rounded-lg">
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <Icons.CreditCard className="w-4 h-4" />
-                                <span className="text-sm">Monthly</span>
+                                <span className="text-sm">{t('card.monthly')}</span>
                             </div>
                             <span className="font-bold text-lg">{formatCurrency(summary.monthlyPayment, currency)}</span>
                         </div>
@@ -137,14 +139,14 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
                         <div className="flex justify-between items-center p-3 bg-secondary/30 rounded-lg">
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <Icons.CreditCard className="w-4 h-4" />
-                                <span className="text-sm">Remaining Balance</span>
+                                <span className="text-sm">{t('card.remainingBalance')}</span>
                             </div>
                             <span className="font-bold text-lg">{formatCurrency(summary.remainingBalance, currency)}</span>
                         </div>
 
                         <div className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
                             <Icons.Building className="w-3 h-3" />
-                            {summary.planCount} active plans
+                            {t('card.activePlans', { count: summary.planCount })}
                         </div>
                     </div>
                 </CardContent>

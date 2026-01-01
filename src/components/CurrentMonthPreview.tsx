@@ -4,6 +4,7 @@ import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { usePlans } from '@/context/PlanProvider';
 import { parseDateToMonthIndex, parseMonth } from '@/lib/planUtils';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Get current month in MM/YYYY format
@@ -78,6 +79,7 @@ function compareMonths(month1: string, month2: string): number {
 }
 
 export function CurrentMonthPreview() {
+  const { t } = useTranslation('portfolio-page');
   const { plans: allPlans, amortizationRows: rows, currency } = usePlans();
   const plans = allPlans.filter(p => p.enabled !== false);
 
@@ -177,14 +179,14 @@ export function CurrentMonthPreview() {
               <CalendarDays className="w-6 h-6 text-white" />
             </div>
             <div>
-              <CardTitle className="text-lg font-semibold">Current Month Preview</CardTitle>
+              <CardTitle className="text-lg font-semibold">{t('preview.title')}</CardTitle>
               <CardDescription>{displayDate}</CardDescription>
             </div>
           </div>
           <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
         </CardHeader>
         <CardContent className="p-8 text-center text-muted-foreground">
-          Add a mortgage plan to see the current month preview.
+          {t('preview.empty')}
         </CardContent>
       </Card>
     );
@@ -198,7 +200,7 @@ export function CurrentMonthPreview() {
             <CalendarDays className="w-6 h-6 text-white" />
           </div>
           <div>
-            <CardTitle className="text-lg font-semibold">Current Month Preview</CardTitle>
+            <CardTitle className="text-lg font-semibold">{t('preview.title')}</CardTitle>
             <CardDescription>{displayDate}</CardDescription>
           </div>
         </div>
@@ -208,7 +210,7 @@ export function CurrentMonthPreview() {
         {
           plans.length === 0
             ? (
-              "Add a mortgage plan to see the current month preview."
+              t('preview.empty')
             )
             : (
               <>
@@ -219,7 +221,7 @@ export function CurrentMonthPreview() {
                     <div className="relative z-10">
                       <div className="flex items-center gap-2 mb-3 opacity-90">
                         <DollarSign className="w-4 h-4" />
-                        <span className="text-sm font-medium">Total Payment</span>
+                        <span className="text-sm font-medium">{t('preview.totalPayment')}</span>
                       </div>
                       <div className="text-2xl font-bold tracking-tight">
                         {formatCurrency(aggregatedData.totalPayment, currency)}
@@ -233,7 +235,7 @@ export function CurrentMonthPreview() {
                     <div className="relative z-10">
                       <div className="flex items-center gap-2 mb-3 opacity-90">
                         <TrendingUp className="w-4 h-4" />
-                        <span className="text-sm font-medium">Principal</span>
+                        <span className="text-sm font-medium">{t('preview.principal')}</span>
                       </div>
                       <div className="text-2xl font-bold tracking-tight">
                         {formatCurrency(aggregatedData.totalPrincipal, currency)}
@@ -247,7 +249,7 @@ export function CurrentMonthPreview() {
                     <div className="relative z-10">
                       <div className="flex items-center gap-2 mb-3 opacity-90">
                         <DollarSign className="w-4 h-4" />
-                        <span className="text-sm font-medium">Interest</span>
+                        <span className="text-sm font-medium">{t('preview.interest')}</span>
                       </div>
                       <div className="text-2xl font-bold tracking-tight">
                         {formatCurrency(aggregatedData.totalInterest, currency)}
@@ -261,7 +263,7 @@ export function CurrentMonthPreview() {
                     <div className="relative z-10">
                       <div className="flex items-center gap-2 mb-3 opacity-90">
                         <Calendar className="w-4 h-4" />
-                        <span className="text-sm font-medium">Next Payment</span>
+                        <span className="text-sm font-medium">{t('preview.nextPayment')}</span>
                       </div>
                       <div className="text-2xl font-bold tracking-tight">
                         {nextPaymentDate}
@@ -272,7 +274,7 @@ export function CurrentMonthPreview() {
 
                 {/* Footer - Remaining Balance */}
                 <div className="bg-secondary/5 rounded-xl p-4 flex items-center justify-between border border-border/50">
-                  <span className="text-sm font-medium text-muted-foreground">Remaining Balance</span>
+                  <span className="text-sm font-medium text-muted-foreground">{t('preview.remainingBalance')}</span>
                   <span className="text-xl font-bold text-foreground">
                     {formatCurrency(aggregatedData.totalRemainingBalance, currency)}
                   </span>

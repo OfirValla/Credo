@@ -4,8 +4,11 @@ import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { usePlans } from '@/context/PlanProvider';
 
+import { useTranslation } from 'react-i18next';
+
 
 export function PortfolioSummary() {
+  const { t } = useTranslation('portfolio-page');
   const { plans: allPlans, amortizationRows: rows, currency, extraPayments: allExtraPayments } = usePlans();
   const plans = allPlans.filter(p => p.enabled !== false);
   const extraPayments = allExtraPayments.filter(ep => ep.enabled !== false);
@@ -70,12 +73,12 @@ export function PortfolioSummary() {
             <PieChart className="w-6 h-6 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
-            <CardTitle className="text-lg font-semibold">Portfolio Summary</CardTitle>
-            <CardDescription>Complete lifecycle overview</CardDescription>
+            <CardTitle className="text-lg font-semibold">{t('summary.title')}</CardTitle>
+            <CardDescription>{t('summary.description')}</CardDescription>
           </div>
         </CardHeader>
         <CardContent className="p-8 text-center text-muted-foreground">
-          Add a plan to see the summary.
+          {t('summary.empty')}
         </CardContent>
       </Card>
     );
@@ -88,8 +91,8 @@ export function PortfolioSummary() {
           <PieChart className="w-6 h-6 text-purple-600 dark:text-purple-400" />
         </div>
         <div>
-          <CardTitle className="text-lg font-semibold">Portfolio Summary</CardTitle>
-          <CardDescription>Complete lifecycle overview</CardDescription>
+          <CardTitle className="text-lg font-semibold">{t('summary.title')}</CardTitle>
+          <CardDescription>{t('summary.description')}</CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-8 pt-0">
@@ -100,18 +103,18 @@ export function PortfolioSummary() {
               className="bg-blue-600 flex items-center justify-center transition-all duration-500 rounded-l-[0.5rem]"
               style={{ width: `${summary.principalPct}% ` }}
             >
-              Principal
+              {t('summary.principal')}
             </div>
             <div
               className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500 rounded-r-[0.5rem]"
               style={{ width: `${summary.interestPct}% ` }}
             >
-              Interest
+              {t('summary.interest')}
             </div>
           </div>
           <div className="flex justify-between text-xs text-muted-foreground px-1">
-            <span>Principal: {summary.principalPct.toFixed(1)}%</span>
-            <span>Interest: {summary.interestPct.toFixed(1)}%</span>
+            <span>{t('summary.principal')}: {summary.principalPct.toFixed(1)}%</span>
+            <span>{t('summary.interest')}: {summary.interestPct.toFixed(1)}%</span>
           </div>
         </div>
 
@@ -121,7 +124,7 @@ export function PortfolioSummary() {
           <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
               <DollarSign className="w-4 h-4" />
-              <span className="text-sm font-medium">Total Principal</span>
+              <span className="text-sm font-medium">{t('summary.totalPrincipal')}</span>
             </div>
             <div className="text-2xl font-bold text-foreground">
               {formatCurrency(summary.totalPrincipal, currency)}
@@ -132,7 +135,7 @@ export function PortfolioSummary() {
           <div className="bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-800 rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
               <TrendingUp className="w-4 h-4" />
-              <span className="text-sm font-medium">Total Interest</span>
+              <span className="text-sm font-medium">{t('summary.totalInterest')}</span>
             </div>
             <div className="text-2xl font-bold text-foreground">
               {formatCurrency(summary.totalInterest, currency)}
@@ -143,7 +146,7 @@ export function PortfolioSummary() {
           <div className="bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-800 rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
               <DollarSign className="w-4 h-4" />
-              <span className="text-sm font-medium">Total Payments</span>
+              <span className="text-sm font-medium">{t('summary.totalPayments')}</span>
             </div>
             <div className="text-2xl font-bold text-foreground">
               {formatCurrency(summary.totalPaid, currency)}
@@ -154,10 +157,10 @@ export function PortfolioSummary() {
           <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800 rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
               <Calendar className="w-4 h-4" />
-              <span className="text-sm font-medium">Duration</span>
+              <span className="text-sm font-medium">{t('summary.duration')}</span>
             </div>
             <div className="text-2xl font-bold text-foreground">
-              {summary.durationMonths} mo
+              {summary.durationMonths} {t('summary.monthUnit')}
             </div>
           </div>
         </div>
@@ -167,14 +170,14 @@ export function PortfolioSummary() {
           <div className="bg-secondary/20 rounded-lg p-3 flex justify-between items-center">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Layers className="w-4 h-4" />
-              <span>Active Plans</span>
+              <span>{t('summary.activePlans')}</span>
             </div>
             <span className="font-bold">{plans.length}</span>
           </div>
           <div className="bg-secondary/20 rounded-lg p-3 flex justify-between items-center">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <CreditCard className="w-4 h-4" />
-              <span>Extra Payments</span>
+              <span>{t('summary.extraPayments')}</span>
             </div>
             <span className="font-bold">{extraPayments.filter(extra => extra.enabled).length}</span>
           </div>

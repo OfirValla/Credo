@@ -1,11 +1,15 @@
 import React, { useRef } from 'react';
+import { toast } from 'react-toastify';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePlans } from '@/context/PlanProvider';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio, ExtraPayment, GracePeriod, Plan, RateChange } from '@/types';
+import { useTranslation } from 'react-i18next';
+
 
 export const PortfolioImport: React.FC = () => {
+    const { t } = useTranslation(['portfolio-page', 'common']);
     const { importData } = usePlans();
     const { updatePortfolio, currentPortfolioId } = usePortfolios();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -43,10 +47,10 @@ export const PortfolioImport: React.FC = () => {
                 if (data.portfolio)
                     updatePortfolio(currentPortfolioId, data.portfolio);
 
-                alert('Data imported successfully!');
+                toast.success(t('import.success', { ns: 'common' }));
             } catch (error) {
                 console.error('Import error:', error);
-                alert('Failed to import data. Please check the file format.');
+                toast.error(t('import.error', { ns: 'common' }));
             } finally {
                 // Reset input
                 if (fileInputRef.current) {
@@ -73,11 +77,11 @@ export const PortfolioImport: React.FC = () => {
             <Button
                 variant="outline"
                 onClick={handleButtonClick}
-                title="Import Data"
+                title={t('import.buttonTitle', { ns: 'common' })}
                 className="bg-background/50 backdrop-blur-sm border-primary/20 hover:bg-primary/10 gap-2"
             >
                 <Upload className="h-4 w-4" />
-                Import
+                {t('importButton')}
             </Button>
         </>
     );

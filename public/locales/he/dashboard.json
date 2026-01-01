@@ -1,0 +1,31 @@
+{
+    "title": "לוח בקרה",
+    "subtitle": "סקירה כללית של כל התיקים שלך",
+    "createPortfolio": "צור תיק חדש",
+    "create-modal": {
+        "title": "צור תיק חדש",
+        "nameLabel": "שם התיק",
+        "namePlaceholder": "התיק המדהים שלי...",
+        "typeLabel": "סוג"
+    },
+    "stats": {
+        "totalBalance": "יתרה כוללת",
+        "totalBalanceDesc": "יתרת קרן בכל התיקים",
+        "monthlyPayment": "תשלום חודשי",
+        "monthlyPaymentDesc": "התחייבות חודשית כוללת",
+        "activePortfolios": "תיקים פעילים",
+        "activePortfoliosDesc": "סך התיקים המנוהלים",
+        "avgPayment": "תשלום ממוצע",
+        "avgPaymentDesc": "לכל תיק"
+    },
+    "charts": {
+        "balanceDistribution": "התפלגות יתרות",
+        "monthlyPayments": "תשלומים חודשיים"
+    },
+    "card": {
+        "balance": "יתרה",
+        "monthly": "חודשי",
+        "remainingBalance": "יתרה נותרת",
+        "activePlans": "{{count}} תוכניות פעילות"
+    }
+}

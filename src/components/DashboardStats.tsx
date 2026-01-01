@@ -9,7 +9,10 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Coins, CreditCard, Building, Wallet } from 'lucide-react';
 
+import { useTranslation } from 'react-i18next';
+
 export function DashboardStats() {
+    const { t } = useTranslation('dashboard');
     const { portfolios } = usePortfolios();
     const cpiData = useCPI();
 
@@ -58,12 +61,12 @@ export function DashboardStats() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                     <Card gradient>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
+                            <CardTitle className="text-sm font-medium">{t('stats.totalBalance')}</CardTitle>
                             <Coins className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{formatCurrency(data.totalBalance, 'ILS')}</div>
-                            <p className="text-xs text-muted-foreground">Outstanding principal across all portfolios</p>
+                            <p className="text-xs text-muted-foreground">{t('stats.totalBalanceDesc')}</p>
                         </CardContent>
                     </Card>
                 </motion.div>
@@ -71,12 +74,12 @@ export function DashboardStats() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                     <Card gradient>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Monthly Payment</CardTitle>
+                            <CardTitle className="text-sm font-medium">{t('stats.monthlyPayment')}</CardTitle>
                             <CreditCard className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{formatCurrency(data.totalMonthlyPayment, 'ILS')}</div>
-                            <p className="text-xs text-muted-foreground">Combined monthly liability</p>
+                            <p className="text-xs text-muted-foreground">{t('stats.monthlyPaymentDesc')}</p>
                         </CardContent>
                     </Card>
                 </motion.div>
@@ -84,12 +87,12 @@ export function DashboardStats() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                     <Card gradient>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active Portfolios</CardTitle>
+                            <CardTitle className="text-sm font-medium">{t('stats.activePortfolios')}</CardTitle>
                             <Building className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{portfolios.length}</div>
-                            <p className="text-xs text-muted-foreground">Total managed portfolios</p>
+                            <p className="text-xs text-muted-foreground">{t('stats.activePortfoliosDesc')}</p>
                         </CardContent>
                     </Card>
                 </motion.div>
@@ -97,14 +100,14 @@ export function DashboardStats() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
                     <Card gradient>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Avg. Payment</CardTitle>
+                            <CardTitle className="text-sm font-medium">{t('stats.avgPayment')}</CardTitle>
                             <Wallet className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
                                 {portfolios.length > 0 ? formatCurrency(data.totalMonthlyPayment / portfolios.length, 'ILS') : 0}
                             </div>
-                            <p className="text-xs text-muted-foreground">Per portfolio</p>
+                            <p className="text-xs text-muted-foreground">{t('stats.avgPaymentDesc')}</p>
                         </CardContent>
                     </Card>
                 </motion.div>
@@ -115,7 +118,7 @@ export function DashboardStats() {
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
                     <Card gradient className="h-[350px]">
                         <CardHeader>
-                            <CardTitle>Balance Distribution</CardTitle>
+                            <CardTitle className="text-lg font-semibold">{t('charts.balanceDistribution')}</CardTitle>
                         </CardHeader>
                         <CardContent className="h-[300px]">
                             <ResponsiveContainer width="100%" height="100%">
@@ -148,7 +151,7 @@ export function DashboardStats() {
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
                     <Card gradient className="h-[350px]">
                         <CardHeader>
-                            <CardTitle>Monthly Payments</CardTitle>
+                            <CardTitle className="text-lg font-semibold">{t('charts.monthlyPayments')}</CardTitle>
                         </CardHeader>
                         <CardContent className="h-[300px]">
                             <ResponsiveContainer width="100%" height="100%">

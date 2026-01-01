@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes, useParams, Navigate } from "react-router";
+import { ToastContainer } from 'react-toastify';
 
 import { Theme, ThemeProvider } from '@/context/ThemeProvider';
 import { PlanProvider } from '@/context/PlanProvider';
@@ -8,6 +9,8 @@ import { Dashboard } from '@/pages/Dashboard';
 import { PortfolioPage } from '@/pages/PortfolioPage';
 
 import { Sidebar } from '@/components/Sidebar';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -21,6 +24,7 @@ function App() {
               <Route path=":type/:portfolioId" element={<PortfolioPageWrapper />} />
             </Routes>
           </div>
+          <ToastContainer position="bottom-right" theme="colored" />
         </BrowserRouter>
       </PortfoliosProvider>
     </ThemeProvider>
