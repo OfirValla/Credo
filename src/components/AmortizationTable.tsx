@@ -242,7 +242,7 @@ export function AmortizationTable() {
               {/* Plan Filter */}
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 border-dashed">
+                  <Button variant="outline" size="sm" className="h-9 border-dashed gap-2">
                     <Filter className="mr-2 h-4 w-4" />
                     {t('table.filter')}
                     {selectedPlanIds.length > 0 && (
@@ -257,7 +257,7 @@ export function AmortizationTable() {
                     {plans.map((plan) => (
                       <div
                         key={plan.id}
-                        className="flex items-center space-x-2 p-2 rounded-md hover:bg-accent cursor-pointer"
+                        className="flex items-center space-x-2 p-2 rounded-md hover:bg-accent cursor-pointer gap-2"
                         onClick={() => togglePlanSelection(plan.id)}
                       >
                         <div
