@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 const MotionButton = motion(Button);
 
 export const ClearCache: React.FC = () => {
-    const { t } = useTranslation('common'); // settings namespace
+    const { t } = useTranslation('common'); // common namespace
     const { removeAllPortfolios } = usePortfolios();
     const navigate = useNavigate();
     const [areYouSure, setAreYouSure] = useState(false);

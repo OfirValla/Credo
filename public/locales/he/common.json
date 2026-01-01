@@ -16,12 +16,25 @@
         "all": "ייבוא כל התיקים",
         "success": "הנתונים יובאו בהצלחה!",
         "error": "לא ניתן לייבא את הנתונים. אנא בדוק את פורמט הקובץ.",
-        "buttonTitle": "ייבוא נתונים"
+        "buttonTitle": "ייבוא נתונים",
+        "portfolio": "תיק יובא"
     },
     "clear-cache": {
         "warning": "פעולה זו אינה ניתנת לביטול.",
         "button": "ניקוי מטמון (מוחק את כל התיקים)",
         "confirm": "כן, מחק הכל",
         "cancel": "ביטול"
+    },
+    "sidebar": {
+        "portfolios": "תיקים",
+        "overview": "סקירה כללית",
+        "color": "צבע",
+        "icon": "אייקון",
+        "edit": "עריכה",
+        "delete": "מחיקה",
+        "deleteConfirm": "למחוק את התיק \"{{name}}\"?",
+        "newPortfolio": "תיק חדש",
+        "importPortfolio": "ייבוא תיק",
+        "settings": "הגדרות"
     }
 }

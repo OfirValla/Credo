@@ -2,8 +2,10 @@ import { CurrencyCode, CURRENCIES } from '@/lib/currency';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { usePlans } from '@/context/PlanProvider';
+import { useTranslation } from 'react-i18next';
 
 export function CurrencySelector() {
+  const { t } = useTranslation('portfolio-page');
   const { currency, setCurrency } = usePlans();
   const currencyOptions = CURRENCIES.map((curr) => ({
     value: curr.code,
@@ -13,7 +15,7 @@ export function CurrencySelector() {
   return (
     <div className="flex items-center gap-2">
       <Label htmlFor="currency-selector" className="text-sm font-medium hidden sm:block">
-        Currency:
+        {t('currency')}:
       </Label>
       <Select
         value={currency}

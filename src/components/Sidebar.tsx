@@ -25,6 +25,7 @@ import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { PortfolioCreationModal } from './modals/PortfolioCreationModal';
 import { PortfolioType } from '@/types';
 import { SettingsModal } from './modals/SettingsModal';
+import { useTranslation } from 'react-i18next';
 
 enum ModalType {
     PORTFOLIO_CREATION,
@@ -39,6 +40,7 @@ export function Sidebar() {
     const [editName, setEditName] = useState('');
     const importInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+    const { t } = useTranslation('common');
 
     const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const newId = addPortfolio(name, color, icon, type);
@@ -58,7 +60,7 @@ export function Sidebar() {
                 const data = JSON.parse(content);
 
                 let type: PortfolioType = PortfolioType.MORTGAGE;
-                let name = `Imported Portfolio ${new Date().toLocaleDateString()}`;
+                let name = `${t('import.portfolio')} ${new Date().toLocaleDateString()}`;
                 let color = PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)];
                 let icon;
 
@@ -89,7 +91,7 @@ export function Sidebar() {
 
             } catch (error) {
                 console.error("Failed to import portfolio", error);
-                alert("Failed to import portfolio. Invalid file.");
+                alert(t('import.error'));
             }
         };
         reader.readAsText(file);
@@ -163,7 +165,7 @@ export function Sidebar() {
                                 animate={{ opacity: 1, x: 0 }}
                                 className="ml-3 font-semibold text-lg whitespace-nowrap overflow-hidden"
                             >
-                                Portfolios
+                                {t('sidebar.portfolios')}
                             </motion.span>
                         )
                     }
@@ -189,7 +191,7 @@ export function Sidebar() {
                             animate={{ opacity: 1 }}
                             className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                         >
-                            Overview
+                            {t('sidebar.overview')}
                         </motion.span>
                     </Link>
                 </div>
@@ -232,7 +234,7 @@ export function Sidebar() {
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-72 p-4 space-y-4">
                                                     <div className="space-y-2">
-                                                        <h4 className="font-medium text-sm text-muted-foreground">Color</h4>
+                                                        <h4 className="font-medium text-sm text-muted-foreground">{t('sidebar.color')}</h4>
                                                         <div className="grid grid-cols-6 gap-2">
                                                             {PORTFOLIO_COLORS.map((color) => (
                                                                 <div
@@ -248,7 +250,7 @@ export function Sidebar() {
                                                         </div>
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <h4 className="font-medium text-sm text-muted-foreground">Icon</h4>
+                                                        <h4 className="font-medium text-sm text-muted-foreground">{t('sidebar.icon')}</h4>
                                                         <div className="grid grid-cols-5 gap-2">
                                                             {PORTFOLIO_ICONS.map(({ name, icon: Icon }) => (
                                                                 <div
@@ -320,7 +322,7 @@ export function Sidebar() {
                                                                     <Edit2 className="w-3 h-3" />
                                                                 </Button>
                                                             </TooltipTrigger>
-                                                            <TooltipContent>Edit</TooltipContent>
+                                                            <TooltipContent>{t('sidebar.edit')}</TooltipContent>
                                                         </Tooltip>
                                                     </TooltipProvider>
 
@@ -345,7 +347,7 @@ export function Sidebar() {
                                                                     <Trash2 className="w-3 h-3" />
                                                                 </Button>
                                                             </TooltipTrigger>
-                                                            <TooltipContent>Delete</TooltipContent>
+                                                            <TooltipContent>{t('sidebar.delete')}</TooltipContent>
                                                         </Tooltip>
                                                     </TooltipProvider>
                                                 </div>
@@ -382,7 +384,7 @@ export function Sidebar() {
                             animate={{ opacity: 1 }}
                             className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                         >
-                            New Portfolio
+                            {t('sidebar.newPortfolio')}
                         </motion.span>
                     </Button>
 
@@ -401,7 +403,7 @@ export function Sidebar() {
                             animate={{ opacity: 1 }}
                             className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                         >
-                            Import Portfolio
+                            {t('sidebar.importPortfolio')}
                         </motion.span>
                     </Button>
                 </div>
@@ -422,7 +424,7 @@ export function Sidebar() {
                             animate={{ opacity: 1 }}
                             className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                         >
-                            Settings
+                            {t('sidebar.settings')}
                         </motion.span>
                     </Button>
                 </div>

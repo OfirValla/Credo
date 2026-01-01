@@ -3,7 +3,7 @@ import { Theme, useTheme } from "@/context/ThemeProvider";
 import { useTranslation } from "react-i18next";
 
 export function ThemeSelect() {
-    const { t } = useTranslation("common"); // Use "settings" namespace
+    const { t } = useTranslation("common"); // Use "common" namespace
     const { theme, setTheme } = useTheme();
 
     return (

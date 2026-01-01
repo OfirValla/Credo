@@ -16,12 +16,25 @@
         "all": "Import all portfolios",
         "success": "Data imported successfully!",
         "error": "Failed to import data. Please check the file format.",
-        "buttonTitle": "Import Data"
+        "buttonTitle": "Import Data",
+        "portfolio": "Imported Portfolio"
     },
     "clear-cache": {
         "warning": "This action cannot be undone.",
         "button": "Clear cache (Deletes all portfolios)",
         "confirm": "Yes, delete everything",
         "cancel": "Cancel"
+    },
+    "sidebar": {
+        "portfolios": "Portfolios",
+        "overview": "Overview",
+        "color": "Color",
+        "icon": "Icon",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Delete portfolio \"{{name}}\"?",
+        "newPortfolio": "New Portfolio",
+        "importPortfolio": "Import Portfolio",
+        "settings": "Settings"
     }
 }
