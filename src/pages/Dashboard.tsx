@@ -55,6 +55,10 @@ export function Dashboard() {
 
             <DashboardStats />
 
+            <div className="flex items-center gap-2 mb-4">
+                <div className="text-xl font-bold text-gradient capitalize">{t('portfolios')}</div>
+                <div className="h-px bg-border flex-1 ml-4"></div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {portfolios.map((portfolio, index) => (
                     <motion.div

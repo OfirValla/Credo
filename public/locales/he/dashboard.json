@@ -22,10 +22,13 @@
         "balanceDistribution": "התפלגות יתרות",
         "monthlyPayments": "תשלומים חודשיים"
     },
+    "currencySection": "תיקי {{currency}}",
+    "noData": "לא נמצאו תיקים",
     "card": {
         "balance": "יתרה",
         "monthly": "חודשי",
         "remainingBalance": "יתרה נותרת",
         "activePlans": "{{count}} תוכניות פעילות"
-    }
+    },
+    "portfolios": "תיקים"
 }

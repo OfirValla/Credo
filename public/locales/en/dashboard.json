@@ -22,6 +22,9 @@
         "balanceDistribution": "Balance Distribution",
         "monthlyPayments": "Monthly Payments"
     },
+    "portfolios": "Portfolios",
+    "currencySection": "{{currency}} Portfolios",
+    "noData": "No portfolios found",
     "card": {
         "balance": "Balance",
         "monthly": "Monthly",

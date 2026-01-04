@@ -3,27 +3,30 @@ import { Portfolio, Plan, ExtraPayment, RateChange, GracePeriod } from '@/types'
 import { calculateAmortizationSchedule } from '@/lib/mortgageCalculations';
 import { CurrencyCode } from '@/lib/currency';
 
-interface PortfolioStats {
+
+export interface PortfolioStats {
     id: string;
     name: string;
     totalBalance: number;
     monthlyPayment: number;
+    currency: CurrencyCode;
     color?: string;
 }
 
-interface DashboardData {
+export interface GroupedDashboardData {
     totalBalance: number;
     totalMonthlyPayment: number;
     portfolioStats: PortfolioStats[];
 }
 
+
+export type DashboardData = Partial<Record<CurrencyCode, GroupedDashboardData>>;
+
 export function getAggregateDashboardData(
     portfolios: Portfolio[],
     cpiData: any
 ): DashboardData {
-    let totalBalance = 0;
-    let totalMonthlyPayment = 0;
-    const portfolioStats: PortfolioStats[] = [];
+    const dashboardData: DashboardData = {};
 
     portfolios.forEach(portfolio => {
         // Read directly from localStorage to avoid loading all contexts
@@ -38,14 +41,23 @@ export function getAggregateDashboardData(
             const extraPayments: ExtraPayment[] = extraPaymentsStr ? JSON.parse(extraPaymentsStr) : [];
             const rateChanges: RateChange[] = rateChangesStr ? JSON.parse(rateChangesStr) : [];
             const gracePeriods: GracePeriod[] = gracePeriodsStr ? JSON.parse(gracePeriodsStr) : [];
-            const currency: CurrencyCode = currencyStr ? JSON.parse(currencyStr) : 'ILS'; // Default to ILS if not found, though usually 'ILS' is string literal
+            const currency: CurrencyCode = currencyStr ? JSON.parse(currencyStr) : 'ILS'; // Default to ILS if not found
+
+            if (!dashboardData[currency]) {
+                dashboardData[currency] = {
+                    totalBalance: 0,
+                    totalMonthlyPayment: 0,
+                    portfolioStats: []
+                };
+            }
 
             if (!plans || plans.length === 0) {
-                portfolioStats.push({
+                dashboardData[currency].portfolioStats.push({
                     id: portfolio.id,
                     name: portfolio.name,
                     totalBalance: 0,
                     monthlyPayment: 0,
+                    currency: currency,
                     color: portfolio.color
                 });
                 return;
@@ -60,11 +72,7 @@ export function getAggregateDashboardData(
                 cpiData
             );
 
-            const currentBalance = plans.reduce((sum, plan) => sum + plan.amount, 0); // Simplified: This is original amount. We should calculate current balance if possible or just use schedule.
-
-            // Better approach for Current Balance: Use the amortization schedule
-            // However, calculateAmortizationSchedule returns the full schedule.
-            // We need to find "now".
+            const currentBalance = plans.reduce((sum, plan) => sum + plan.amount, 0);
 
             let currentScheduleBalance = currentBalance;
             let currentMonthlyPayment = 0;
@@ -95,44 +103,35 @@ export function getAggregateDashboardData(
                         return now < paymentDate ? sum + row.startingBalance : sum + row.endingBalance;
                     }, 0);
                 } else {
-                    // If we are before the mortgage starts, it's the full amount.
-                    // If we are after, it's 0.
                     const firstRow = amortizationSchedule[0];
                     const lastRow = amortizationSchedule[amortizationSchedule.length - 1];
 
-                    // Simple date check
-                    // This is a bit rough, but good enough for a summary
                     const firstParts = firstRow.month.split('/').map(Number); // D, M, Y
                     const firstDate = new Date(firstParts[2], firstParts[1] - 1, 1);
 
                     if (now < firstDate) {
                         currentMonthlyPayment = 0;
-                        currentScheduleBalance = currentBalance; // Full amount
+                        currentScheduleBalance = currentBalance;
                     } else {
-                        // Check if finished
                         const lastParts = lastRow.month.split('/').map(Number);
                         const lastDate = new Date(lastParts[2], lastParts[1] - 1, 1);
                         if (now > lastDate) {
                             currentScheduleBalance = 0;
                             currentMonthlyPayment = 0;
-                        } else {
-                            // We are somewhere in the middle but maybe a gap or just didn't catch the exact month?
-                            // Fallback to first month payment as an estimate if needed, or 0.
-                            // Let's try to find the closest previous month.
-                            // For now, 0 is safer than wrong data.
                         }
                     }
                 }
             }
 
-            totalBalance += currentScheduleBalance;
-            totalMonthlyPayment += currentMonthlyPayment;
+            dashboardData[currency].totalBalance += currentScheduleBalance;
+            dashboardData[currency].totalMonthlyPayment += currentMonthlyPayment;
 
-            portfolioStats.push({
+            dashboardData[currency].portfolioStats.push({
                 id: portfolio.id,
                 name: portfolio.name,
                 totalBalance: currentScheduleBalance,
                 monthlyPayment: currentMonthlyPayment,
+                currency: currency,
                 color: portfolio.color
             });
 
@@ -141,9 +140,5 @@ export function getAggregateDashboardData(
         }
     });
 
-    return {
-        totalBalance,
-        totalMonthlyPayment,
-        portfolioStats
-    };
+    return dashboardData;
 }
