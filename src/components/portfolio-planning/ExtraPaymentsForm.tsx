@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, Calendar, DollarSign, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Wallet, Calendar, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { ExtraPayment, ExtraPaymentType } from '@/types';
 import { getCurrencySymbol, formatCurrency } from '@/lib/currency';
 import { getPlanDisplayName, parseDateToMonthIndex } from '@/lib/planUtils';
@@ -159,7 +159,9 @@ export function ExtraPaymentsForm() {
               <div className="space-y-2">
                 <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.extra.form.amount')} ({currencySymbol})</Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <div className="absolute left-2.5 top-2.5 h-4 w-4 flex items-center justify-center text-muted-foreground font-medium text-lg">
+                    {currencySymbol}
+                  </div>
                   <Input
                     id="amount"
                     type="number"

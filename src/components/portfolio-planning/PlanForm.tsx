@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Trash2, Home, Calendar, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { LoanType, Plan } from '@/types';
 import { getCurrencySymbol } from '@/lib/currency';
 import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
@@ -183,7 +183,9 @@ export function PlanForm() {
                 <div className="space-y-2">
                   <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.amount')} ({currencySymbol})</Label>
                   <div className="relative">
-                    <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <div className="absolute left-2.5 top-2.5 h-4 w-4 flex items-center justify-center text-muted-foreground font-medium text-lg">
+                      {currencySymbol}
+                    </div>
                     <Input
                       id="amount"
                       type="number"
@@ -293,7 +295,9 @@ export function PlanForm() {
                     <div className="space-y-2">
                       <Label htmlFor="balloonValue" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.balloonAmount')} ({currencySymbol})</Label>
                       <div className="relative">
-                        <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <div className="absolute left-2.5 top-2.5 h-4 w-4 flex items-center justify-center text-muted-foreground font-medium text-lg">
+                          {currencySymbol}
+                        </div>
                         <Input
                           id="balloonValue"
                           type="number"
