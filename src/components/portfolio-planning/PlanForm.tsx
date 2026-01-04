@@ -93,6 +93,11 @@ export function PlanForm() {
       return;
     }
 
+    if (parseDateToMonthIndex(lastPaymentDate) < parseDateToMonthIndex(firstPaymentDate)) {
+      toast.error(t('planning.plans.errors.lastPaymentBeforeFirst'));
+      return;
+    }
+
     const finalName = isLoanPortfolio && currentPortfolio?.name ? currentPortfolio.name : name.trim();
 
     if (finalName) {
