@@ -14,6 +14,51 @@ const DateInput = React.forwardRef<HTMLInputElement, DateInputProps>(
             const inputValue = e.target.value;
             const numbers = inputValue.replace(/\D/g, "");
 
+            // Validation Logic
+            let dayPart = "";
+            let monthPart = "";
+            let yearPart = "";
+
+            if (format === 'DD/MM/YYYY') {
+                dayPart = numbers.slice(0, 2);
+                monthPart = numbers.slice(2, 4);
+                yearPart = numbers.slice(4, 8);
+            } else { // MM/YYYY
+                monthPart = numbers.slice(0, 2);
+                yearPart = numbers.slice(2, 6);
+            }
+
+            // Validate Day
+            if (dayPart) {
+                const day = parseInt(dayPart);
+                if (dayPart.length === 2) {
+                    if (day === 0 || day > 31) return;
+                } else {
+                    if (day > 3) return;
+                }
+            }
+
+            // Validate Month
+            if (monthPart) {
+                const month = parseInt(monthPart);
+                if (monthPart.length === 2) {
+                    if (month === 0 || month > 12) return;
+                } else {
+                    if (month > 1) return;
+                }
+            }
+
+            // Validate Date existence (only for DD/MM/YYYY)
+            if (format === 'DD/MM/YYYY' && dayPart.length === 2 && monthPart.length === 2) {
+                const day = parseInt(dayPart);
+                const month = parseInt(monthPart);
+                // If year is not fully entered, assume leap year (2024) to allow typing 29/02
+                const year = yearPart.length === 4 ? parseInt(yearPart) : 2024;
+
+                const maxDays = new Date(year, month, 0).getDate();
+                if (day > maxDays) return;
+            }
+
             // Check if the user is deleting (backspace)
             // We compare the raw input length to the previous value length
             const isDeleting = inputValue.length < value.length;
