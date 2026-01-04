@@ -161,6 +161,16 @@ export function PlanForm() {
   // It also says "prevent the ability to create multiple plans".
   // So if isLoanPortfolio && plans.length >= 1 && !editingId, we should hide the form or show a message.
   const showForm = !isLoanPortfolio || plans.length === 0 || editingId !== null;
+  const isDirty = name !== (isLoanPortfolio && currentPortfolio?.name ? currentPortfolio.name : '') ||
+    amount !== '' ||
+    interestRate !== '' ||
+    takenDate !== '' ||
+    firstPaymentDate !== '' ||
+    lastPaymentDate !== '' ||
+    linkedToCPI !== false ||
+    balloonValue !== '' ||
+    loanType !== LoanType.REGULAR;
+  const showReset = !!editingId || isDirty;
 
   return (
     <Card gradient>
@@ -345,8 +355,8 @@ export function PlanForm() {
                   </>
                 )}
               </Button>
-              {editingId && (
-                <Button type="button" variant="outline" onClick={handleCancelEdit} className="px-3">
+              {showReset && (
+                <Button type="button" variant="outline" onClick={handleCancelEdit} title={editingId ? t('planning.plans.form.cancel') : t('planning.plans.form.reset')}>
                   <X className="w-4 h-4" />
                 </Button>
               )}

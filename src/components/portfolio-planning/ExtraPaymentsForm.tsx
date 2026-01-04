@@ -107,6 +107,12 @@ export function ExtraPaymentsForm() {
 
   const showPlanSelect = !isLoanPortfolio && plans.length > 1;
 
+  const isDirty = month !== '' ||
+    amount !== '' ||
+    type !== ExtraPaymentType.REDUCE_TERM ||
+    (showPlanSelect && planId !== '');
+  const showReset = !!editingId || isDirty;
+
   return (
     <Card gradient>
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
@@ -206,8 +212,8 @@ export function ExtraPaymentsForm() {
                   </>
                 )}
               </Button>
-              {editingId && (
-                <Button type="button" variant="outline" onClick={handleCancelEdit} className="px-3">
+              {showReset && (
+                <Button type="button" variant="outline" onClick={handleCancelEdit} title={editingId ? t('planning.extra.form.cancel') : t('planning.extra.form.reset')} className="px-3">
                   <X className="w-4 h-4" />
                 </Button>
               )}

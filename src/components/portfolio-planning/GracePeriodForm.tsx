@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hourglass, CalendarClock, Plus, Trash2, Pencil, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Hourglass, CalendarClock, Plus, Trash2, Pencil, ToggleLeft, ToggleRight, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DateInput } from '@/components/ui/date-input';
@@ -337,14 +337,24 @@ export function GracePeriodForm() {
                                                                 </div>
                                                             </div>
                                                             <div className="flex justify-end gap-2">
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    className="h-7 text-xs"
-                                                                    onClick={() => setIsAdding(null)}
-                                                                >
-                                                                    {t('planning.grace.additional.cancelAdd')}
-                                                                </Button>
+                                                                {(newGracePeriod.startDate || newGracePeriod.endDate) && (
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        className="h-7 px-2"
+                                                                        onClick={() => {
+                                                                            setNewGracePeriod({
+                                                                                type: GracePeriodType.CAPITALIZED,
+                                                                                startDate: '',
+                                                                                endDate: ''
+                                                                            });
+                                                                            setIsAdding(null);
+                                                                        }}
+                                                                        title={t('planning.grace.additional.cancelAdd')}
+                                                                    >
+                                                                        <X className="w-3 h-3" />
+                                                                    </Button>
+                                                                )}
                                                                 <Button
                                                                     size="sm"
                                                                     className="h-7 text-xs"

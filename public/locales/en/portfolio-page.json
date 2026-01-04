@@ -103,6 +103,7 @@
                 "update": "Update Plan",
                 "add": "Add Plan",
                 "cancel": "Cancel",
+                "reset": "Reset",
                 "loanActive": "Loan plan already active"
             },
             "list": {
@@ -137,7 +138,9 @@
                     "reducePayment": "Reduce Payment"
                 },
                 "update": "Update Payment",
-                "add": "Add Payment"
+                "add": "Add Payment",
+                "cancel": "Cancel",
+                "reset": "Reset"
             },
             "list": {
                 "title": "Scheduled Payments",
@@ -160,7 +163,9 @@
                 "effectiveMonth": "Effective Month",
                 "newRate": "New Rate (%)",
                 "update": "Update Rate Change",
-                "add": "Add Rate Change"
+                "add": "Add Rate Change",
+                "cancel": "Cancel",
+                "reset": "Reset"
             },
             "list": {
                 "title": "Scheduled Changes",

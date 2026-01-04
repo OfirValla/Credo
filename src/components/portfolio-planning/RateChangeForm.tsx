@@ -107,6 +107,11 @@ export function RateChangeForm() {
 
   const showPlanSelect = !isLoanPortfolio && plans.length > 1;
 
+  const isDirty = month !== '' ||
+    newAnnualRate !== '' ||
+    (showPlanSelect && planId !== '');
+  const showReset = !!editingId || isDirty;
+
   return (
     <Card gradient>
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
@@ -195,8 +200,8 @@ export function RateChangeForm() {
                 </>
               )}
             </Button>
-            {editingId && (
-              <Button type="button" variant="outline" onClick={handleCancelEdit} className="px-3">
+            {showReset && (
+              <Button type="button" variant="outline" onClick={handleCancelEdit} title={editingId ? t('planning.rates.form.cancel') : t('planning.rates.form.reset')} className="px-3">
                 <X className="w-4 h-4" />
               </Button>
             )}
