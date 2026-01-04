@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Home, Calendar, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { LoanType, Plan } from '@/types';
 import { getCurrencySymbol } from '@/lib/currency';
-import { getPlanDisplayName, getPlanDurationInfo } from '@/lib/planUtils';
+import { getPlanDisplayName, getPlanDurationInfo, parseDateToMonthIndex } from '@/lib/planUtils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,6 +85,11 @@ export function PlanForm() {
     const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
     if (!dateRegex.test(takenDate) || !dateRegex.test(firstPaymentDate) || !dateRegex.test(lastPaymentDate)) {
       toast.error(t('planning.plans.errors.date'));
+      return;
+    }
+
+    if (parseDateToMonthIndex(firstPaymentDate) < parseDateToMonthIndex(takenDate)) {
+      toast.error(t('planning.plans.errors.firstPaymentBeforeTaken'));
       return;
     }
 
