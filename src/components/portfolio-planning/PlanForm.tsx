@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Home, Calendar, DollarSign, Percent, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
@@ -42,6 +42,13 @@ export function PlanForm() {
 
   const currencySymbol = getCurrencySymbol(currency);
 
+  // Auto-set name for Loan portfolios
+  useEffect(() => {
+    if (isLoanPortfolio && currentPortfolio?.name && !name) {
+      setName(currentPortfolio.name);
+    }
+  }, [isLoanPortfolio, currentPortfolio?.name]);
+
   const handleEdit = (plan: Plan) => {
     setEditingId(plan.id);
     setName(plan.name || '');
@@ -57,7 +64,7 @@ export function PlanForm() {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setName('');
+    setName(isLoanPortfolio && currentPortfolio?.name ? currentPortfolio.name : '');
     setAmount('');
     setInterestRate('');
     setTakenDate('');
@@ -81,19 +88,24 @@ export function PlanForm() {
       return;
     }
 
-    if (name.trim()) {
+    const finalName = isLoanPortfolio && currentPortfolio?.name ? currentPortfolio.name : name.trim();
+
+    if (finalName) {
       const duplicatePlan = plans.find(
-        p => p.name?.toLowerCase() === name.trim().toLowerCase() && p.id !== editingId
+        p => p.name?.toLowerCase() === finalName.toLowerCase() && p.id !== editingId
       );
 
-      if (duplicatePlan) {
+      // In Loan mode, we don't check for duplicates because we restrict to 1 plan anyway, 
+      // but if we were to allow renaming in future, we might need it. 
+      // For now, if isLoanPortfolio, we just use the portfolio name.
+      if (!isLoanPortfolio && duplicatePlan) {
         toast.error(t('planning.plans.errors.duplicateName'));
         return;
       }
     }
 
     const planData = {
-      name: name.trim() || undefined,
+      name: finalName || undefined,
       amount: parseFloat(amount),
       interestRate: parseFloat(interestRate),
       takenDate,
@@ -114,7 +126,8 @@ export function PlanForm() {
       onAddPlan(planData);
     }
 
-    setName('');
+    // For Loan portfolio, keep the name set
+    setName(isLoanPortfolio && currentPortfolio?.name ? currentPortfolio.name : '');
     setAmount('');
     setInterestRate('');
     setTakenDate('');
@@ -124,6 +137,13 @@ export function PlanForm() {
     setBalloonValue('');
     setLoanType(LoanType.REGULAR);
   };
+
+  // If it's a loan portfolio and we already have a plan, and we are NOT editing, 
+  // do not show the form (or show it disabled/hidden).
+  // Actually, requirement says "Hide the plan selection... and the name of the default plan will be the loan name".
+  // It also says "prevent the ability to create multiple plans".
+  // So if isLoanPortfolio && plans.length >= 1 && !editingId, we should hide the form or show a message.
+  const showForm = !isLoanPortfolio || plans.length === 0 || editingId !== null;
 
   return (
     <Card gradient>
@@ -143,171 +163,179 @@ export function PlanForm() {
         </div>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="planName" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.name')}</Label>
-              <Input
-                id="planName"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={t('planning.plans.form.namePlaceholder')}
-                className="bg-background/50 border-border/50 focus:ring-primary/20"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.amount')} ({currencySymbol})</Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder={t('planning.plans.form.amountPlaceholder')}
-                    className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="interestRate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.rate')}</Label>
-                <div className="relative">
-                  <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="interestRate"
-                    type="number"
-                    step="0.001"
-                    value={interestRate}
-                    onChange={(e) => setInterestRate(e.target.value)}
-                    placeholder="5.500"
-                    className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="takenDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.takenDate')}</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <DateInput
-                    id="takenDate"
-                    value={takenDate}
-                    onChange={(e) => setTakenDate(e.target.value)}
-                    placeholder="DD/MM/YYYY"
-                    format="DD/MM/YYYY"
-                    className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="firstPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.firstPayment')}</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <DateInput
-                    id="firstPaymentDate"
-                    value={firstPaymentDate}
-                    onChange={(e) => setFirstPaymentDate(e.target.value)}
-                    placeholder="DD/MM/YYYY"
-                    format="DD/MM/YYYY"
-                    className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.lastPayment')}</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <DateInput
-                    id="lastPaymentDate"
-                    value={lastPaymentDate}
-                    onChange={(e) => setLastPaymentDate(e.target.value)}
-                    placeholder="DD/MM/YYYY"
-                    format="DD/MM/YYYY"
-                    className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2 pt-2 gap-3">
-              <Switch
-                id="linkedToCPI"
-                checked={linkedToCPI}
-                onCheckedChange={setLinkedToCPI}
-              />
-              <Label htmlFor="linkedToCPI" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground">
-                {t('planning.plans.form.linkCPI')}
-              </Label>
-            </div>
-
-            {isLoanPortfolio && (
-              <div className="pt-2 border-t border-border/50 space-y-4">
+        {showForm ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4">
+              {!isLoanPortfolio && (
                 <div className="space-y-2">
-                  <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.structure')}</Label>
-                  <SlidingSelect
-                    value={loanType}
-                    onValueChange={(e) => setLoanType(e as LoanType)}
-                    options={[
-                      { value: LoanType.REGULAR, label: t('planning.plans.form.structures.regular') },
-                      { value: LoanType.BALLOON, label: t('planning.plans.form.structures.balloon') },
-                    ]}
-                    color="bg-primary"
-                    textColor="text-primary-foreground"
+                  <Label htmlFor="planName" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.name')}</Label>
+                  <Input
+                    id="planName"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={t('planning.plans.form.namePlaceholder')}
+                    className="bg-background/50 border-border/50 focus:ring-primary/20"
                   />
                 </div>
-
-                {loanType === LoanType.BALLOON && (
-                  <div className="space-y-2">
-                    <Label htmlFor="balloonValue" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.balloonAmount')} ({currencySymbol})</Label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="balloonValue"
-                        type="number"
-                        step="0.01"
-                        value={balloonValue}
-                        onChange={(e) => setBalloonValue(e.target.value)}
-                        placeholder="100000"
-                        className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="flex gap-2">
-            <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]">
-              {editingId ? (
-                <>
-                  <Pencil className="w-4 h-4 mr-2" />
-                  {t('planning.plans.form.update')}
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t('planning.plans.form.add')}
-                </>
               )}
-            </Button>
-            {editingId && (
-              <Button type="button" variant="outline" onClick={handleCancelEdit} className="px-3">
-                <X className="w-4 h-4" />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="amount" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.amount')} ({currencySymbol})</Label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="0.01"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder={t('planning.plans.form.amountPlaceholder')}
+                      className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="interestRate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.rate')}</Label>
+                  <div className="relative">
+                    <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="interestRate"
+                      type="number"
+                      step="0.001"
+                      value={interestRate}
+                      onChange={(e) => setInterestRate(e.target.value)}
+                      placeholder="5.500"
+                      className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="takenDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.takenDate')}</Label>
+                  <div className="relative">
+                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <DateInput
+                      id="takenDate"
+                      value={takenDate}
+                      onChange={(e) => setTakenDate(e.target.value)}
+                      placeholder="DD/MM/YYYY"
+                      format="DD/MM/YYYY"
+                      className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="firstPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.firstPayment')}</Label>
+                  <div className="relative">
+                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <DateInput
+                      id="firstPaymentDate"
+                      value={firstPaymentDate}
+                      onChange={(e) => setFirstPaymentDate(e.target.value)}
+                      placeholder="DD/MM/YYYY"
+                      format="DD/MM/YYYY"
+                      className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.lastPayment')}</Label>
+                  <div className="relative">
+                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <DateInput
+                      id="lastPaymentDate"
+                      value={lastPaymentDate}
+                      onChange={(e) => setLastPaymentDate(e.target.value)}
+                      placeholder="DD/MM/YYYY"
+                      format="DD/MM/YYYY"
+                      className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 pt-2 gap-3">
+                <Switch
+                  id="linkedToCPI"
+                  checked={linkedToCPI}
+                  onCheckedChange={setLinkedToCPI}
+                />
+                <Label htmlFor="linkedToCPI" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground">
+                  {t('planning.plans.form.linkCPI')}
+                </Label>
+              </div>
+
+              {isLoanPortfolio && (
+                <div className="pt-2 border-t border-border/50 space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.structure')}</Label>
+                    <SlidingSelect
+                      value={loanType}
+                      onValueChange={(e) => setLoanType(e as LoanType)}
+                      options={[
+                        { value: LoanType.REGULAR, label: t('planning.plans.form.structures.regular') },
+                        { value: LoanType.BALLOON, label: t('planning.plans.form.structures.balloon') },
+                      ]}
+                      color="bg-primary"
+                      textColor="text-primary-foreground"
+                    />
+                  </div>
+
+                  {loanType === LoanType.BALLOON && (
+                    <div className="space-y-2">
+                      <Label htmlFor="balloonValue" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.balloonAmount')} ({currencySymbol})</Label>
+                      <div className="relative">
+                        <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="balloonValue"
+                          type="number"
+                          step="0.01"
+                          value={balloonValue}
+                          onChange={(e) => setBalloonValue(e.target.value)}
+                          placeholder="100000"
+                          className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]">
+                {editingId ? (
+                  <>
+                    <Pencil className="w-4 h-4 mr-2" />
+                    {t('planning.plans.form.update')}
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('planning.plans.form.add')}
+                  </>
+                )}
               </Button>
-            )}
+              {editingId && (
+                <Button type="button" variant="outline" onClick={handleCancelEdit} className="px-3">
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </form>
+        ) : (
+          <div className="text-center py-4 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg">
+            Loan plan already active.
           </div>
-        </form>
+        )}
 
         <h3 className="text-sm font-medium text-muted-foreground">{t('planning.plans.list.title')}</h3>
         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">

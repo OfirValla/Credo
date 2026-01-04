@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Calendar, Percent, Plus, Trash2, ArrowRight, Pencil, X, ToggleLeft, ToggleRight } from 'lucide-react';
@@ -11,6 +11,8 @@ import { DateInput } from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router';
+import { usePortfolios } from '@/context/PortfoliosContext';
 
 import { usePlans } from '@/context/PlanProvider';
 
@@ -25,6 +27,18 @@ export function RateChangeForm() {
   const [planId, setPlanId] = useState('');
   const [newAnnualRate, setNewAnnualRate] = useState('');
 
+  const { portfolioId } = useParams<{ portfolioId: string }>();
+  const { portfolios } = usePortfolios();
+  const currentPortfolio = portfolios.find(p => p.id === portfolioId);
+  const isLoanPortfolio = currentPortfolio?.type === 'loan';
+
+  // Auto-set planId for Loan portfolios or if only 1 plan exists
+  useEffect(() => {
+    if ((isLoanPortfolio || plans.length === 1) && !planId && plans.length > 0) {
+      setPlanId(plans[0].id);
+    }
+  }, [isLoanPortfolio, plans, planId]);
+
   const handleEdit = (rateChange: RateChange) => {
     setEditingId(rateChange.id);
     setMonth(rateChange.month);
@@ -35,7 +49,10 @@ export function RateChangeForm() {
   const handleCancelEdit = () => {
     setEditingId(null);
     setMonth('');
-    setPlanId('');
+    // Keep planId if loan/single plan
+    if (!isLoanPortfolio && plans.length !== 1) {
+      setPlanId('');
+    }
     setNewAnnualRate('');
   };
 
@@ -76,7 +93,10 @@ export function RateChangeForm() {
 
     // Reset form
     setMonth('');
-    setPlanId('');
+    // Keep planId if loan/single plan
+    if (!isLoanPortfolio && plans.length !== 1) {
+      setPlanId('');
+    }
     setNewAnnualRate('');
   };
 
@@ -84,6 +104,8 @@ export function RateChangeForm() {
     value: plan.id,
     label: getPlanDisplayName(plan, currency)
   }));
+
+  const showPlanSelect = !isLoanPortfolio && plans.length > 1;
 
   return (
     <Card gradient>
@@ -105,16 +127,18 @@ export function RateChangeForm() {
       <CardContent className="p-6 space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="rate-plan" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.rates.form.targetPlan')}</Label>
-              <Select
-                value={planId}
-                onValueChange={setPlanId}
-                options={planOptions}
-                placeholder={t('planning.extra.form.selectPlan')}
-                className="w-full"
-              />
-            </div>
+            {showPlanSelect && (
+              <div className="space-y-2">
+                <Label htmlFor="rate-plan" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.rates.form.targetPlan')}</Label>
+                <Select
+                  value={planId}
+                  onValueChange={setPlanId}
+                  options={planOptions}
+                  placeholder={t('planning.extra.form.selectPlan')}
+                  className="w-full"
+                />
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
