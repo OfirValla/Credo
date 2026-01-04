@@ -87,6 +87,8 @@
                 "amount": "סכום",
                 "amountPlaceholder": "300,000",
                 "rate": "ריבית (%)",
+                "ratePlaceholder": "5.500",
+                "datePlaceholder": "DD/MM/YYYY",
                 "takenDate": "תאריך לקיחה",
                 "firstPayment": "תשלום ראשון",
                 "lastPayment": "תשלום אחרון",
@@ -97,9 +99,11 @@
                     "balloon": "בלון / גרייס"
                 },
                 "balloonAmount": "סכום בלון",
+                "balloonAmountPlaceholder": "100,000",
                 "update": "עדכן תוכנית",
                 "add": "הוסף תוכנית",
-                "cancel": "ביטול"
+                "cancel": "ביטול",
+                "loanActive": "תוכנית הלוואה כבר פעילה"
             },
             "list": {
                 "title": "תוכניות קיימות",
@@ -112,7 +116,8 @@
             },
             "errors": {
                 "date": "תאריכים חייבים להיות בפורמט DD/MM/YYYY",
-                "duplicateName": "תוכנית עם שם זה כבר קיימת"
+                "duplicateName": "תוכנית עם שם זה כבר קיימת",
+                "balloonTooHigh": "סכום הבלון אינו יכול להיות גדול או שווה מסכום ההלוואה"
             }
         },
         "extra": {

@@ -87,6 +87,8 @@
                 "amount": "Amount",
                 "amountPlaceholder": "300,000",
                 "rate": "Rate (%)",
+                "ratePlaceholder": "5.500",
+                "datePlaceholder": "DD/MM/YYYY",
                 "takenDate": "Taken Date",
                 "firstPayment": "First Payment",
                 "lastPayment": "Last Payment",
@@ -97,9 +99,11 @@
                     "balloon": "Balloon"
                 },
                 "balloonAmount": "Balloon Amount",
+                "balloonAmountPlaceholder": "100,000",
                 "update": "Update Plan",
                 "add": "Add Plan",
-                "cancel": "Cancel"
+                "cancel": "Cancel",
+                "loanActive": "Loan plan already active"
             },
             "list": {
                 "title": "Current Plans",
@@ -112,7 +116,8 @@
             },
             "errors": {
                 "date": "Dates must be in DD/MM/YYYY format (e.g., 01/01/2024)",
-                "duplicateName": "A plan with this name already exists"
+                "duplicateName": "A plan with this name already exists",
+                "balloonTooHigh": "Balloon amount cannot be greater or equal than the loan amount"
             }
         },
         "extra": {

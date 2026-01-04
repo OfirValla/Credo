@@ -104,6 +104,13 @@ export function PlanForm() {
       }
     }
 
+    if (isLoanPortfolio && loanType === LoanType.BALLOON && balloonValue) {
+      if (parseFloat(balloonValue) >= parseFloat(amount)) {
+        toast.error(t('planning.plans.errors.balloonTooHigh'));
+        return;
+      }
+    }
+
     const planData = {
       name: finalName || undefined,
       amount: parseFloat(amount),
@@ -208,7 +215,7 @@ export function PlanForm() {
                       step="0.001"
                       value={interestRate}
                       onChange={(e) => setInterestRate(e.target.value)}
-                      placeholder="5.500"
+                      placeholder={t('planning.plans.form.ratePlaceholder')}
                       className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                       required
                     />
@@ -225,7 +232,7 @@ export function PlanForm() {
                       id="takenDate"
                       value={takenDate}
                       onChange={(e) => setTakenDate(e.target.value)}
-                      placeholder="DD/MM/YYYY"
+                      placeholder={t('planning.plans.form.datePlaceholder')}
                       format="DD/MM/YYYY"
                       className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                       required
@@ -240,7 +247,7 @@ export function PlanForm() {
                       id="firstPaymentDate"
                       value={firstPaymentDate}
                       onChange={(e) => setFirstPaymentDate(e.target.value)}
-                      placeholder="DD/MM/YYYY"
+                      placeholder={t('planning.plans.form.datePlaceholder')}
                       format="DD/MM/YYYY"
                       className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                       required
@@ -255,7 +262,7 @@ export function PlanForm() {
                       id="lastPaymentDate"
                       value={lastPaymentDate}
                       onChange={(e) => setLastPaymentDate(e.target.value)}
-                      placeholder="DD/MM/YYYY"
+                      placeholder={t('planning.plans.form.datePlaceholder')}
                       format="DD/MM/YYYY"
                       className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                       required
@@ -304,7 +311,7 @@ export function PlanForm() {
                           step="0.01"
                           value={balloonValue}
                           onChange={(e) => setBalloonValue(e.target.value)}
-                          placeholder="100000"
+                          placeholder={t('planning.plans.form.balloonAmountPlaceholder')}
                           className="pl-9 bg-background/50 border-border/50 focus:ring-primary/20"
                         />
                       </div>
@@ -337,7 +344,7 @@ export function PlanForm() {
           </form>
         ) : (
           <div className="text-center py-4 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg">
-            Loan plan already active.
+            {t('planning.plans.loanActive')}
           </div>
         )}
 
