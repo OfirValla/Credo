@@ -344,7 +344,7 @@ export function PlanForm() {
           </form>
         ) : (
           <div className="text-center py-4 text-muted-foreground text-sm border border-dashed border-border/50 rounded-lg">
-            {t('planning.plans.loanActive')}
+            {t('planning.plans.form.loanActive')}
           </div>
         )}
 
@@ -392,7 +392,7 @@ export function PlanForm() {
                       {(() => {
                         const { totalMonths } = getPlanDurationInfo(plan);
                         return <>
-                          <span>{`${totalMonths} ${t('planning.plans.list.totalMonths')}`}</span>
+                          <span>{`${Math.floor(totalMonths)} ${t('planning.plans.list.totalMonths')}`}</span>
                           <span>•</span>
                           <span>{`${plan.remainingMonths ?? 0} ${t('planning.plans.list.remainingMonths')}`}</span>
                         </>;
