@@ -81,6 +81,17 @@ export function PlanForm() {
       return;
     }
 
+    if (name.trim()) {
+      const duplicatePlan = plans.find(
+        p => p.name?.toLowerCase() === name.trim().toLowerCase() && p.id !== editingId
+      );
+
+      if (duplicatePlan) {
+        toast.error(t('planning.plans.errors.duplicateName'));
+        return;
+      }
+    }
+
     const planData = {
       name: name.trim() || undefined,
       amount: parseFloat(amount),

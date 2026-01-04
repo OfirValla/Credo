@@ -111,7 +111,8 @@
                 "disable": "Disable plan"
             },
             "errors": {
-                "date": "Dates must be in DD/MM/YYYY format (e.g., 01/01/2024)"
+                "date": "Dates must be in DD/MM/YYYY format (e.g., 01/01/2024)",
+                "duplicateName": "A plan with this name already exists"
             }
         },
         "extra": {
