@@ -46,7 +46,7 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
 
     return (
         <Modal title={t('create-modal.title')} isOpen={isOpen} onClose={handleClose}>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <div className="space-y-2">
                     <label className="text-sm font-medium">{t('create-modal.nameLabel')}</label>
                     <Input
@@ -73,7 +73,7 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium">{t('sidebar.color', { ns: 'common' })}</label>
-                    <div className="grid grid-cols-9 gap-2">
+                    <div className="grid grid-cols-5 xs:grid-cols-7 sm:grid-cols-9 gap-2">
                         {PORTFOLIO_COLORS.map((c) => (
                             <div
                                 key={c}
@@ -90,7 +90,7 @@ export function PortfolioCreationModal({ isOpen, onClose, onCreate }: PortfolioC
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium">{t('sidebar.icon', { ns: 'common' })}</label>
-                    <div className="grid grid-cols-8 gap-2">
+                    <div className="grid grid-cols-4 xs:grid-cols-6 sm:grid-cols-8 gap-2">
                         {PORTFOLIO_ICONS.map(({ name: iconName, icon: Icon }) => (
                             <div
                                 key={iconName}
