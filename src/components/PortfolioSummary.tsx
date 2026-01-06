@@ -105,12 +105,16 @@ export function PortfolioSummary() {
             >
               {t('summary.principal')}
             </div>
-            <div
-              className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500 rounded-r-[0.5rem]"
-              style={{ width: `${summary.interestPct}% ` }}
-            >
-              {t('summary.interest')}
-            </div>
+            {
+              summary.interestPct > 0 && (
+                <div
+                  className="bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center transition-all duration-500 rounded-r-[0.5rem]"
+                  style={{ width: `${summary.interestPct}% ` }}
+                >
+                  {t('summary.interest')}
+                </div>
+              )
+            }
           </div>
           <div className="flex justify-between text-xs text-muted-foreground px-1">
             <span>{t('summary.principal')}: {summary.principalPct.toFixed(1)}%</span>
