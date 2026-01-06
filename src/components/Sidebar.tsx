@@ -23,7 +23,8 @@ import {
 import { Link, useNavigate, useLocation } from 'react-router';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { PortfolioCreationModal } from './modals/PortfolioCreationModal';
-import { PortfolioType } from '@/types';
+import { DeleteConfirmationModal } from './modals/DeleteConfirmationModal';
+import { PortfolioType, Portfolio } from '@/types';
 import { SettingsModal } from './modals/SettingsModal';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -51,6 +52,7 @@ export function Sidebar() {
         }
     };
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [portfolioToDelete, setPortfolioToDelete] = useState<Portfolio | null>(null);
     const [editName, setEditName] = useState('');
     const importInputRef = useRef<HTMLInputElement>(null);
 
@@ -146,6 +148,19 @@ export function Sidebar() {
         return iconData ? iconData.icon : Home;
     };
 
+    const handleDeletePortfolio = () => {
+        if (!portfolioToDelete) return;
+
+        const isCurrent = activePortfolioId === portfolioToDelete.id;
+        removePortfolio(portfolioToDelete.id);
+        toast.success(t('delete-modal.success'));
+
+        if (isCurrent) {
+            navigate('/');
+        }
+        setPortfolioToDelete(null);
+    };
+
     return (
         <>
             <PortfolioCreationModal
@@ -156,6 +171,12 @@ export function Sidebar() {
             <SettingsModal
                 isOpen={modalType === ModalType.SETTINGS}
                 onClose={() => setModalType(null)}
+            />
+            <DeleteConfirmationModal
+                isOpen={!!portfolioToDelete}
+                onClose={() => setPortfolioToDelete(null)}
+                onConfirm={handleDeletePortfolio}
+                itemName={portfolioToDelete?.name}
             />
 
             <motion.div
@@ -343,19 +364,11 @@ export function Sidebar() {
                                                     <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                <Button
+                                                                 <Button
                                                                     size="icon"
                                                                     variant="ghost"
                                                                     className="h-6 w-6 text-destructive hover:text-destructive"
-                                                                    onClick={() => {
-                                                                        if (confirm(t('sidebar.deleteConfirm', { name: portfolio.name }))) {
-                                                                            const isCurrent = activePortfolioId === portfolio.id;
-                                                                            removePortfolio(portfolio.id);
-                                                                            if (isCurrent) {
-                                                                                navigate('/');
-                                                                            }
-                                                                        }
-                                                                    }}
+                                                                    onClick={() => setPortfolioToDelete(portfolio)}
                                                                 >
                                                                     <Trash2 className="w-3 h-3" />
                                                                 </Button>

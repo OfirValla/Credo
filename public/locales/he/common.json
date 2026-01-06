@@ -31,6 +31,13 @@
         "confirm": "כן, מחק הכל",
         "cancel": "ביטול"
     },
+    "delete-modal": {
+        "title": "אישור מחיקה",
+        "description": "האם אתה בטוח שברצונך למחוק את \"{{name}}\"? פעולה זו אינה ניתנת לביטול.",
+        "confirm": "מחיקה",
+        "cancel": "ביטול",
+        "success": "נמחק בהצלחה"
+    },
     "sidebar": {
         "portfolios": "תיקים",
         "overview": "סקירה כללית",

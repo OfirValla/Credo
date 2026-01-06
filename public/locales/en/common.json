@@ -31,6 +31,13 @@
         "confirm": "Yes, delete everything",
         "cancel": "Cancel"
     },
+    "delete-modal": {
+        "title": "Confirm Deletion",
+        "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel",
+        "success": "Deleted successfully"
+    },
     "sidebar": {
         "portfolios": "Portfolios",
         "overview": "Overview",
