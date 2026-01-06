@@ -27,6 +27,7 @@ import { PortfolioType } from '@/types';
 import { SettingsModal } from './modals/SettingsModal';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import { useIsMobile } from '@/hooks/useMediaQuery';
 
 enum ModalType {
     PORTFOLIO_CREATION,
@@ -37,12 +38,21 @@ export function Sidebar() {
     const { portfolios, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
     const [modalType, setModalType] = useState<ModalType | null>(null);
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [editName, setEditName] = useState('');
-    const importInputRef = useRef<HTMLInputElement>(null);
+    const isMobile = useIsMobile();
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation('common');
+
+    const handleNewPortfolioClick = () => {
+        if (isMobile) {
+            navigate('/portfolio/create');
+        } else {
+            setModalType(ModalType.PORTFOLIO_CREATION);
+        }
+    };
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editName, setEditName] = useState('');
+    const importInputRef = useRef<HTMLInputElement>(null);
 
     // Derive current portfolio ID from the URL path
     const pathParts = location.pathname.split('/');
@@ -377,7 +387,7 @@ export function Sidebar() {
                         className={cn(
                             "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
                         )}
-                        onClick={() => setModalType(ModalType.PORTFOLIO_CREATION)}
+                        onClick={handleNewPortfolioClick}
                     >
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <Plus className="w-5 h-5" />

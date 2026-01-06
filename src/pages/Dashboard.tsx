@@ -11,17 +11,29 @@ import { PortfolioType } from '@/types';
 
 import { useTranslation } from 'react-i18next';
 
+import { useIsMobile } from '@/hooks/useMediaQuery';
+
 export function Dashboard() {
     const { t } = useTranslation('dashboard');
     const { portfolios, addPortfolio } = usePortfolios();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
+    const isMobile = useIsMobile();
 
     const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const id = addPortfolio(name, color, icon, type);
         setIsModalOpen(false);
         navigate(`/${type}/${id}`);
     };
+
+    const handleOpenCreateModal = () => {
+        if (isMobile) {
+            navigate('/portfolio/create');
+        } else {
+            setIsModalOpen(true);
+        }
+    };
+
 
     return (
         <div className="min-h-screen bg-background text-foreground py-8 px-4">
@@ -79,8 +91,9 @@ export function Dashboard() {
                     <Button
                         variant="outline"
                         className="w-full h-full min-h-[200px] border-dashed flex flex-col gap-4 hover:border-primary hover:bg-primary/5 transition-all"
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={handleOpenCreateModal}
                     >
+
                         <div className="p-4 rounded-full bg-secondary">
                             <Plus className="w-6 h-6" />
                         </div>

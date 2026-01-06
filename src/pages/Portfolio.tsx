@@ -17,7 +17,7 @@ import { generatePDFReport } from "@/lib/pdfReportGenerator";
 import { Button } from '@/components/ui/button';
 import { PortfolioType } from '@/types';
 
-export function PortfolioPage() {
+export function Portfolio() {
     const { t } = useTranslation('portfolio-page');
     const { type, portfolioId } = useParams<{ type: string, portfolioId: string }>();
     const { portfolios } = usePortfolios();

@@ -6,7 +6,8 @@ import { PlanProvider } from '@/context/PlanProvider';
 import { PortfoliosProvider } from '@/context/PortfoliosContext';
 
 import { Dashboard } from '@/pages/Dashboard';
-import { PortfolioPage } from '@/pages/PortfolioPage';
+import { Portfolio } from '@/pages/Portfolio';
+import { CreatePortfolio } from '@/pages/CreatePortfolio';
 
 import { Sidebar } from '@/components/Sidebar';
 
@@ -21,6 +22,7 @@ function App() {
           <div className="ps-16 transition-all duration-300">
             <Routes>
               <Route index element={<Dashboard />} />
+              <Route path="portfolio/create" element={<CreatePortfolio />} />
               <Route path=":type/:portfolioId" element={<PortfolioPageWrapper />} />
             </Routes>
           </div>
@@ -31,6 +33,7 @@ function App() {
   );
 }
 
+
 function PortfolioPageWrapper() {
   const { type, portfolioId } = useParams<{ type: string; portfolioId: string }>();
 
@@ -39,7 +42,7 @@ function PortfolioPageWrapper() {
 
   return (
     <PlanProvider key={`${type}-${portfolioId}`}>
-      <PortfolioPage />
+      <Portfolio />
     </PlanProvider>
   );
 }
