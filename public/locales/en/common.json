@@ -49,5 +49,11 @@
         "newPortfolio": "New Portfolio",
         "importPortfolio": "Import Portfolio",
         "settings": "Settings"
+    },
+    "portfolio-form": {
+        "or": "OR",
+        "import-title": "Import existing portfolio",
+        "import-subtitle": "Drop your .json file here",
+        "import-button": "Choose file"
     }
 }

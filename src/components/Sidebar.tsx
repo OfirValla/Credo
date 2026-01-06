@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-    Plus, Trash2, Edit2, Check, X, FolderOpen, Upload, LayoutDashboard,
+    Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard,
     Home,
     Settings
 } from 'lucide-react';
@@ -29,6 +29,7 @@ import { SettingsModal } from './modals/SettingsModal';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useIsMobile } from '@/hooks/useMediaQuery';
+import { useImportPortfolio } from '@/hooks/useImportPortfolio';
 
 enum ModalType {
     PORTFOLIO_CREATION,
@@ -43,6 +44,7 @@ export function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation('common');
+    const { importPortfolio } = useImportPortfolio();
 
     const handleNewPortfolioClick = () => {
         if (isMobile) {
@@ -54,7 +56,6 @@ export function Sidebar() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [portfolioToDelete, setPortfolioToDelete] = useState<Portfolio | null>(null);
     const [editName, setEditName] = useState('');
-    const importInputRef = useRef<HTMLInputElement>(null);
 
     // Derive current portfolio ID from the URL path
     const pathParts = location.pathname.split('/');
@@ -67,52 +68,9 @@ export function Sidebar() {
         navigate(`/${type}/${newId}`);
     };
 
-    const handleImportPortfolio = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const content = e.target?.result as string;
-                const data = JSON.parse(content);
-
-                let type: PortfolioType = PortfolioType.MORTGAGE;
-                let name = `${t('import.portfolio')} ${new Date().toLocaleDateString()}`;
-                let color = PORTFOLIO_COLORS[Math.floor(Math.random() * PORTFOLIO_COLORS.length)];
-                let icon;
-
-                if (data.portfolio) {
-                    if (data.portfolio.type) type = data.portfolio.type;
-                    if (data.portfolio.name) name = data.portfolio.name;
-                    if (data.portfolio.color) color = data.portfolio.color;
-                    if (data.portfolio.icon) icon = data.portfolio.icon;
-                } else if (data.portfolioName) {
-                    name = data.portfolioName;
-                    if (data.portfolioColor) color = data.portfolioColor;
-                    if (data.portfolioIcon) icon = data.portfolioIcon;
-                }
-
-                const newId = addPortfolio(name, color, icon, type);
-
-                // Manually seed local storage for the new portfolio
-                if (data.plans) localStorage.setItem(`${newId}-plans`, JSON.stringify(data.plans));
-                if (data.extraPayments) localStorage.setItem(`${newId}-extra-payments`, JSON.stringify(data.extraPayments));
-                if (data.rateChanges) localStorage.setItem(`${newId}-rate-changes`, JSON.stringify(data.rateChanges));
-                if (data.gracePeriods) localStorage.setItem(`${newId}-grace-periods`, JSON.stringify(data.gracePeriods));
-                if (data.currency) localStorage.setItem(`${newId}-currency`, JSON.stringify(data.currency));
-
-                navigate(`/${type}/${newId}`);
-
-                // Clear input
-                if (importInputRef.current) importInputRef.current.value = '';
-
-            } catch (error) {
-                console.error("Failed to import portfolio", error);
-                toast.error(t('import.error'));
-            }
-        };
-        reader.readAsText(file);
+    const handleImportSuccess = (data: any) => {
+        importPortfolio(data);
+        setModalType(null);
     };
 
     const startEditing = (e: React.MouseEvent, id: string, name: string) => {
@@ -167,6 +125,7 @@ export function Sidebar() {
                 isOpen={modalType === ModalType.PORTFOLIO_CREATION}
                 onClose={() => setModalType(null)}
                 onCreate={handleCreatePortfolio}
+                onImport={handleImportSuccess}
             />
             <SettingsModal
                 isOpen={modalType === ModalType.SETTINGS}
@@ -364,7 +323,7 @@ export function Sidebar() {
                                                     <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                 <Button
+                                                                <Button
                                                                     size="icon"
                                                                     variant="ghost"
                                                                     className="h-6 w-6 text-destructive hover:text-destructive"
@@ -387,14 +346,6 @@ export function Sidebar() {
                 </div>
 
                 <div className="p-2 border-t border-border space-y-1">
-                    <input
-                        type="file"
-                        ref={importInputRef}
-                        onChange={handleImportPortfolio}
-                        accept=".json"
-                        className="hidden"
-                    />
-
                     <Button
                         variant="ghost"
                         className={cn(
@@ -411,25 +362,6 @@ export function Sidebar() {
                             className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                         >
                             {t('sidebar.newPortfolio')}
-                        </motion.span>
-                    </Button>
-
-                    <Button
-                        variant="ghost"
-                        className={cn(
-                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
-                        )}
-                        onClick={() => importInputRef.current?.click()}
-                    >
-                        <div className="min-w-[2rem] flex justify-center items-center">
-                            <Upload className="w-5 h-5" />
-                        </div>
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
-                        >
-                            {t('sidebar.importPortfolio')}
                         </motion.span>
                     </Button>
                 </div>

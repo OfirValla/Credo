@@ -3,15 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { Button } from './button';
 import { useScrollLock } from '@/hooks/useScrollLock';
+import { cn } from '@/lib/utils';
 
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  className?: string;
 }
 
-const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
+const Modal = ({ isOpen, onClose, children, title, className }: ModalProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   useScrollLock(isOpen, scrollContainerRef);
 
@@ -35,7 +37,10 @@ const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
             animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
             exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-50%" }}
             transition={{ duration: 0.2 }}
-            className="fixed left-[50%] top-[50%] z-50 w-[95%] sm:w-full max-w-md max-h-[90vh] overflow-y-auto bg-background border border-border shadow-lg rounded-lg p-4 sm:p-6"
+            className={cn(
+              "fixed left-[50%] top-[50%] z-50 w-[95%] sm:w-full max-w-md max-h-[90vh] overflow-y-auto bg-background border border-border shadow-lg rounded-xl p-4 sm:p-6",
+              className
+            )}
             ref={scrollContainerRef}
             onClick={(e) => e.stopPropagation()}
           >
@@ -56,3 +61,4 @@ const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
 Modal.displayName = "Modal"
 
 export { Modal }
+

@@ -5,20 +5,26 @@ import { usePortfolios } from '@/context/PortfoliosContext';
 import { PortfolioForm } from '@/components/forms/PortfolioForm';
 import { PortfolioType } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { useImportPortfolio } from '@/hooks/useImportPortfolio';
 
 export function CreatePortfolio() {
     const { t } = useTranslation(['dashboard', 'common']);
     const { addPortfolio } = usePortfolios();
     const navigate = useNavigate();
+    const { importPortfolio } = useImportPortfolio();
 
     const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const id = addPortfolio(name, color, icon, type);
         navigate(`/${type}/${id}`);
     };
 
+    const handleImportSuccess = (data: any) => {
+        importPortfolio(data);
+    };
+
     return (
         <div className="min-h-screen bg-background text-foreground pb-8">
-            <main className="px-4 py-8 max-w-2xl mx-auto">
+            <main className="px-4 py-8 max-w-4xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -35,6 +41,7 @@ export function CreatePortfolio() {
 
                     <PortfolioForm
                         onCreate={handleCreatePortfolio}
+                        onImport={handleImportSuccess}
                         onCancel={() => navigate(-1)}
                     />
                 </motion.div>

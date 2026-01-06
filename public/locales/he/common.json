@@ -49,5 +49,11 @@
         "newPortfolio": "תיק חדש",
         "importPortfolio": "ייבוא תיק",
         "settings": "הגדרות"
+    },
+    "portfolio-form": {
+        "or": "או",
+        "import-title": "ייבוא תיק קיים",
+        "import-subtitle": "גרור קובץ .json לכאן",
+        "import-button": "בחר קובץ"
     }
 }
