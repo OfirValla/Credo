@@ -108,7 +108,7 @@ export function PortfolioForm({ onCreate, onImport, onCancel }: PortfolioFormPro
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium">{t('sidebar.color', { ns: 'common' })}</label>
-                    <div className="grid grid-cols-5 xs:grid-cols-7 gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {PORTFOLIO_COLORS.map((c) => (
                             <div
                                 key={c}
@@ -125,7 +125,7 @@ export function PortfolioForm({ onCreate, onImport, onCancel }: PortfolioFormPro
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium">{t('sidebar.icon', { ns: 'common' })}</label>
-                    <div className="grid grid-cols-4 xs:grid-cols-6 gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {PORTFOLIO_ICONS.map(({ name: iconName, icon: Icon }) => (
                             <div
                                 key={iconName}
@@ -141,6 +141,7 @@ export function PortfolioForm({ onCreate, onImport, onCancel }: PortfolioFormPro
                     </div>
                 </div>
 
+
                 <div className="flex justify-end gap-2 pt-2">
                     {onCancel && (
                         <Button type="button" variant="outline" onClick={onCancel}>
@@ -152,6 +153,14 @@ export function PortfolioForm({ onCreate, onImport, onCancel }: PortfolioFormPro
                     </Button>
                 </div>
             </form>
+
+            <div className="flex md:hidden items-center gap-4 my-2">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest py-2">
+                    {t('portfolio-form.or', { ns: 'common' })}
+                </span>
+                <div className="h-px flex-1 bg-border" />
+            </div>
 
             {/* Dropzone section */}
             <div className="relative flex flex-col items-center justify-center">
