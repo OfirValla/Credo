@@ -7,7 +7,12 @@ import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
 import { CurrencyCode } from '@/lib/currency';
 
-export const ExportAll: React.FC = () => {
+interface ExportAllProps {
+  showText?: boolean;
+  className?: string;
+}
+
+export const ExportAll: React.FC<ExportAllProps> = ({ showText = true, className }) => {
   const { t } = useTranslation('common'); // settings.json namespace
   const { portfolios } = usePortfolios();
 
@@ -61,10 +66,10 @@ export const ExportAll: React.FC = () => {
     <Button
       variant="outline"
       onClick={exportData}
-      className="gap-2 w-full"
+      className={className}
     >
       <Download className="h-4 w-4" />
-      {t('exportAll')}
+      {showText && <span>{t('exportAll')}</span>}
     </Button>
   );
 };

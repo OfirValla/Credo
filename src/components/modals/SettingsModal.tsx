@@ -4,8 +4,6 @@ import { Modal } from '@/components/ui/modal';
 import { ThemeSelect } from '../ThemeSelect';
 import { LanguageSelect } from '../LanguageSelect';
 import { ClearCache } from '../ClearCache';
-import { ExportAll } from '../ExportAll';
-import { ImportAll } from '../ImportAll';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -30,11 +28,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         {t('language.label')}
                     </label>
                     <LanguageSelect className="w-full" />
-                </div>
-
-                <div className="space-y-2 border-t border-border pt-6">
-                    <ExportAll />
-                    <ImportAll />
                 </div>
 
                 <div className="space-y-2 border-t border-border pt-6">

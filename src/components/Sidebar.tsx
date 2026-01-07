@@ -1,35 +1,23 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import {
-    Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard,
-    Home,
-    Settings
-} from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Link, useNavigate, useLocation } from 'react-router';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { PortfolioCreationModal } from './modals/PortfolioCreationModal';
 import { DeleteConfirmationModal } from './modals/DeleteConfirmationModal';
-import { PortfolioType, Portfolio } from '@/types';
+import { Portfolio } from '@/types';
 import { SettingsModal } from './modals/SettingsModal';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useIsMobile } from '@/hooks/useMediaQuery';
-import { useImportPortfolio } from '@/hooks/useImportPortfolio';
+import { ImportAll } from './ImportAll';
+import { ExportAll } from './ExportAll';
 
 enum ModalType {
     PORTFOLIO_CREATION,
@@ -37,22 +25,13 @@ enum ModalType {
 }
 
 export function Sidebar() {
-    const { portfolios, addPortfolio, removePortfolio, updatePortfolio } = usePortfolios();
+    const { portfolios, removePortfolio, updatePortfolio } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
     const [modalType, setModalType] = useState<ModalType | null>(null);
     const isMobile = useIsMobile();
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation('common');
-    const { importPortfolio } = useImportPortfolio();
-
-    const handleNewPortfolioClick = () => {
-        if (isMobile) {
-            navigate('/portfolio/create');
-        } else {
-            setModalType(ModalType.PORTFOLIO_CREATION);
-        }
-    };
     const [editingId, setEditingId] = useState<string | null>(null);
     const [portfolioToDelete, setPortfolioToDelete] = useState<Portfolio | null>(null);
     const [editName, setEditName] = useState('');
@@ -62,15 +41,12 @@ export function Sidebar() {
     // Format: /:type/:portfolioId
     const activePortfolioId = pathParts.length >= 3 ? pathParts[2] : 'overview';
 
-    const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
-        const newId = addPortfolio(name, color, icon, type);
-        setModalType(null);
-        navigate(`/${type}/${newId}`);
-    };
-
-    const handleImportSuccess = (data: any) => {
-        importPortfolio(data);
-        setModalType(null);
+    const handleNewPortfolioClick = () => {
+        if (isMobile) {
+            navigate('/portfolio/create');
+        } else {
+            setModalType(ModalType.PORTFOLIO_CREATION);
+        }
     };
 
     const startEditing = (e: React.MouseEvent, id: string, name: string) => {
@@ -124,8 +100,6 @@ export function Sidebar() {
             <PortfolioCreationModal
                 isOpen={modalType === ModalType.PORTFOLIO_CREATION}
                 onClose={() => setModalType(null)}
-                onCreate={handleCreatePortfolio}
-                onImport={handleImportSuccess}
             />
             <SettingsModal
                 isOpen={modalType === ModalType.SETTINGS}
@@ -367,23 +341,43 @@ export function Sidebar() {
                 </div>
 
                 <div className="p-2 border-t border-border space-y-1">
+                    <ExportAll
+                        showText={isExpanded}
+                        className={cn(
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full border-none shadow-none bg-transparent",
+                            !isExpanded && "justify-center"
+                        )}
+                    />
+                    <ImportAll
+                        showText={isExpanded}
+                        className={cn(
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full border-none shadow-none bg-transparent",
+                            !isExpanded && "justify-center"
+                        )}
+                    />
+                </div>
+
+                <div className="p-2 border-t border-border space-y-1">
                     <Button
                         variant="ghost"
                         className={cn(
-                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full",
+                            !isExpanded && "justify-center"
                         )}
                         onClick={() => setModalType(ModalType.SETTINGS)}
                     >
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <Settings className="w-5 h-5" />
                         </div>
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
-                        >
-                            {t('sidebar.settings')}
-                        </motion.span>
+                        {isExpanded && (
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                            >
+                                {t('sidebar.settings')}
+                            </motion.span>
+                        )}
                     </Button>
                 </div>
             </motion.div>

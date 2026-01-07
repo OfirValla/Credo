@@ -7,7 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
 
-export const ImportAll: React.FC = () => {
+interface ImportAllProps {
+  showText?: boolean;
+  className?: string;
+}
+
+export const ImportAll: React.FC<ImportAllProps> = ({ showText = true, className }) => {
   const { t } = useTranslation('common'); // settings namespace
   const { addMultiplePortfolios } = usePortfolios();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -65,10 +70,10 @@ export const ImportAll: React.FC = () => {
         variant="outline"
         onClick={handleButtonClick}
         title={t('import.buttonTitle')}
-        className="gap-2 w-full"
+        className={className}
       >
         <Upload className="h-4 w-4" />
-        {t('import.all')}
+        {showText && <span>{t('import.all')}</span>}
       </Button>
     </>
   );
