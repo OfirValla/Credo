@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { SlidingSelect } from '@/components/ui/sliding-select';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { PortfolioType } from '@/types';
+import { ExportPortfolio, Portfolio, PortfolioType } from '@/types';
 import { useTranslation } from 'react-i18next';
 
 import { useRef } from 'react';
@@ -24,7 +24,7 @@ export function PortfolioForm({ onCreate, onImport, onCancel }: PortfolioFormPro
     const [color, setColor] = useState(PORTFOLIO_COLORS[0]);
     const [icon, setIcon] = useState(PORTFOLIO_ICONS[0].name);
     const [isDragging, setIsDragging] = useState(false);
-    const [pendingData, setPendingData] = useState<{ name: string, data: any } | null>(null);
+    const [pendingData, setPendingData] = useState<{ name: string, data: ExportPortfolio } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -209,11 +209,16 @@ export function PortfolioForm({ onCreate, onImport, onCancel }: PortfolioFormPro
 
                     <div className="space-y-2 z-10">
                         <h3 className="font-semibold text-xl tracking-tight">
-                            {pendingData ? pendingData.name : t('portfolio-form.import-title', { ns: 'common' })}
+                            {pendingData ? pendingData.data.portfolio.name : t('portfolio-form.import-title', { ns: 'common' })}
                         </h3>
                         <p className="text-sm text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
                             {pendingData
-                                ? `${(JSON.stringify(pendingData.data).length / 1024).toFixed(2)} KB`
+                                ? (
+                                    <>
+                                        <div>{pendingData.data.portfolio.name}</div>
+                                        <span>({(JSON.stringify(pendingData.data).length / 1024).toFixed(2)} KB)</span>
+                                    </>
+                                )
                                 : t('portfolio-form.import-subtitle', { ns: 'common' })
                             }
                         </p>
