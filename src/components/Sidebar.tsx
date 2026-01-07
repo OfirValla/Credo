@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings, Download } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ enum ModalType {
 }
 
 export function Sidebar() {
-    const { portfolios, removePortfolio, updatePortfolio, importPortfolio } = usePortfolios();
+    const { portfolios, removePortfolio, updatePortfolio, exportAllPortfolios } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
     const [modalType, setModalType] = useState<ModalType | null>(null);
     const isMobile = useIsMobile();
@@ -341,13 +341,25 @@ export function Sidebar() {
                 </div>
 
                 <div className="p-2 border-t border-border space-y-1">
-                    <ExportAll
-                        showText={isExpanded}
+                    <Button
+                        variant="ghost"
                         className={cn(
-                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full border-none shadow-none bg-transparent",
-                            !isExpanded && "justify-center"
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
                         )}
-                    />
+                        onClick={exportAllPortfolios}
+                    >
+                        <div className="min-w-[2rem] flex justify-center items-center">
+                            <Download className="w-5 h-5" />
+                        </div>
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                        >
+                            {t('exportAll')}
+                        </motion.span>
+                    </Button>
+
                     <ImportAll
                         showText={isExpanded}
                         className={cn(
