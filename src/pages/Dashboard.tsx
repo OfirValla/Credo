@@ -13,26 +13,12 @@ import { useTranslation } from 'react-i18next';
 
 import { useIsMobile } from '@/hooks/useMediaQuery';
 
-import { useImportPortfolio } from '@/hooks/useImportPortfolio';
-
 export function Dashboard() {
     const { t } = useTranslation('dashboard');
-    const { portfolios, addPortfolio } = usePortfolios();
+    const { portfolios } = usePortfolios();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
     const isMobile = useIsMobile();
-    const { importPortfolio } = useImportPortfolio();
-
-    const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
-        const id = addPortfolio(name, color, icon, type);
-        setIsModalOpen(false);
-        navigate(`/${type}/${id}`);
-    };
-
-    const handleImportSuccess = (data: any) => {
-        importPortfolio(data);
-        setIsModalOpen(false);
-    };
 
     const handleOpenCreateModal = () => {
         if (isMobile) {
@@ -48,10 +34,7 @@ export function Dashboard() {
             <PortfolioCreationModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                onCreate={handleCreatePortfolio}
-                onImport={handleImportSuccess}
             />
-
 
             <motion.div
                 initial={{ opacity: 0, y: -20 }}

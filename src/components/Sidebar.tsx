@@ -25,7 +25,7 @@ enum ModalType {
 }
 
 export function Sidebar() {
-    const { portfolios, removePortfolio, updatePortfolio } = usePortfolios();
+    const { portfolios, removePortfolio, updatePortfolio, importPortfolio } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
     const [modalType, setModalType] = useState<ModalType | null>(null);
     const isMobile = useIsMobile();

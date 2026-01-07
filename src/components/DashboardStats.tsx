@@ -134,7 +134,7 @@ export function DashboardStats() {
                                         <CardTitle className="text-lg font-semibold">{t('charts.balanceDistribution')}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="h-[300px]">
-                                        <ResponsiveContainer width="100%" height="100%">
+                                        <ResponsiveContainer width="100%" height="100%" className="outline-0">
                                             <PieChart>
                                                 <Pie
                                                     data={chartData}

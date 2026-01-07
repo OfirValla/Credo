@@ -16,8 +16,8 @@ import 'react-toastify/dist/ReactToastify.css';
 function App() {
   return (
     <ThemeProvider defaultTheme={Theme.LIGHT} storageKey="vite-ui-theme">
-      <PortfoliosProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <PortfoliosProvider>
           <Sidebar />
           <div className="ps-16 transition-all duration-300">
             <Routes>
@@ -27,8 +27,8 @@ function App() {
             </Routes>
           </div>
           <ToastContainer position="bottom-right" theme="colored" />
-        </BrowserRouter>
-      </PortfoliosProvider>
+        </PortfoliosProvider>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

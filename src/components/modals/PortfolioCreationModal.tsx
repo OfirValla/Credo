@@ -2,7 +2,6 @@ import { Modal } from '@/components/ui/modal';
 import { PortfolioType } from '@/types';
 import { useTranslation } from 'react-i18next';
 import { PortfolioForm } from '../forms/PortfolioForm';
-import { useImportPortfolio } from '@/hooks/useImportPortfolio';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { useNavigate } from 'react-router';
 
@@ -14,8 +13,7 @@ interface PortfolioCreationModalProps {
 export function PortfolioCreationModal({ isOpen, onClose }: PortfolioCreationModalProps) {
     const { t } = useTranslation(['dashboard', 'common']);
 
-    const { addPortfolio } = usePortfolios();
-    const { importPortfolio } = useImportPortfolio();
+    const { addPortfolio, importPortfolio } = usePortfolios();
     const navigate = useNavigate();
 
     const handleImport = (data: any) => {

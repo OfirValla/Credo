@@ -5,13 +5,11 @@ import { usePortfolios } from '@/context/PortfoliosContext';
 import { PortfolioForm } from '@/components/forms/PortfolioForm';
 import { PortfolioType } from '@/types';
 import { useTranslation } from 'react-i18next';
-import { useImportPortfolio } from '@/hooks/useImportPortfolio';
 
 export function CreatePortfolio() {
     const { t } = useTranslation(['dashboard', 'common']);
-    const { addPortfolio } = usePortfolios();
+    const { addPortfolio, importPortfolio } = usePortfolios();
     const navigate = useNavigate();
-    const { importPortfolio } = useImportPortfolio();
 
     const handleCreatePortfolio = (name: string, type: PortfolioType, color: string, icon: string) => {
         const id = addPortfolio(name, color, icon, type);
