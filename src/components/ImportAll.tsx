@@ -9,12 +9,7 @@ import { ExportPortfolio } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-interface ImportAllProps {
-  showText?: boolean;
-  className?: string;
-}
-
-export const ImportAll: React.FC<ImportAllProps> = ({ showText = true, className }) => {
+export const ImportAll: React.FC = () => {
   const { t } = useTranslation('common'); // settings namespace
   const { addMultiplePortfolios } = usePortfolios();
   const fileInputRef = useRef<HTMLInputElement>(null);
