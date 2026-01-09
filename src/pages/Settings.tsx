@@ -21,6 +21,9 @@ export function Settings() {
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
                         {t('settings.title')}
                     </h1>
+                    <p className="text-lg text-muted-foreground">
+                        {t('settings.subtitle')}
+                    </p>
                 </div>
 
                 <SettingsForm />

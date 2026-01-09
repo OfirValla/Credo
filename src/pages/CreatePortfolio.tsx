@@ -27,14 +27,16 @@ export function CreatePortfolio() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="p-3 bg-primary/10 rounded-xl">
+                    <div className="text-center space-y-2 mb-8">
+                        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                             <FolderPlus className="w-6 h-6 text-primary" />
                         </div>
-                        <div>
-                            <h2 className="text-lg font-semibold">{t('sidebar.newPortfolio', { ns: 'common' })}</h2>
-                            <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
-                        </div>
+                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                            {t('sidebar.newPortfolio', { ns: 'common' })}
+                        </h1>
+                        <p className="text-lg text-muted-foreground">
+                            {t('subtitle')}
+                        </p>
                     </div>
 
                     <PortfolioForm

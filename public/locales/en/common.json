@@ -1,5 +1,6 @@
 {
     "settings.title": "Settings",
+    "settings.subtitle": "Customize your experience",
     "theme": {
         "label": "Theme",
         "options": {
