@@ -63,5 +63,27 @@
         "import-title": "ייבוא תיק קיים",
         "import-subtitle": "גרור קובץ .json לכאן",
         "import-button": "בחר קובץ"
+    },
+    "feedback": {
+        "title": "שלח משוב",
+        "intro": "האם אתה רוצה לשלוח לנו משוב?",
+        "type": {
+            "label": "סוג משוב",
+            "bug": "דיווח על תקלה",
+            "feature": "פיצ'ר",
+            "other": "אחר"
+        },
+        "message": {
+            "label": "הודעה",
+            "placeholder": "הגיד לנו מה אתה חושב..."
+        },
+        "email": {
+            "label": "כתובת אימייל (אופציונלי)",
+            "placeholder": "your@email.com",
+            "error": "אנא הזן כתובת אימייל תקינה"
+        },
+        "submit": "שלח",
+        "success": "תודה על המשוב שלך!",
+        "error": "השליחה נכשלה. אנא נסה שוב."
     }
 }

@@ -8,6 +8,7 @@ import { PortfoliosProvider } from '@/context/PortfoliosContext';
 import { Dashboard } from '@/pages/Dashboard';
 import { Portfolio } from '@/pages/Portfolio';
 import { CreatePortfolio } from '@/pages/CreatePortfolio';
+import { Feedback } from '@/pages/Feedback';
 
 import { Sidebar } from '@/components/Sidebar';
 
@@ -23,6 +24,7 @@ function App() {
             <Routes>
               <Route index element={<Dashboard />} />
               <Route path="portfolio/create" element={<CreatePortfolio />} />
+              <Route path="feedback" element={<Feedback />} />
               <Route path=":type/:portfolioId" element={<PortfolioPageWrapper />} />
             </Routes>
           </div>

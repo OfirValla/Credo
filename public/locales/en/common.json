@@ -63,5 +63,27 @@
         "import-title": "Import existing portfolio",
         "import-subtitle": "Drop your .json file here",
         "import-button": "Choose file"
+    },
+    "feedback": {
+        "title": "Send Feedback",
+        "intro": "We value your feedback! Let us know how we can improve.",
+        "type": {
+            "label": "Feedback Type",
+            "bug": "Bug Report",
+            "feature": "Feature Request",
+            "other": "Other"
+        },
+        "message": {
+            "label": "Message",
+            "placeholder": "Tell us what you think..."
+        },
+        "email": {
+            "label": "Email (Optional)",
+            "placeholder": "your@email.com",
+            "error": "Please enter a valid email address"
+        },
+        "submit": "Send Feedback",
+        "success": "Thank you for your feedback!",
+        "error": "Failed to send feedback. Please try again."
     }
 }

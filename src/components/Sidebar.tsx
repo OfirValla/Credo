@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings, Download } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings, Download, MessageSquare } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -18,9 +18,12 @@ import { toast } from 'react-toastify';
 import { useIsMobile } from '@/hooks/useMediaQuery';
 import { ImportAll } from './ImportAll';
 
+import { FeedbackModal } from './modals/FeedbackModal';
+
 enum ModalType {
     PORTFOLIO_CREATION,
-    SETTINGS
+    SETTINGS,
+    FEEDBACK
 }
 
 export function Sidebar() {
@@ -102,6 +105,10 @@ export function Sidebar() {
             />
             <SettingsModal
                 isOpen={modalType === ModalType.SETTINGS}
+                onClose={() => setModalType(null)}
+            />
+            <FeedbackModal
+                isOpen={modalType === ModalType.FEEDBACK}
                 onClose={() => setModalType(null)}
             />
             <DeleteConfirmationModal
@@ -360,6 +367,34 @@ export function Sidebar() {
                     </Button>
 
                     <ImportAll />
+                </div>
+
+                <div className="p-2 border-t border-border space-y-1">
+                    <Button
+                        variant="ghost"
+                        className={cn(
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full",
+                            location.pathname === '/feedback' && "bg-primary/10 text-primary"
+                        )}
+                        onClick={() => {
+                            if (isMobile) {
+                                navigate('/feedback');
+                            } else {
+                                setModalType(ModalType.FEEDBACK);
+                            }
+                        }}
+                    >
+                        <div className="min-w-[2rem] flex justify-center items-center">
+                            <MessageSquare className="w-5 h-5" />
+                        </div>
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+                        >
+                            {t('feedback.title')}
+                        </motion.span>
+                    </Button>
                 </div>
 
                 <div className="p-2 border-t border-border space-y-1">

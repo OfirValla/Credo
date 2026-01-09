@@ -1,0 +1,13 @@
+{
+    "rules": {
+        ".read": false,
+        ".write": false,
+        "feedbacks": {
+            ".read": false,
+            "$feedbackId": {
+                ".write": "!data.exists()",
+                ".validate": "newData.hasChildren(['type', 'message', 'timestamp']) && newData.child('type').isString() && (newData.child('type').val() === 'bug' || newData.child('type').val() === 'feature' || newData.child('type').val() === 'other') && newData.child('message').isString() && newData.child('message').val().length > 0 && newData.child('message').val().length <= 1024 && (!newData.child('email').exists() || (newData.child('email').isString() && newData.child('email').val().matches(/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/))) && (!newData.child('timestamp').exists() || (newData.child('timestamp').isNumber() && newData.child('timestamp').val() <= now))"
+            }
+        }
+    }
+}
