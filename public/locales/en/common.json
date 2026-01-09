@@ -23,7 +23,15 @@
         "success": "Data imported successfully!",
         "error": "Failed to import data. Please check the file format.",
         "buttonTitle": "Import Data",
-        "portfolio": "Imported Portfolio"
+        "portfolio": "Imported Portfolio",
+        "confirmation": {
+            "title": "Import Portfolios",
+            "description": "Are you sure you want to import these portfolios? This will add them to your current collection.",
+            "preview-title": "Portfolios to be imported:",
+            "plan-count": "{{count}} plans",
+            "confirm": "Import All",
+            "cancel": "Cancel"
+        }
     },
     "clear-cache": {
         "warning": "This action cannot be undone.",

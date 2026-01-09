@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { Button } from './button';
@@ -21,7 +22,7 @@ const Modal = ({ isOpen, onClose, children, title, className }: ModalProps) => {
     onClose();
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <>
@@ -57,6 +58,8 @@ const Modal = ({ isOpen, onClose, children, title, className }: ModalProps) => {
       )}
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 }
 Modal.displayName = "Modal"
 
