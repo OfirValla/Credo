@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface ImportAllProps {
   showText?: boolean;
@@ -67,13 +69,22 @@ export const ImportAll: React.FC<ImportAllProps> = ({ showText = true, className
         className="hidden"
       />
       <Button
-        variant="outline"
+        variant="ghost"
+        className={cn(
+          "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
+        )}
         onClick={handleButtonClick}
-        title={t('import.buttonTitle')}
-        className={className}
       >
-        <Upload className="h-4 w-4" />
-        {showText && <span>{t('import.all')}</span>}
+        <div className="min-w-[2rem] flex justify-center items-center">
+          <Upload className="w-5 h-5" />
+        </div>
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
+        >
+          {t('import.all')}
+        </motion.span>
       </Button>
     </>
   );

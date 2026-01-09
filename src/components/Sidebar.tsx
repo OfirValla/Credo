@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings, Download } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings, Download, Upload } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useIsMobile } from '@/hooks/useMediaQuery';
 import { ImportAll } from './ImportAll';
-import { ExportAll } from './ExportAll';
 
 enum ModalType {
     PORTFOLIO_CREATION,
@@ -25,7 +24,7 @@ enum ModalType {
 }
 
 export function Sidebar() {
-    const { portfolios, removePortfolio, updatePortfolio, exportAllPortfolios } = usePortfolios();
+    const { portfolios, removePortfolio, updatePortfolio, exportAllPortfolios, importAllPortfolios } = usePortfolios();
     const [isExpanded, setIsExpanded] = useState(false);
     const [modalType, setModalType] = useState<ModalType | null>(null);
     const isMobile = useIsMobile();
@@ -360,13 +359,7 @@ export function Sidebar() {
                         </motion.span>
                     </Button>
 
-                    <ImportAll
-                        showText={isExpanded}
-                        className={cn(
-                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full border-none shadow-none bg-transparent",
-                            !isExpanded && "justify-center"
-                        )}
-                    />
+                    <ImportAll />
                 </div>
 
                 <div className="p-2 border-t border-border space-y-1">
