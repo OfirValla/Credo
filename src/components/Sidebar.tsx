@@ -401,9 +401,16 @@ export function Sidebar() {
                     <Button
                         variant="ghost"
                         className={cn(
-                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full",
+                            location.pathname === '/settings' && "bg-primary/10 text-primary"
                         )}
-                        onClick={() => setModalType(ModalType.SETTINGS)}
+                        onClick={() => {
+                            if (isMobile) {
+                                navigate('/settings');
+                            } else {
+                                setModalType(ModalType.SETTINGS);
+                            }
+                        }}
                     >
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <Settings className="w-5 h-5" />
