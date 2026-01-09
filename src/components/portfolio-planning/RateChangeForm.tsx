@@ -148,8 +148,8 @@ export function RateChangeForm() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="rate-month" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.rates.form.effectiveMonth')}</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <div className="relative flex items-center">
+                  <Calendar className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
                   <DateInput
                     id="rate-month"
                     value={month}
@@ -163,8 +163,8 @@ export function RateChangeForm() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="new-rate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.rates.form.newRate')}</Label>
-                <div className="relative">
-                  <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <div className="relative flex items-center">
+                  <Percent className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="new-rate"
                     type="number"

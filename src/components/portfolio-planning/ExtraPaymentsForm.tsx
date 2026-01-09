@@ -149,8 +149,8 @@ export function ExtraPaymentsForm() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="month" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.extra.form.month')}</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <div className="relative flex items-center">
+                  <Calendar className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
                   <DateInput
                     id="month"
                     value={month}

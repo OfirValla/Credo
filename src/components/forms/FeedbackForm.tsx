@@ -132,8 +132,8 @@ export function FeedbackForm({ onSuccess }: FeedbackFormProps) {
                 <label className="text-sm font-medium leading-none">
                     {t('feedback.email.label')}
                 </label>
-                <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <div className="relative flex items-center">
+                    <Mail className="absolute left-3 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="email"
                         placeholder={t('feedback.email.placeholder')}

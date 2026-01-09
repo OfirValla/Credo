@@ -227,8 +227,8 @@ export function PlanForm() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="interestRate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.rate')}</Label>
-                  <div className="relative">
-                    <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <div className="relative flex items-center">
+                    <Percent className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="interestRate"
                       type="number"
@@ -246,8 +246,8 @@ export function PlanForm() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="takenDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.takenDate')}</Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <div className="relative flex items-center">
+                    <Calendar className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
                     <DateInput
                       id="takenDate"
                       value={takenDate}
@@ -261,8 +261,8 @@ export function PlanForm() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="firstPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.firstPayment')}</Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <div className="relative flex items-center">
+                    <Calendar className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
                     <DateInput
                       id="firstPaymentDate"
                       value={firstPaymentDate}
@@ -276,8 +276,8 @@ export function PlanForm() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastPaymentDate" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('planning.plans.form.lastPayment')}</Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <div className="relative flex items-center">
+                    <Calendar className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
                     <DateInput
                       id="lastPaymentDate"
                       value={lastPaymentDate}
