@@ -164,7 +164,7 @@ export function PortfolioForm({ onCreate, onImport, onCancel }: PortfolioFormPro
 
             {/* Dropzone section */}
             <div className="relative flex flex-col items-center justify-center">
-                <div className="hidden md:flex absolute -left-4 top-0 bottom-0 items-center">
+                <div className="hidden md:flex absolute ltr:-left-4 rtl:-right-4 top-0 bottom-0 items-center">
                     <div className="h-3/4 w-px bg-border relative">
                         <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs font-bold text-muted-foreground uppercase tracking-widest py-5">
                             {t('portfolio-form.or', { ns: 'common' })}
