@@ -3,13 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SlidingSelect } from '@/components/ui/sliding-select';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
-import { cn } from '@/lib/utils';
-import { ExportPortfolio, Portfolio, PortfolioType } from '@/types';
+import { ExportPortfolio, PortfolioType } from '@/types';
 import { useTranslation } from 'react-i18next';
 
 import { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { cn } from '@/lib/utils';
 
 interface PortfolioFormProps {
     onCreate: (name: string, type: PortfolioType, color: string, icon: string) => void;

@@ -7,7 +7,6 @@ import { DashboardStats } from '@/components/DashboardStats';
 import { Button } from '@/components/ui/button';
 import { PortfolioCreationModal } from '@/components/modals/PortfolioCreationModal';
 import { useNavigate } from 'react-router';
-import { PortfolioType } from '@/types';
 
 import { useTranslation } from 'react-i18next';
 

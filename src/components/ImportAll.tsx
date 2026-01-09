@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { ExportPortfolio } from '@/types';
-import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { ImportConfirmationModal } from './modals/ImportConfirmationModal';
 

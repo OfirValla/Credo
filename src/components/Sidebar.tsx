@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings, Download, Upload } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, FolderOpen, LayoutDashboard, Home, Settings, Download } from 'lucide-react';
 import { usePortfolios } from '@/context/PortfoliosContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
