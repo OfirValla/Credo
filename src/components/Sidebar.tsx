@@ -7,6 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Link, useNavigate, useLocation } from 'react-router';
 import { PORTFOLIO_COLORS, PORTFOLIO_ICONS } from '@/lib/constants';
 import { PortfolioCreationModal } from './modals/PortfolioCreationModal';
@@ -35,6 +41,7 @@ export function Sidebar() {
     const location = useLocation();
     const { t } = useTranslation('common');
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [contextMenuOpenId, setContextMenuOpenId] = useState<string | null>(null);
     const [portfolioToDelete, setPortfolioToDelete] = useState<Portfolio | null>(null);
     const [editName, setEditName] = useState('');
 
@@ -208,6 +215,12 @@ export function Sidebar() {
                                             navigate(`/${portfolio.type}/${portfolio.id}`);
                                         }
                                     }}
+                                    onContextMenu={(e) => {
+                                        if (isMobile) {
+                                            e.preventDefault();
+                                            setContextMenuOpenId(portfolio.id);
+                                        }
+                                    }}
                                 >
 
                                     {/* Portfolio icon */}
@@ -271,7 +284,7 @@ export function Sidebar() {
                                     {/* Portfolio name + Action Icons */}
                                     <div className="flex-1 flex items-center justify-between overflow-hidden ml-3">
                                         {editingId === portfolio.id ? (
-                                            <div className="flex items-center gap-1 w-full" onClick={(e) => e.stopPropagation()}>
+                                            <div className="flex items-center gap-1 w-full" onClick={(e) => e.stopPropagation()} onContextMenu={(e) => e.stopPropagation()}>
                                                 <Input
                                                     value={editName}
                                                     onChange={(e) => setEditName(e.target.value)}
@@ -282,10 +295,10 @@ export function Sidebar() {
                                                         if (e.key === 'Escape') cancelEdit();
                                                     }}
                                                 />
-                                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={saveEdit}>
+                                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); saveEdit(); }}>
                                                     <Check className="w-3 h-3 text-green-500" />
                                                 </Button>
-                                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelEdit}>
+                                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); cancelEdit(); }}>
                                                     <X className="w-3 h-3 text-red-500" />
                                                 </Button>
                                             </div>
@@ -299,39 +312,76 @@ export function Sidebar() {
                                                     <ScrollingName name={portfolio.name} />
                                                 </motion.div>
 
-                                                <div className="flex opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    size="icon"
-                                                                    variant="ghost"
-                                                                    className="h-6 w-6"
-                                                                    onClick={(e) => startEditing(e, portfolio.id, portfolio.name)}
-                                                                >
-                                                                    <Edit2 className="w-3 h-3" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>{t('sidebar.edit')}</TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
+                                                {/* Mobile Context Menu */}
+                                                {isMobile && (
+                                                    <DropdownMenu
+                                                        open={contextMenuOpenId === portfolio.id}
+                                                        onOpenChange={(open) => {
+                                                            if (!open) setContextMenuOpenId(null);
+                                                            console.log("open", open)
+                                                        }}
+                                                    >
+                                                        <DropdownMenuTrigger asChild>
+                                                            <div className="w-1 h-1 opacity-0" />
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem onClick={(e) => {
+                                                                startEditing(e, portfolio.id, portfolio.name);
+                                                                setContextMenuOpenId(null);
+                                                            }}>
+                                                                <Edit2 className="w-4 h-4 mr-2" />
+                                                                {t('sidebar.edit')}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() => {
+                                                                    setPortfolioToDelete(portfolio);
+                                                                    setContextMenuOpenId(null);
+                                                                }}
+                                                                className="text-destructive focus:text-destructive"
+                                                            >
+                                                                <Trash2 className="w-4 h-4 mr-2" />
+                                                                {t('sidebar.delete')}
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                )}
 
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    size="icon"
-                                                                    variant="ghost"
-                                                                    className="h-6 w-6 text-destructive hover:text-destructive"
-                                                                    onClick={() => setPortfolioToDelete(portfolio)}
-                                                                >
-                                                                    <Trash2 className="w-3 h-3" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>{t('sidebar.delete')}</TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                </div>
+                                                {/* Desktop Hover Actions */}
+                                                {!isMobile && (
+                                                    <div className="flex opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                                                        <TooltipProvider>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button
+                                                                        size="icon"
+                                                                        variant="ghost"
+                                                                        className="h-6 w-6"
+                                                                        onClick={(e) => startEditing(e, portfolio.id, portfolio.name)}
+                                                                    >
+                                                                        <Edit2 className="w-3 h-3" />
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>{t('sidebar.edit')}</TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+
+                                                        <TooltipProvider>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button
+                                                                        size="icon"
+                                                                        variant="ghost"
+                                                                        className="h-6 w-6 text-destructive hover:text-destructive"
+                                                                        onClick={() => setPortfolioToDelete(portfolio)}
+                                                                    >
+                                                                        <Trash2 className="w-3 h-3" />
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>{t('sidebar.delete')}</TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    </div>
+                                                )}
                                             </>
                                         )}
                                     </div>
