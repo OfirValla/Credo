@@ -285,9 +285,9 @@ export function AmortizationTable() {
               </Popover>
 
               <Button
-                variant="ghost"
+                variant="outline"
                 size="icon"
-                className="h-9 w-9"
+                className="h-9 w-9 border-dashed"
                 onClick={() => setIsZoomed(!isZoomed)}
                 title={isZoomed ? t('table.zoomOut') : t('table.zoomIn')}
               >
@@ -301,10 +301,10 @@ export function AmortizationTable() {
           </CardHeader>
           <CardContent className="p-0 sm:p-0 flex-1 overflow-auto min-h-0" ref={tableContainerRef}>
             <div>
-              <table className="w-full caption-bottom text-sm table-fixed">
+              <table className="w-full caption-bottom text-sm table-fixed min-w-[800px]">
                 <TableHeader className="sticky top-0 bg-background z-20 shadow-sm" ref={tableHeaderRef}>
                   <TableRow className="border-border/50 hover:bg-transparent">
-                    <TableHead className="w-[100px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{viewMode === 'monthly' ? t('table.headers.month') : t('table.headers.year')}</TableHead>
+                    <TableHead className="w-[100px] sticky left-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-r border-border/50">{viewMode === 'monthly' ? t('table.headers.month') : t('table.headers.year')}</TableHead>
                     <TableHead className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.plan')}</TableHead>
                     <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.startingBalance')}</TableHead>
                     <TableHead className="text-right bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">{t('table.headers.payment')}</TableHead>
@@ -336,22 +336,32 @@ export function AmortizationTable() {
                         isCurrent = row.month === currentYear;
                       }
 
+                      const rowClasses = isCurrent
+                        ? "bg-blue-100/80 dark:bg-blue-900/30 hover:bg-blue-200/80 dark:hover:bg-blue-800/40 border-blue-300/50 dark:border-blue-700/50"
+                        : row.isGracePeriod
+                          ? "bg-yellow-50/50 dark:bg-yellow-900/10 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20"
+                          : row.tags?.some(t => t.type === 'extra-payment')
+                            ? "bg-green-50/50 dark:bg-green-900/10 hover:bg-green-100/50 dark:hover:bg-green-900/20"
+                            : "hover:bg-primary/5";
+
+                      const stickyCellClasses = isCurrent
+                        ? "bg-blue-100 dark:bg-blue-900"
+                        : row.isGracePeriod
+                          ? "bg-yellow-50 dark:bg-yellow-900"
+                          : row.tags?.some(t => t.type === 'extra-payment')
+                            ? "bg-green-50 dark:bg-green-900"
+                            : "bg-background";
+
                       return (
                         <TableRow
                           key={`${row.planId}-${row.month}-${index}`}
                           data-current={isCurrent}
                           className={cn(
                             "border-b border-border/50 transition-colors",
-                            isCurrent
-                              ? "bg-blue-100/80 dark:bg-blue-900/30 hover:bg-blue-200/80 dark:hover:bg-blue-800/40 border-blue-300/50 dark:border-blue-700/50"
-                              : row.isGracePeriod
-                                ? "bg-yellow-50/50 dark:bg-yellow-900/10 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20"
-                                : row.tags?.some(t => t.type === 'extra-payment')
-                                  ? "bg-green-50/50 dark:bg-green-900/10 hover:bg-green-100/50 dark:hover:bg-green-900/20"
-                                  : "hover:bg-primary/5"
+                            rowClasses
                           )}
                         >
-                          <TableCell className="font-medium">{row.month}</TableCell>
+                          <TableCell className={cn("font-medium sticky left-0 z-10 border-r border-border/50", stickyCellClasses)}>{row.month}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             <div className="flex flex-col gap-1">
                               <span>
