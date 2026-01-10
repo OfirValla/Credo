@@ -127,24 +127,26 @@ export function Sidebar() {
                 onMouseLeave={() => setIsExpanded(false)}
             >
                 {/* Title */}
-                <div
-                    className={"group flex items-center rounded-lg cursor-pointer transition-colors relative h-16 p-4 flex items-center justify-center border-b border-border"}
-                    onClick={() => navigate('/')}
-                >
-                    <div className="min-w-[2rem] flex justify-center items-center">
-                        <FolderOpen className="w-6 h-6" />
-                    </div>
-                    {
-                        isExpanded && (
-                            <motion.span
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="ml-3 font-semibold text-lg whitespace-nowrap overflow-hidden"
-                            >
-                                {t('sidebar.portfolios')}
-                            </motion.span>
-                        )
-                    }
+                <div className="px-2 py-2 border-b border-border">
+                    <Link
+                        to="/"
+                        className="group flex gap-3 items-center justify-center p-2 rounded-lg cursor-pointer relative"
+                    >
+                        <div className="min-w-[2rem] ml-3 flex justify-center items-center">
+                            <FolderOpen className="w-6 h-6" />
+                        </div>
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className={cn(
+                                "font-semibold text-lg whitespace-nowrap overflow-hidden",
+
+                                // isExpanded ? "ml-3" : ""
+                            )}
+                        >
+                            {t('sidebar.portfolios')}
+                        </motion.span>
+                    </Link>
                 </div>
 
                 {/* Overview */}
