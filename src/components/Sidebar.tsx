@@ -345,7 +345,8 @@ export function Sidebar() {
                     <Button
                         variant="ghost"
                         className={cn(
-                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full"
+                            "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full",
+                            location.pathname === '/portfolio/create' && "bg-primary/10 text-primary"
                         )}
                         onClick={handleNewPortfolioClick}
                     >
