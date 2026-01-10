@@ -169,7 +169,7 @@ export function Sidebar() {
                         to="/"
                         className={cn(
                             "group flex items-center p-2 rounded-lg cursor-pointer transition-colors relative",
-                            activePortfolioId === 'overview'
+                            location.pathname === '/'
                                 ? "bg-primary/10 text-primary"
                                 : "hover:bg-muted text-muted-foreground hover:text-foreground"
                         )}
