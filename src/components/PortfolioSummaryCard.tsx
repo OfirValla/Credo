@@ -111,7 +111,7 @@ export function PortfolioSummaryCard({ portfolio }: PortfolioSummaryCardProps) {
                         <Link
                             to={`/${portfolio.type}/${portfolio.id}`}
                         >
-                            <Icons.ArrowRight className="w-4 h-4" />
+                            <Icons.ArrowRight className="w-4 h-4 rtl:rotate-180 transition-transform" />
                         </Link>
                     </div>
                 </CardHeader>
