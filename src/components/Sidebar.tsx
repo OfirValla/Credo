@@ -44,11 +44,24 @@ export function Sidebar() {
     const activePortfolioId = pathParts.length >= 3 ? pathParts[2] : 'overview';
 
     const handleNewPortfolioClick = () => {
-        if (isMobile) {
+        if (isMobile)
             navigate('/portfolio/create');
-        } else {
+        else
             setModalType(ModalType.PORTFOLIO_CREATION);
-        }
+    };
+
+    const handleSettingsClick = () => {
+        if (isMobile)
+            navigate('/settings');
+        else
+            setModalType(ModalType.SETTINGS);
+    };
+
+    const handleFeedbackClick = () => {
+        if (isMobile)
+            navigate('/feedback');
+        else
+            setModalType(ModalType.FEEDBACK);
     };
 
     const startEditing = (e: React.MouseEvent, id: string, name: string) => {
@@ -126,13 +139,14 @@ export function Sidebar() {
                 onMouseEnter={() => setIsExpanded(true)}
                 onMouseLeave={() => setIsExpanded(false)}
             >
+
                 {/* Title */}
                 <div className="px-2 py-2 border-b border-border">
                     <Link
                         to="/"
                         className="group flex gap-3 items-center justify-center p-2 rounded-lg cursor-pointer relative"
                     >
-                        <div className="min-w-[2rem] ml-3 flex justify-center items-center">
+                        <div className="min-w-[2rem] ms-3 flex justify-center items-center">
                             <FolderOpen className="w-6 h-6" />
                         </div>
                         <motion.span
@@ -378,13 +392,7 @@ export function Sidebar() {
                             "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full",
                             location.pathname === '/feedback' && "bg-primary/10 text-primary"
                         )}
-                        onClick={() => {
-                            if (isMobile) {
-                                navigate('/feedback');
-                            } else {
-                                setModalType(ModalType.FEEDBACK);
-                            }
-                        }}
+                        onClick={handleFeedbackClick}
                     >
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <MessageSquare className="w-5 h-5" />
@@ -406,13 +414,7 @@ export function Sidebar() {
                             "group flex justify-start items-center p-2 rounded-lg cursor-pointer transition-colors relative hover:bg-muted hover:text-foreground w-full",
                             location.pathname === '/settings' && "bg-primary/10 text-primary"
                         )}
-                        onClick={() => {
-                            if (isMobile) {
-                                navigate('/settings');
-                            } else {
-                                setModalType(ModalType.SETTINGS);
-                            }
-                        }}
+                        onClick={handleSettingsClick}
                     >
                         <div className="min-w-[2rem] flex justify-center items-center">
                             <Settings className="w-5 h-5" />
