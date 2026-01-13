@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Plus, CheckCircle2, Sparkles, Target, ShieldCheck, Github } from 'lucide-react';
+import { Plus, CheckCircle2, Sparkles, Target, ShieldCheck } from 'lucide-react';
 
 interface DashboardWelcomeProps {
     onCreatePortfolio: () => void;
