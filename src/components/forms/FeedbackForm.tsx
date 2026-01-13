@@ -72,9 +72,9 @@ export function FeedbackForm({ onSuccess }: FeedbackFormProps) {
                     <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-semibold mb-2">{t('feedback.success')}</h3>
-                <p className="text-muted-foreground mb-6">Your input helps us build a better product.</p>
+                <p className="text-muted-foreground mb-6">{t('feedback.successDescription')}</p>
                 <Button onClick={() => setSubmitted(false)} variant="outline">
-                    Send another
+                    {t('feedback.sendAnother')}
                 </Button>
             </motion.div>
         );
@@ -157,7 +157,7 @@ export function FeedbackForm({ onSuccess }: FeedbackFormProps) {
                         className="flex items-center"
                     >
                         <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                        Sending...
+                        {t('feedback.submitting')}
                     </motion.div>
                 ) : (
                     <span className="flex items-center">
