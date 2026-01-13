@@ -30,5 +30,24 @@
         "monthly": "Monthly",
         "remainingBalance": "Remaining Balance",
         "activePlans": "{{count}} active plans"
+    },
+    "welcome": {
+        "title": "Welcome to Credo",
+        "intro": "For quite some time, I've been looking for a tool that would allow me to manage and understand all my loans and mortgages in one place, not just to calculate monthly payments, but to see the full picture and understand how different decisions affect them over time.",
+        "problemTitle": "The Problem",
+        "problem": "Most mortgage calculators I found allow only single-action simulations, require re-entering all data for every calculation, and do not provide a real solution for ongoing management and tracking.",
+        "solutionTitle": "The Solution",
+        "solution": "Out of this need, Credo was built - a free system for managing and tracking loans and mortgages.",
+        "featuresTitle": "The system allows:",
+        "features": [
+            "Managing multiple loans and mortgages simultaneously",
+            "Viewing detailed payment schedules",
+            "Centralized dashboard with aggregated data",
+            "Simulating additional deposits, interest rate changes, grace periods, and linkage",
+            "Examining the impact of a sequence of actions, not just a single point change",
+            "Saving all data locally in the browser (LocalStorage), with no data sharing or third parties"
+        ],
+        "conclusion": "The system is active, completely free, and intended for people who want to get a clear and in-depth overview of their mortgages and loans. At this stage, the main goal is to receive feedback from real users and improve the user experience.",
+        "cta": "I would love to hear your thoughts, comments, insights, and ideas 🙏"
     }
 }
