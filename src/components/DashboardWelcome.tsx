@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Plus, CheckCircle2, Sparkles, Target, ShieldCheck } from 'lucide-react';
+import { Plus, CheckCircle2, Sparkles, Target, ShieldCheck, Github } from 'lucide-react';
 
 interface DashboardWelcomeProps {
     onCreatePortfolio: () => void;
@@ -108,14 +108,19 @@ export function DashboardWelcome({ onCreatePortfolio }: DashboardWelcomeProps) {
                             </p>
                         </div>
 
-                        <Button
-                            size="lg"
-                            onClick={onCreatePortfolio}
-                            className="text-lg px-8 py-6 h-auto rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-105"
-                        >
-                            <Plus className="mr-2 h-5 w-5" />
-                            {t('createPortfolio')}
-                        </Button>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <Button
+                                size="lg"
+                                onClick={onCreatePortfolio}
+                                className="text-lg px-8 py-6 h-auto rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-105 w-full sm:w-auto"
+                            >
+                                <Plus className="mr-2 h-5 w-5" />
+                                {t('createPortfolio')}
+                            </Button>
+                        </div>
+                        <p className="text-sm text-muted-foreground pt-4">
+                            {t('welcome.github')} <a href="https://github.com/OfirValla/Credo" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">GitHub</a>
+                        </p>
                     </div>
                 </motion.div>
             </motion.div>

@@ -48,6 +48,7 @@
             "Saving all data locally in the browser (LocalStorage), with no data sharing or third parties"
         ],
         "conclusion": "The system is active, completely free, and intended for people who want to get a clear and in-depth overview of their mortgages and loans. At this stage, the main goal is to receive feedback from real users and improve the user experience.",
-        "cta": "I would love to hear your thoughts, comments, insights, and ideas 🙏"
+        "cta": "I would love to hear your thoughts, comments, insights, and ideas 🙏",
+        "github": "The project is open source and can be found on "
     }
 }
