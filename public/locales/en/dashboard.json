@@ -50,5 +50,28 @@
         "conclusion": "The system is active, completely free, and intended for people who want to get a clear and in-depth overview of their mortgages and loans. At this stage, the main goal is to receive feedback from real users and improve the user experience.",
         "cta": "I would love to hear your thoughts, comments, insights, and ideas 🙏",
         "github": "The project is open source and can be found on "
+    },
+    "tutorial": {
+        "startTour": "Start Tour",
+        "welcome": {
+            "title": "Welcome to Credo!",
+            "content": "Let's take a quick tour of your financial dashboard."
+        },
+        "stats": {
+            "title": "Aggregated Stats",
+            "content": "See your total balance and monthly payments across all portfolios."
+        },
+        "charts": {
+            "title": "Visual Analysis",
+            "content": "Analyze your balance distribution and monthly payments trends."
+        },
+        "portfolios": {
+            "title": "Your Portfolios",
+            "content": "Manage and access your individual mortgages and loans from here."
+        },
+        "sidebar": {
+            "title": "Navigation",
+            "content": "Quick access to settings, data import/export, and feedback."
+        }
     }
 }

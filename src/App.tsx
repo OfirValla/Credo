@@ -12,6 +12,7 @@ import { Feedback } from '@/pages/Feedback';
 import { Settings } from '@/pages/Settings';
 
 import { Sidebar } from '@/components/Sidebar';
+import { TutorialWrapper } from '@/components/ui/TutorialWrapper';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -31,6 +32,7 @@ function App() {
             </Routes>
           </div>
           <ToastContainer position="bottom-right" theme="colored" />
+          <TutorialWrapper />
         </PortfoliosProvider>
       </BrowserRouter>
     </ThemeProvider>

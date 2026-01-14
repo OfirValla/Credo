@@ -127,7 +127,7 @@ export function DashboardStats() {
                         </div>
 
                         {/* Graphs */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div id="tour-charts" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
                                 <Card gradient className="h-[350px]">
                                     <CardHeader>

@@ -89,5 +89,12 @@
         "success": "Thank you for your feedback!",
         "successDescription": "Your input helps us build a better product.",
         "error": "Failed to send feedback. Please try again."
+    },
+    "tutorial": {
+        "back": "Back",
+        "close": "Close",
+        "last": "Finish",
+        "next": "Next",
+        "skip": "Skip"
     }
 }

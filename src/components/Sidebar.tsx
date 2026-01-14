@@ -139,6 +139,7 @@ export function Sidebar() {
             />
 
             <motion.div
+                id="tour-sidebar"
                 className={cn(
                     "fixed start-0 top-0 h-full bg-background/80 backdrop-blur-md border-r border-border z-40 shadow-lg transition-all duration-300 ease-in-out flex flex-col",
                     isExpanded ? "w-64" : "w-16"
