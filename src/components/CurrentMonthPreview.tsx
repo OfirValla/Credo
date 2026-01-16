@@ -10,11 +10,11 @@ import { useTranslation } from 'react-i18next';
  * Get current month in MM/YYYY format
  */
 /**
- * Get current month in MM/YYYY format
+ * Get current date in DD/MM/YYYY format (internal use)
  */
-function getCurrentMonth(locale: string = 'en-GB'): string {
+function getCurrentDate(): string {
   const now = new Date();
-  return now.toLocaleDateString(locale, {
+  return now.toLocaleDateString('en-GB', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -75,14 +75,24 @@ function getNextPaymentDate(paymentDay: number = 10, locale: string = 'en-GB'): 
 }
 
 /**
- * Compare two months (MM/YYYY format)
- * Returns: -1 if month1 < month2, 0 if equal, 1 if month1 > month2
+ * Compare two dates (DD/MM/YYYY or MM/YYYY format)
+ * Returns: -1 if date1 < date2, 0 if equal, 1 if date1 > date2
  */
-function compareMonths(month1: string, month2: string): number {
-  const m1 = parseMonth(month1);
-  const m2 = parseMonth(month2);
+function compareDates(date1: string, date2: string): number {
+  const v1 = parseDateToMonthIndex(date1);
+  const v2 = parseDateToMonthIndex(date2);
 
-  return m1 - m2;
+  if (Math.abs(v1 - v2) < 0.0001) return 0;
+  return v1 < v2 ? -1 : 1;
+}
+
+/**
+ * Check if two dates fall in the same calendar month
+ */
+function isSameMonth(date1: string, date2: string): boolean {
+  const m1 = parseMonth(date1);
+  const m2 = parseMonth(date2);
+  return m1 === m2;
 }
 
 export function CurrentMonthPreview() {
@@ -90,7 +100,7 @@ export function CurrentMonthPreview() {
   const { plans: allPlans, amortizationRows: rows, currency } = usePlans();
   const plans = allPlans.filter(p => p.enabled !== false);
 
-  const currentMonth = getCurrentMonth(i18n.language);
+  const currentDateInternal = getCurrentDate();
   const displayDate = getDisplayDate(i18n.language);
 
   // Determine payment day from the first plan, or default to 10
@@ -123,18 +133,19 @@ export function CurrentMonthPreview() {
       const planRows = rows.filter((r) => r.planId === plan.id);
 
       // Check if plan has started
-      const planStartMonth = parseDateToMonthIndex(plan.firstPaymentDate);
-      const currentMonthNum = parseDateToMonthIndex(currentMonth);
+      const planStartIdx = parseDateToMonthIndex(plan.firstPaymentDate);
+      const currentIdx = parseDateToMonthIndex(currentDateInternal);
 
-      if (planStartMonth > currentMonthNum) {
+      if (planStartIdx > currentIdx) {
         // Plan hasn't started yet
         result.totalRemainingBalance += plan.amount;
         return;
       }
 
-      // Find rows up to and including current month
+      // Find rows up to and including current date
+      // IMPORTANT: Row 'month' field might be DD/MM/YYYY
       const currentOrPastRows = planRows.filter(
-        (r) => compareMonths(r.month, currentMonth) <= 0
+        (r) => compareDates(r.month, currentDateInternal) <= 0
       );
 
       if (currentOrPastRows.length === 0) {
@@ -142,32 +153,17 @@ export function CurrentMonthPreview() {
         return;
       }
 
-      // Get the latest row (closest to current month)
+      // Get the latest row (closest to current date)
       const latestRow = currentOrPastRows.reduce((latest, row) => {
-        return compareMonths(row.month, latest.month) > 0 ? row : latest;
+        return compareDates(row.month, latest.month) > 0 ? row : latest;
       });
 
-      // If the latest row IS the current month, add payment details
-      if (compareMonths(latestRow.month, currentMonth) === 0) {
+      // If the latest row is in the current calendar month
+      if (isSameMonth(latestRow.month, currentDateInternal)) {
         result.totalPayment += latestRow.monthlyPayment;
         result.totalPrincipal += latestRow.principal;
         result.totalInterest += latestRow.interest;
-
-        // Check if payment has been made yet (based on current day vs payment day)
-        const now = new Date();
-        const currentDay = now.getDate();
-
-        // Extract payment day from firstPaymentDate (DD/MM/YYYY)
-        // Default to 1st if parsing fails
-        const paymentDay = parseInt(plan.firstPaymentDate.split('/')[0], 10) || 1;
-
-        if (currentDay < paymentDay) {
-          // Payment not yet made, show starting balance
-          result.totalRemainingBalance += latestRow.startingBalance;
-        } else {
-          // Payment made, show ending balance
-          result.totalRemainingBalance += latestRow.endingBalance;
-        }
+        result.totalRemainingBalance += latestRow.endingBalance;
       } else {
         // Past month, always use ending balance
         result.totalRemainingBalance += latestRow.endingBalance;
@@ -175,7 +171,7 @@ export function CurrentMonthPreview() {
     });
 
     return result;
-  }, [plans, rows, currentMonth]);
+  }, [plans, rows, currentDateInternal]);
 
   if (plans.length === 0) {
     return (
