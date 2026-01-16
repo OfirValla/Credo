@@ -132,6 +132,8 @@ export function CurrentMonthPreview() {
       // Find all rows for this plan
       const planRows = rows.filter((r) => r.planId === plan.id);
 
+      console.log(planRows);
+      debugger
       // Check if plan has started
       const planStartIdx = parseDateToMonthIndex(plan.firstPaymentDate);
       const currentIdx = parseDateToMonthIndex(currentDateInternal);
@@ -139,6 +141,17 @@ export function CurrentMonthPreview() {
       if (planStartIdx > currentIdx) {
         // Plan hasn't started yet
         result.totalRemainingBalance += plan.amount;
+
+        // This plan is about to start in the next month
+        if (planStartIdx - currentIdx < 1) {
+          const nextRow = planRows.at(1)
+          if (nextRow) {
+            result.totalPayment += nextRow.monthlyPayment;
+            result.totalPrincipal += nextRow.principal;
+            result.totalInterest += nextRow.interest;
+            result.totalRemainingBalance = nextRow.endingBalance;
+          }
+        }
         return;
       }
 
@@ -172,6 +185,8 @@ export function CurrentMonthPreview() {
 
     return result;
   }, [plans, rows, currentDateInternal]);
+
+  console.log(aggregatedData, currentDateInternal);
 
   if (plans.length === 0) {
     return (

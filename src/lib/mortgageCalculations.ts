@@ -13,6 +13,7 @@ export interface PlanState {
     currentMonth: number;
     originalTermMonths: number;
     remainingPayments: number;
+    lastInterestDate: Date;
 }
 
 export interface CalculationContext {
@@ -83,6 +84,7 @@ function initializePlanStates(plans: Plan[]): Map<string, PlanState> {
             currentMonth: takenMonthIdx,
             originalTermMonths: termMonths,
             remainingPayments: termMonths,
+            lastInterestDate: parseDateToDate(plan.takenDate),
         });
     }
     return planData;
@@ -187,35 +189,20 @@ function calculateCPIAdjustment(
 
 function calculateInterest(
     state: PlanState,
-    monthNum: number,
-    isGracePeriod: boolean,
-    isFirstPaymentMonth: boolean
+    rowDate: Date
 ): number {
-    let daysInPeriod = 30;
-
-    // Handle precise day counting for startup or grace periods
-    if (isGracePeriod || isFirstPaymentMonth) {
-        const takenDate = parseDateToDate(state.plan.takenDate);
-        const firstPaymentDate = parseDateToDate(state.plan.firstPaymentDate);
-        const currentYear = 2000 + Math.floor(monthNum / 12);
-        const currentMonth = Math.floor(monthNum) % 12;
-
-        if (isGracePeriod) {
-            // Logic: If month is taken month, start from taken date, else start 1st of month
-            const isStartMonth = monthNum < parseDateToMonthIndex(state.plan.takenDate) + 0.1;
-            const periodStart = isStartMonth
-                ? takenDate
-                : new Date(currentYear, currentMonth, 1);
-
-            const periodEnd = new Date(currentYear, currentMonth + 1, 0); // Last day of month
-            daysInPeriod = Math.ceil((periodEnd.getTime() - periodStart.getTime()) / (86400000)) + 1;
-        } else if (isFirstPaymentMonth) {
-            daysInPeriod = firstPaymentDate.getDate();
-        }
-    }
-
     const dailyRate = state.monthlyRate / 30;
+    const diffTime = rowDate.getTime() - state.lastInterestDate.getTime();
+    const daysInPeriod = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+
     return state.balance * dailyRate * daysInPeriod;
+}
+
+function monthNumToDate(monthNum: number): Date {
+    const year = 2000 + Math.floor(monthNum / 12);
+    const month = Math.floor(monthNum) % 12;
+    const day = Math.round((monthNum % 1) * 100) || 1;
+    return new Date(year, month, day);
 }
 
 function parseDateToDate(dateStr: string) {
@@ -359,7 +346,8 @@ function processPlanMonth(
     }
 
     // 6. Calculate Interest
-    const interest = calculateInterest(state, monthNum, isGracePeriod, isFirstPaymentMonth);
+    const rowDate = monthNumToDate(monthNum);
+    const interest = calculateInterest(state, rowDate);
 
     // 7. Determine Payment
     let currentPayment = state.monthlyPayment;
@@ -441,6 +429,9 @@ function processPlanMonth(
         ctx.currency,
         ctx.t
     );
+
+    // Update last interest date
+    state.lastInterestDate = rowDate;
 
     return {
         month: formatMonth(monthNum),

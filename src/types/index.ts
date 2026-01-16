@@ -1,4 +1,4 @@
-import { CurrencyCode } from "@/lib/currency";
+import type { CurrencyCode } from "@/lib/currency";
 
 export interface Plan {
   id: string;
