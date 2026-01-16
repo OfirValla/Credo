@@ -9,9 +9,13 @@ import { useTranslation } from 'react-i18next';
 /**
  * Get current month in MM/YYYY format
  */
-function getCurrentMonth(): string {
+/**
+ * Get current month in MM/YYYY format
+ */
+function getCurrentMonth(locale: string = 'en-GB'): string {
   const now = new Date();
-  return now.toLocaleDateString('en-GB', {
+  return now.toLocaleDateString(locale, {
+    day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   });
@@ -20,9 +24,12 @@ function getCurrentMonth(): string {
 /**
  * Get display date string (e.g., "20 November 2025")
  */
-function getDisplayDate(): string {
+/**
+ * Get display date string (e.g., "20 November 2025")
+ */
+function getDisplayDate(locale: string = 'en-GB'): string {
   const now = new Date();
-  return now.toLocaleDateString('en-GB', {
+  return now.toLocaleDateString(locale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -38,7 +45,7 @@ function getDisplayDate(): string {
  * If current date <= payment day, show this month's payment date
  * Else show next month's payment date
  */
-function getNextPaymentDate(paymentDay: number = 10): string {
+function getNextPaymentDate(paymentDay: number = 10, locale: string = 'en-GB'): string {
   const now = new Date();
   const currentDay = now.getDate();
 
@@ -46,7 +53,7 @@ function getNextPaymentDate(paymentDay: number = 10): string {
   if (currentDay <= paymentDay) {
     const paymentDateThisMonth = new Date(now);
     paymentDateThisMonth.setDate(paymentDay);
-    return paymentDateThisMonth.toLocaleDateString('en-GB', {
+    return paymentDateThisMonth.toLocaleDateString(locale, {
       day: 'numeric',
       month: 'short',
     });
@@ -61,7 +68,7 @@ function getNextPaymentDate(paymentDay: number = 10): string {
   }
   now.setDate(paymentDay);
 
-  return now.toLocaleDateString('en-GB', {
+  return now.toLocaleDateString(locale, {
     day: 'numeric',
     month: 'short',
   });
@@ -79,12 +86,12 @@ function compareMonths(month1: string, month2: string): number {
 }
 
 export function CurrentMonthPreview() {
-  const { t } = useTranslation('portfolio-page');
+  const { t, i18n } = useTranslation('portfolio-page');
   const { plans: allPlans, amortizationRows: rows, currency } = usePlans();
   const plans = allPlans.filter(p => p.enabled !== false);
 
-  const currentMonth = getCurrentMonth();
-  const displayDate = getDisplayDate();
+  const currentMonth = getCurrentMonth(i18n.language);
+  const displayDate = getDisplayDate(i18n.language);
 
   // Determine payment day from the first plan, or default to 10
   const paymentDay = useMemo(() => {
@@ -97,7 +104,7 @@ export function CurrentMonthPreview() {
     return 10;
   }, [plans]);
 
-  const nextPaymentDate = getNextPaymentDate(paymentDay);
+  const nextPaymentDate = getNextPaymentDate(paymentDay, i18n.language);
 
   const aggregatedData = useMemo(() => {
     const result = {
