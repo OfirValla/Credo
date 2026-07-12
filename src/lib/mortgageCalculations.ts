@@ -13,7 +13,8 @@ export interface PlanState {
     currentMonth: number;
     originalTermMonths: number;
     remainingPayments: number;
-    lastInterestDate: Date;
+    lastInterestMonth: number;
+    needsPaymentRecalc: boolean;
 }
 
 export interface CalculationContext {
@@ -84,7 +85,8 @@ function initializePlanStates(plans: Plan[]): Map<string, PlanState> {
             currentMonth: takenMonthIdx,
             originalTermMonths: termMonths,
             remainingPayments: termMonths,
-            lastInterestDate: parseDateToDate(plan.takenDate),
+            lastInterestMonth: takenMonthIdx,
+            needsPaymentRecalc: false,
         });
     }
     return planData;
@@ -187,13 +189,28 @@ function calculateCPIAdjustment(
     return { linkageDiff: 0, newBalance: state.balance, newPayment: state.monthlyPayment };
 }
 
+/**
+ * Interest accrued since the previous row.
+ * Whole-month periods charge the nominal monthly rate (Spitzer convention,
+ * independent of calendar days) so the schedule amortizes exactly to zero.
+ * Partial stub periods (e.g. between the taken date and the first aligned row)
+ * accrue daily at monthlyRate / 30.
+ */
 function calculateInterest(
     state: PlanState,
-    rowDate: Date
+    monthNum: number
 ): number {
+    const monthsDiff = monthNum - state.lastInterestMonth;
+    const wholeMonths = Math.round(monthsDiff);
+
+    // A day is 0.01 in month-index units, so 0.005 tolerance = same day-of-month
+    if (wholeMonths >= 1 && Math.abs(monthsDiff - wholeMonths) < 0.005) {
+        return state.balance * state.monthlyRate * wholeMonths;
+    }
+
     const dailyRate = state.monthlyRate / 30;
-    const diffTime = rowDate.getTime() - state.lastInterestDate.getTime();
-    const daysInPeriod = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+    const diffTime = monthNumToDate(monthNum).getTime() - monthNumToDate(state.lastInterestMonth).getTime();
+    const daysInPeriod = Math.max(0, Math.round(diffTime / (1000 * 60 * 60 * 24)));
 
     return state.balance * dailyRate * daysInPeriod;
 }
@@ -203,11 +220,6 @@ function monthNumToDate(monthNum: number): Date {
     const month = Math.floor(monthNum) % 12;
     const day = Math.round((monthNum % 1) * 100) || 1;
     return new Date(year, month, day);
-}
-
-function parseDateToDate(dateStr: string) {
-    const [day, month, year] = dateStr.split('/').map(Number);
-    return new Date(year, month - 1, day);
 }
 
 function calculateExtraPayment(
@@ -313,6 +325,9 @@ function processPlanMonth(
     // 2. Skip if finished
     if (state.remainingPayments <= 0 && monthNum >= firstPaymentIdx - 0.0001) return null;
 
+    // 2b. Skip if fully repaid early (e.g. reduce-term extra payments)
+    if (state.balance <= 0.01) return null;
+
     // 3. Apply CPI
     const cpiAdj = calculateCPIAdjustment(state, monthNum, ctx.cpiData);
     state.balance = cpiAdj.newBalance;
@@ -346,8 +361,7 @@ function processPlanMonth(
     }
 
     // 6. Calculate Interest
-    const rowDate = monthNumToDate(monthNum);
-    const interest = calculateInterest(state, rowDate);
+    const interest = calculateInterest(state, monthNum);
 
     // 7. Determine Payment
     let currentPayment = state.monthlyPayment;
@@ -355,27 +369,41 @@ function processPlanMonth(
     if (isGracePeriod) {
         const type = activeGracePeriod?.type || state.plan.gracePeriodType;
         currentPayment = (type === 'interestOnly') ? interest : 0;
-    } else if (isFirstPaymentMonth && state.balance > 0 && state.originalTermMonths > 0) {
-        // Recalculate on first payment to ensure accuracy after startup interest accumulation
-        state.monthlyPayment = calculatePMT(state.balance, state.monthlyRate, state.originalTermMonths, state.plan.balloonValue || 0);
+        // Balance/term changed during grace — payment must be re-derived afterwards
+        state.needsPaymentRecalc = true;
+    } else if ((isFirstPaymentMonth || state.needsPaymentRecalc) && state.balance > 0) {
+        // Recalculate the payment over the months left until the plan's end date:
+        // after startup interest accumulation, and after any grace period
+        // (capitalized interest / frozen payment count), keeping the end date fixed
+        const endIdx = parseDateToMonthIndex(state.plan.lastPaymentDate);
+        const paymentsLeft = Math.max(1, Math.floor(endIdx) - Math.floor(monthNum) + 1);
+        state.remainingPayments = paymentsLeft;
+        state.monthlyPayment = calculatePMT(state.balance, state.monthlyRate, paymentsLeft, state.plan.balloonValue || 0);
         currentPayment = state.monthlyPayment;
+        state.needsPaymentRecalc = false;
     }
 
     // 8. Extra Payments
     const extra = calculateExtraPayment(ctx, state.plan.id, monthNum);
-    let extraPaymentAmount = extra.amount;
+    const extraPaymentAmount = extra.amount;
 
     // 9. Amortization Math
-    let principal = currentPayment - interest;
-    principal += extraPaymentAmount;
-    principal = Math.min(principal, state.balance); // Cannot pay more than balance (though balloon should remain)
+    let principal = currentPayment - interest + extraPaymentAmount;
+    let adjustedPayment = false;
+
+    // Cannot pay more than balance (though balloon should remain).
+    // When clamped (early payoff), the actual payment is smaller than the
+    // scheduled one — report only what was really paid.
+    if (principal > state.balance) {
+        principal = state.balance;
+        adjustedPayment = true;
+    }
 
     // For balloon, we don't want to pay off the balloon part with normal payment.
     // However, the PMT is calculated to leave exactly Balloon amount.
     // So 'principal' calculated here should naturally reduce balance towards Balloon.
 
     let endingBalance = Math.max(0, state.balance - principal);
-    let adjustedPayment = false;
 
     // Handle small remainders (snap to 0 or balloon)
     // If we are at the very last payment, we might need to snap to balloon value?
@@ -430,8 +458,8 @@ function processPlanMonth(
         ctx.t
     );
 
-    // Update last interest date
-    state.lastInterestDate = rowDate;
+    // Update last interest accrual point
+    state.lastInterestMonth = monthNum;
 
     return {
         month: formatMonth(monthNum),
