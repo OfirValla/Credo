@@ -15,6 +15,7 @@ export interface PlanState {
     remainingPayments: number;
     lastInterestMonth: number;
     needsPaymentRecalc: boolean;
+    lastAppliedCPI: number | null;
 }
 
 export interface CalculationContext {
@@ -40,11 +41,21 @@ export function calculatePMT(principal: number, monthlyRate: number, numPayments
     return (principal * factor - fv) * monthlyRate / (factor - 1);
 }
 
-export function formatMonth(monthNum: number): string {
+function daysInMonth(year: number, monthZeroBased: number): number {
+    return new Date(year, monthZeroBased + 1, 0).getDate();
+}
+
+// Payment day, clamped to the month's length (a day-31 plan pays on 28/02)
+function monthNumToDay(monthNum: number): { year: number; monthZeroBased: number; day: number } {
     const year = 2000 + Math.floor(monthNum / 12);
-    const month = (Math.floor(monthNum) % 12) + 1;
-    const day = Math.round((monthNum % 1) * 100) || 1;
-    return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const monthZeroBased = Math.floor(monthNum) % 12;
+    const rawDay = Math.round((monthNum % 1) * 100) || 1;
+    return { year, monthZeroBased, day: Math.min(rawDay, daysInMonth(year, monthZeroBased)) };
+}
+
+export function formatMonth(monthNum: number): string {
+    const { year, monthZeroBased, day } = monthNumToDay(monthNum);
+    return `${day.toString().padStart(2, '0')}/${(monthZeroBased + 1).toString().padStart(2, '0')}/${year}`;
 }
 
 function getCPI(cpiData: any, monthNum: number): number | null {
@@ -87,6 +98,7 @@ function initializePlanStates(plans: Plan[]): Map<string, PlanState> {
             remainingPayments: termMonths,
             lastInterestMonth: takenMonthIdx,
             needsPaymentRecalc: false,
+            lastAppliedCPI: null,
         });
     }
     return planData;
@@ -100,6 +112,10 @@ function collectRelevantMonths(ctx: CalculationContext, planPaymentDays: Map<str
     const allMonths = new Set<number>();
     const { plans, extraPayments, rateChanges, gracePeriods } = ctx;
 
+    // Month indices are floats (month + day/100); normalize to 2 decimals so
+    // near-equal values from different arithmetic paths collapse to one key
+    const addMonth = (monthNum: number) => allMonths.add(Math.round(monthNum * 100) / 100);
+
     // 1. Plan Start and Payment Ranges
     plans.forEach(plan => {
         const startMonth = parseDateToMonthIndex(plan.takenDate);
@@ -107,16 +123,16 @@ function collectRelevantMonths(ctx: CalculationContext, planPaymentDays: Map<str
         const endMonth = parseDateToMonthIndex(plan.lastPaymentDate);
         const paymentDayFraction = firstPaymentMonth % 1;
 
-        allMonths.add(startMonth);
+        addMonth(startMonth);
 
         // Add payment stream
         for (let i = Math.floor(firstPaymentMonth); i <= Math.floor(endMonth); i++) {
-            allMonths.add(i + paymentDayFraction);
+            addMonth(i + paymentDayFraction);
         }
 
         // Add gap between taken and first payment
         for (let i = Math.floor(startMonth); i < Math.floor(firstPaymentMonth); i++) {
-            if (i > Math.floor(startMonth)) allMonths.add(i + paymentDayFraction);
+            if (i > Math.floor(startMonth)) addMonth(i + paymentDayFraction);
         }
     });
 
@@ -130,7 +146,7 @@ function collectRelevantMonths(ctx: CalculationContext, planPaymentDays: Map<str
             const dayFraction = index % 1;
 
             // Use specific day if provided, otherwise align to plan payment day
-            allMonths.add(dayFraction > 0.001 ? index : Math.floor(index) + paymentDayFraction);
+            addMonth(dayFraction > 0.001 ? index : Math.floor(index) + paymentDayFraction);
         });
     };
 
@@ -145,7 +161,7 @@ function collectRelevantMonths(ctx: CalculationContext, planPaymentDays: Map<str
         const dayFraction = planPaymentDays.get(gp.planId) || 0.01;
 
         for (let i = start; i <= end; i++) {
-            allMonths.add(i + dayFraction);
+            addMonth(i + dayFraction);
         }
     });
 
@@ -159,34 +175,36 @@ function calculateCPIAdjustment(
     monthNum: number,
     cpiData: any
 ): { linkageDiff: number; newBalance: number; newPayment: number } {
-    if (!state.plan.linkedToCPI) {
-        return { linkageDiff: 0, newBalance: state.balance, newPayment: state.monthlyPayment };
+    const noChange = { linkageDiff: 0, newBalance: state.balance, newPayment: state.monthlyPayment };
+
+    if (!state.plan.linkedToCPI) return noChange;
+
+    // Israeli CPI is published mid-month for the previous month: payments after
+    // the 15th use the freshest reading, earlier payments lag one more month
+    const paymentDay = Math.round((monthNum % 1) * 100);
+    const referenceMonthIdx = paymentDay > 15 ? Math.floor(monthNum) - 1 : Math.floor(monthNum) - 2;
+
+    const referenceCPI = getCPI(cpiData, referenceMonthIdx);
+
+    // Missing reading: keep the last applied CPI so the gap is caught up
+    // (not skipped) once the next reading is available
+    if (!referenceCPI) return noChange;
+
+    // First available reading establishes the linkage base — no adjustment yet
+    if (state.lastAppliedCPI === null) {
+        state.lastAppliedCPI = referenceCPI;
+        return noChange;
     }
 
-    const paymentDay = monthNum % 1;
-    let prevMonthIdx = paymentDay > 15 ? Math.floor(monthNum) - 2 : Math.floor(monthNum) - 3;
-    let currentMonthIdx = paymentDay > 15 ? Math.floor(monthNum) - 1 : Math.floor(monthNum) - 2;
+    const inflationFactor = referenceCPI / state.lastAppliedCPI;
+    state.lastAppliedCPI = referenceCPI;
+    const linkageDiff = state.balance * (inflationFactor - 1);
 
-    const currentCPI = getCPI(cpiData, currentMonthIdx);
-    const prevCPI = getCPI(cpiData, prevMonthIdx);
-
-    // console.groupCollapsed(`CPI : ${formatMonth(monthNum)}`);
-    // console.log("Prev: ", formatMonth(prevMonthIdx), prevCPI);
-    // console.log("Current: ", formatMonth(currentMonthIdx), currentCPI);
-    // console.groupEnd();
-
-    if (currentCPI && prevCPI && prevCPI !== 0) {
-        const inflationFactor = currentCPI / prevCPI;
-        const linkageDiff = state.balance * (inflationFactor - 1);
-
-        return {
-            linkageDiff,
-            newBalance: state.balance + linkageDiff,
-            newPayment: state.monthlyPayment * inflationFactor
-        };
-    }
-
-    return { linkageDiff: 0, newBalance: state.balance, newPayment: state.monthlyPayment };
+    return {
+        linkageDiff,
+        newBalance: state.balance + linkageDiff,
+        newPayment: state.monthlyPayment * inflationFactor
+    };
 }
 
 /**
@@ -216,9 +234,7 @@ function calculateInterest(
 }
 
 function monthNumToDate(monthNum: number): Date {
-    const year = 2000 + Math.floor(monthNum / 12);
-    const month = Math.floor(monthNum) % 12;
-    const day = Math.round((monthNum % 1) * 100) || 1;
+    const { year, monthZeroBased: month, day } = monthNumToDay(monthNum);
     return new Date(year, month, day);
 }
 
